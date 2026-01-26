@@ -1,7 +1,6 @@
 #pragma once
-
 #include <optional>
-#include "DynamicsVertx.h"
+#include "DynamicVertex.h"
 #include <vector>
 #include <array>
 #include "IndexedTriangleList.h"

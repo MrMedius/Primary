@@ -133,6 +133,12 @@
     <Filter Include="Source Files\Drawable\Camera">
       <UniqueIdentifier>{6e9a2f8c-23c0-4843-ad20-22bf4719977e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Object">
+      <UniqueIdentifier>{93461155-669d-4187-a356-dff2e833399c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object">
+      <UniqueIdentifier>{ebfdf23a-e08a-4aca-be28-a153f65a4329}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -258,13 +264,10 @@
     <ClCompile Include="TransformCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
-    <ClCompile Include="TransformCbufScaling.cpp">
-      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
-    </ClCompile>
     <ClCompile Include="SkyboxTransformCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowCameraCBuf.cpp">
+    <ClCompile Include="ShadowCameraCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
     <ClCompile Include="DepthStencil.cpp">
@@ -368,6 +371,15 @@
     </ClCompile>
     <ClCompile Include="SolidSphere.cpp">
       <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteUVCbuf.cpp">
+      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -566,10 +578,7 @@
     <ClInclude Include="SkyboxTransformCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
     </ClInclude>
-    <ClInclude Include="TransformCbufScaling.h">
-      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowCameraCBuf.h">
+    <ClInclude Include="ShadowCameraCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
     </ClInclude>
     <ClInclude Include="TransformCbuf.h">
@@ -707,6 +716,15 @@
     <ClInclude Include="ModelWindow.h">
       <Filter>Header Files\Drawable\Model</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteUVCbuf.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HW3D_01.rc">
@@ -776,10 +794,10 @@
     <FxCompile Include="Fullscreen_VS.hlsl">
       <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
-    <FxCompile Include="Cube_VS.hlsl">
+    <FxCompile Include="General_VS.hlsl">
       <Filter>Shader\Model</Filter>
     </FxCompile>
-    <FxCompile Include="Cube_PS.hlsl">
+    <FxCompile Include="General_PS.hlsl">
       <Filter>Shader\Model</Filter>
     </FxCompile>
     <FxCompile Include="Solid_VS.hlsl">
@@ -790,6 +808,18 @@
     </FxCompile>
     <FxCompile Include="Shadow_VS.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowAlpha_VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowAlpha_PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="GeneralSprite3D_VS.hlsl">
+      <Filter>Shader\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="GeneralSprite3D_PS.hlsl">
+      <Filter>Shader\Model</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -809,6 +839,9 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="PShadow.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="SpriteUV.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>

@@ -7,7 +7,7 @@
 #include "Stencil.h"
 #include "Camera.h"
 #include "DepthStencil.h"
-#include "ShadowCameraCBuf.h"
+#include "ShadowCameraCbuf.h"
 #include "ShadowSampler.h"
 #include "Sampler.h"
 
@@ -21,7 +21,7 @@ namespace Rgph
 		LambertianPass( Graphics& gfx,std::string name )
 			:
 			RenderQueuePass(std::move(name)),
-			pShadowCBuf{ std::make_shared<Bind::ShadowCameraCBuf>(gfx) }
+			pShadowCBuf{ std::make_shared<Bind::ShadowCameraCbuf>(gfx) }
 		{
 			using namespace Bind;
 			AddBind(pShadowCBuf);
@@ -50,7 +50,7 @@ namespace Rgph
 			RenderQueuePass::Execute(gfx);
 		}
 	private:
-		std::shared_ptr<Bind::ShadowCameraCBuf> pShadowCBuf;
+		std::shared_ptr<Bind::ShadowCameraCbuf> pShadowCBuf;
 		const Camera* pMainCamera = nullptr;
 	};
 }

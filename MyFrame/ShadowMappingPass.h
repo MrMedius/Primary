@@ -2,14 +2,13 @@
 #include "RenderQueuePass.h"
 #include "Job.h"
 #include <vector>
-#include "PixelShader.h"
 #include "VertexShader.h"
+#include "NullPixelShader.h"
 #include "Stencil.h"
 #include "Rasterizer.h"
 #include "Source.h"
 #include "RenderTarget.h"
 #include "Blender.h"
-#include "NullPixelShader.h"
 #include "ShadowRasterizer.h"
 #include "CubeTexture.h"
 #include "Viewport.h"
@@ -31,7 +30,9 @@ namespace Rgph
 			RenderQueuePass(std::move(name))
 		{
 			using namespace Bind;
+
 			pDepthCube = std::make_shared<DepthCubeTexture>(gfx, size, 3);
+			
 			AddBind(VertexShader::Resolve(gfx, "Shadow_VS.cso"));
 			AddBind(NullPixelShader::Resolve(gfx));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mode::Off));

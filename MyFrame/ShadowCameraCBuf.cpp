@@ -1,19 +1,19 @@
-#include "ShadowCameraCBuf.h"
+#include "ShadowCameraCbuf.h"
 #include "Camera.h"
 
 namespace dx = DirectX;
 
 namespace Bind
 {
-	ShadowCameraCBuf::ShadowCameraCBuf(Graphics& gfx, UINT slot)
+	ShadowCameraCbuf::ShadowCameraCbuf(Graphics& gfx, UINT slot)
 		:
 		pVcbuf{ std::make_unique<VertexConstantBuffer<Transform>>(gfx,slot) }
 	{}
-	void ShadowCameraCBuf::Bind(Graphics& gfx) noxnd
+	void ShadowCameraCbuf::Bind(Graphics& gfx) noxnd
 	{
 		pVcbuf->Bind(gfx);
 	}
-	void ShadowCameraCBuf::Update(Graphics& gfx)
+	void ShadowCameraCbuf::Update(Graphics& gfx)
 	{
 		const auto pos = pCamera->GetPos();
 		const Transform t{
@@ -23,7 +23,7 @@ namespace Bind
 		};
 		pVcbuf->Update(gfx, t);
 	}
-	void ShadowCameraCBuf::SetCamera(const Camera* p) noexcept
+	void ShadowCameraCbuf::SetCamera(const Camera* p) noexcept
 	{
 		pCamera = p;
 	}

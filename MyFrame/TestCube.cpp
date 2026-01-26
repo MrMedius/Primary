@@ -5,8 +5,6 @@
 #include "imgui/imgui.h"
 #include "Stencil.h"
 #include "DynamicConstant.h"
-#include "TechniqueProbe.h"
-#include "TransformCbufScaling.h"
 #include "Channels.h"
 
 TestCube::TestCube(Graphics& gfx, float size)
@@ -32,11 +30,11 @@ TestCube::TestCube(Graphics& gfx, float size)
 			only.AddBindable(Texture::Resolve(gfx, "asset\\Images\\brickwall.jpg"));
 			only.AddBindable(Sampler::Resolve(gfx));
 
-			auto pvs = VertexShader::Resolve(gfx, "Cube_VS.cso");
+			auto pvs = VertexShader::Resolve(gfx, "General_VS.cso");
 			only.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 			only.AddBindable(std::move(pvs));
 
-			only.AddBindable(PixelShader::Resolve(gfx, "Cube_PS.cso"));
+			only.AddBindable(PixelShader::Resolve(gfx, "General_PS.cso"));
 
 			Dcb::RawLayout lay;
 			lay.Add<Dcb::Float3>("specularColor");
@@ -94,7 +92,11 @@ TestCube::TestCube(Graphics& gfx, float size)
 				Step draw("shadowMap");
 
 				// TODO: better sub-layout generation tech for future consideration maybe
-				draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
+				auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
+				draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
+				draw.AddBindable(std::move(pvs));
+
+				draw.AddBindable(NullPixelShader::Resolve(gfx));
 
 				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 

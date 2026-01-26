@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Drawable.h"
 #include "Bindable.h"
 #include "IndexBuffer.h"

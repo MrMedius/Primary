@@ -6,7 +6,7 @@ class Camera;
 
 namespace Bind
 {
-	class ShadowCameraCBuf : public Bindable
+	class ShadowCameraCbuf : public Bindable
 	{
 	protected:
 		struct Transform
@@ -14,7 +14,7 @@ namespace Bind
 			DirectX::XMMATRIX ViewProj;
 		};
 	public:
-		ShadowCameraCBuf(Graphics& gfx, UINT slot = 1u);
+		ShadowCameraCbuf(Graphics& gfx, UINT slot = 1u);
 		void Bind(Graphics& gfx) noxnd override;
 		void Update(Graphics& gfx);
 		void SetCamera(const Camera* pCamera) noexcept;

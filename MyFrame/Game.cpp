@@ -19,7 +19,7 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 10.0f,5.0f,0.0f })
+	light(wnd.Gfx(), { 0.0f,5.0f,0.0f })
 {
 	cameras.AddCamera(std::make_unique<Camera>(wnd.Gfx(), "A", dx::XMFLOAT3{ -13.5f,6.0f,3.5f }, 0.0f, PI / 2.0f));
 	cameras.AddCamera(std::make_unique<Camera>(wnd.Gfx(), "B", dx::XMFLOAT3{ -13.5f,28.8f,-6.4f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
@@ -37,6 +37,12 @@ Game::Game(const std::string& commandLine)
 	gobber.LinkTechniques(rg);
 	nano.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
+
+	spr.SetPos({ 0.0f,5.0f,6.0f });
+	spr.LinkTechniques(rg);
+	spr.SetAtlas(12, 16, 1, 48);
+	spr.SetFPS(12.0f);
+
 
 	rg.BindShadowCamera(*light.ShareCamera());
 }
@@ -90,6 +96,8 @@ void Game::Update(float dt)
 	cameras.Update(dt, &wnd);
 	cube.Update(dt);
 
+	spr.Update(dt);
+
 	light.Bind(wnd.Gfx(), cameras->GetMatrix());
 	rg.BindMainCamera(cameras.GetActiveCamera());
 }
@@ -101,15 +109,22 @@ void Game::Draw()
 	sponza.Submit(Chan::main);
 	cube.Submit(Chan::main);
 	cube2.Submit(Chan::main);
-	//gobber.Submit(Chan::main);
+	gobber.Submit(Chan::main);
 	nano.Submit(Chan::main);
 	cameras.Submit(Chan::main);
+
+	spr.Submit(Chan::main);
+
 	// Shadow Channel
+	spr.Submit(Chan::shadow);
+	
 	sponza.Submit(Chan::shadow);
 	cube.Submit(Chan::shadow);
 	cube2.Submit(Chan::shadow);
-	//gobber.Submit(Chan::shadow);
+	gobber.Submit(Chan::shadow);
 	nano.Submit(Chan::shadow);
+
+
 
 	rg.Execute(wnd.Gfx());
 
@@ -125,6 +140,10 @@ void Game::Draw()
 	light.SpawnControlWindow();
 	cube.SpawnControlWindow(wnd.Gfx(), "Cube 1");
 	cube2.SpawnControlWindow(wnd.Gfx(), "Cube 2");
+
+
+	spr.SpawnControlWindow(wnd.Gfx(), "S3D");
+
 	rg.RenderWindows(wnd.Gfx());
 #endif
 }

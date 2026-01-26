@@ -2,7 +2,6 @@
 #include "BindableCommon.h"
 #include "DynamicConstant.h"
 #include "ConstantBuffersEx.h"
-#include "TransformCbufScaling.h"
 #include "Stencil.h"
 #include <filesystem>
 #include "Channels.h"
@@ -166,7 +165,11 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				Step draw("shadowMap");
 
 				// TODO: better sub-layout generation tech for future consideration maybe
-				draw.AddBindable(InputLayout::Resolve(gfx, vtxLayout, *VertexShader::Resolve(gfx, "Solid_VS.cso")));
+				auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
+				draw.AddBindable(InputLayout::Resolve(gfx, vtxLayout, *pvs));
+				draw.AddBindable(std::move(pvs));
+
+				draw.AddBindable(NullPixelShader::Resolve(gfx));
 
 				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
