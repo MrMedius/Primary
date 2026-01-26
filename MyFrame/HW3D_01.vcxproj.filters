@@ -121,6 +121,18 @@
     <Filter Include="Header Files\Bindable\ShaderDynamics">
       <UniqueIdentifier>{718cd6c2-96ba-46c8-866a-265eac5340f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Framework\Exception">
+      <UniqueIdentifier>{0129b208-d26d-420a-a102-306c56e724c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Framework\Exception">
+      <UniqueIdentifier>{a35a8245-43af-4136-9c2c-c2520fc466e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawable\Camera">
+      <UniqueIdentifier>{9f209525-c928-479b-9266-2c22a5603d5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Drawable\Camera">
+      <UniqueIdentifier>{6e9a2f8c-23c0-4843-ad20-22bf4719977e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -140,9 +152,6 @@
     </ClCompile>
     <ClCompile Include="imgui\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
@@ -169,12 +178,6 @@
       <Filter>Source Files\Drawable\Model</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Drawable\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelException.cpp">
-      <Filter>Source Files\Drawable\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelWindow.cpp">
       <Filter>Source Files\Drawable\Model</Filter>
     </ClCompile>
     <ClCompile Include="Drawable.cpp">
@@ -207,9 +210,6 @@
     <ClCompile Include="FullscreenPass.cpp">
       <Filter>Source Files\Joobber\Passlib\Base</Filter>
     </ClCompile>
-    <ClCompile Include="RenderGraphCompileException.cpp">
-      <Filter>Source Files\Joobber\Passlib</Filter>
-    </ClCompile>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files\Joobber\Passlib\Base</Filter>
     </ClCompile>
@@ -219,17 +219,8 @@
     <ClCompile Include="RenderQueuePass.cpp">
       <Filter>Source Files\Joobber\Passlib\Base</Filter>
     </ClCompile>
-    <ClCompile Include="CameraContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Projection.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraIndicator.cpp">
-      <Filter>Source Files\Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="Frustum.cpp">
-      <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Blender.cpp">
       <Filter>Source Files\Bindable\Core</Filter>
@@ -291,9 +282,6 @@
     <ClCompile Include="ShadowSampler.cpp">
       <Filter>Source Files\Bindable\Shadow</Filter>
     </ClCompile>
-    <ClCompile Include="SolidSphere.cpp">
-      <Filter>Source Files\Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="ScaleOutlineRenderGraph.cpp">
       <Filter>Source Files\Joobber\Graphlib</Filter>
     </ClCompile>
@@ -327,16 +315,10 @@
     <ClCompile Include="WinMain.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptCommander.cpp">
-      <Filter>Source Files\Framework</Filter>
-    </ClCompile>
     <ClCompile Include="Mouse.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Keyboard.cpp">
-      <Filter>Source Files\Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="DxgiInfoManager.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Surface.cpp">
@@ -354,11 +336,38 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\Tool</Filter>
     </ClCompile>
-    <ClCompile Include="ExceptionBase.cpp">
-      <Filter>Source Files\Tool</Filter>
-    </ClCompile>
     <ClCompile Include="Transformation.cpp">
       <Filter>Source Files\Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="DxgiInfoManager.cpp">
+      <Filter>Source Files\Framework\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptCommander.cpp">
+      <Filter>Source Files\Framework\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelException.cpp">
+      <Filter>Source Files\Framework\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderGraphCompileException.cpp">
+      <Filter>Source Files\Framework\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionBase.cpp">
+      <Filter>Source Files\Framework\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraIndicator.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraContainer.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidSphere.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -385,9 +394,6 @@
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
@@ -434,12 +440,6 @@
     <ClInclude Include="GraphicsThrowMacros.h">
       <Filter>Header Files\Macros</Filter>
     </ClInclude>
-    <ClInclude Include="ModelException.h">
-      <Filter>Header Files\Drawable\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelWindow.h">
-      <Filter>Header Files\Drawable\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Plane.h">
       <Filter>Header Files\Drawable\Geometry</Filter>
     </ClInclude>
@@ -476,9 +476,6 @@
     <ClInclude Include="OutlineDrawingPass.h">
       <Filter>Header Files\Joobber\PassLib</Filter>
     </ClInclude>
-    <ClInclude Include="TestModelProbe.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="VerticalBlurPass.h">
       <Filter>Header Files\Joobber\PassLib</Filter>
     </ClInclude>
@@ -494,17 +491,8 @@
     <ClInclude Include="Sink.h">
       <Filter>Header Files\Joobber\PassLib\Base</Filter>
     </ClInclude>
-    <ClInclude Include="CameraContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Projection.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraIndicator.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="Frustum.h">
-      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="WireframePass.h">
       <Filter>Header Files\Joobber\PassLib</Filter>
@@ -599,9 +587,6 @@
     <ClInclude Include="RenderTarget.h">
       <Filter>Header Files\Bindable\RenderRelated</Filter>
     </ClInclude>
-    <ClInclude Include="SolidSphere.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="ScaleOutlineRenderGraph.h">
       <Filter>Header Files\Joobber\GraphLib</Filter>
     </ClInclude>
@@ -612,9 +597,6 @@
       <Filter>Header Files\Joobber\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="RenderGraph.h">
-      <Filter>Header Files\Joobber\GraphLib</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderGraphCompileException.h">
       <Filter>Header Files\Joobber\GraphLib</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
@@ -644,12 +626,6 @@
     <ClInclude Include="Graphics.h">
       <Filter>Header Files\Framework</Filter>
     </ClInclude>
-    <ClInclude Include="ExceptionBase.h">
-      <Filter>Header Files\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="DxgiInfoManager.h">
-      <Filter>Header Files\Framework</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsResource.h">
       <Filter>Header Files\Framework</Filter>
     </ClInclude>
@@ -664,15 +640,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptCommander.h">
-      <Filter>Header Files\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Surface.h">
-      <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="TexturePreprocessor.h">
-      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files\Framework</Filter>
@@ -695,11 +662,50 @@
     <ClInclude Include="WRL.h">
       <Filter>Header Files\Framework</Filter>
     </ClInclude>
-    <ClInclude Include="HrUtils.h">
-      <Filter>Header Files\Framework</Filter>
-    </ClInclude>
     <ClInclude Include="Transformation.h">
       <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="DxgiInfoManager.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionBase.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCommander.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="HrUtils.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelException.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderGraphCompileException.h">
+      <Filter>Header Files\Framework\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraContainer.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraIndicator.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>Header Files\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePreprocessor.h">
+      <Filter>Header Files\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidSphere.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelWindow.h">
+      <Filter>Header Files\Drawable\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -803,12 +809,6 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="PShadow.hlsli">
-      <Filter>Shader\Common</Filter>
-    </None>
-    <None Include="_PShadow_Dynamic.hlsli">
-      <Filter>Shader\Common</Filter>
-    </None>
-    <None Include="_PShadow_Static.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>

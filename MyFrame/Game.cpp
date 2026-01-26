@@ -9,7 +9,7 @@
 #include "PerfLog.h"
 #include "Camera.h"
 #include "Channels.h"
-#include "TestModelProbe.h"
+#include "ModelWindow.h"
 
 namespace dx = DirectX;
 
@@ -87,68 +87,8 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
-	while (const auto e = wnd.kbd.ReadKey())
-	{
-		if (!e->IsPress())
-		{
-			continue;
-		}
-
-		switch (e->GetCode())
-		{
-		case VK_ESCAPE:
-			if (wnd.CursorEnabled())
-			{
-				wnd.DisableCursor();
-				wnd.mouse.EnableRaw();
-			}
-			else
-			{
-				wnd.EnableCursor();
-				wnd.mouse.DisableRaw();
-			}
-			break;
-		case VK_RETURN:
-			savingDepth = true;
-			break;
-		}
-	}
-
-	if (!wnd.CursorEnabled())
-	{
-		if (wnd.kbd.KeyIsPressed('W'))
-		{
-			cameras->Translate({ 0.0f,0.0f,dt });
-		}
-		if (wnd.kbd.KeyIsPressed('A'))
-		{
-			cameras->Translate({ -dt,0.0f,0.0f });
-		}
-		if (wnd.kbd.KeyIsPressed('S'))
-		{
-			cameras->Translate({ 0.0f,0.0f,-dt });
-		}
-		if (wnd.kbd.KeyIsPressed('D'))
-		{
-			cameras->Translate({ dt,0.0f,0.0f });
-		}
-		if (wnd.kbd.KeyIsPressed('R'))
-		{
-			cameras->Translate({ 0.0f,dt,0.0f });
-		}
-		if (wnd.kbd.KeyIsPressed('F'))
-		{
-			cameras->Translate({ 0.0f,-dt,0.0f });
-		}
-	}
-
-	while (const auto delta = wnd.mouse.ReadRawDelta())
-	{
-		if (!wnd.CursorEnabled())
-		{
-			cameras->Rotate(delta->x, delta->y);
-		}
-	}
+	cameras.Update(dt, &wnd);
+	cube.Update(dt);
 
 	light.Bind(wnd.Gfx(), cameras->GetMatrix());
 	rg.BindMainCamera(cameras.GetActiveCamera());
@@ -161,25 +101,20 @@ void Game::Draw()
 	sponza.Submit(Chan::main);
 	cube.Submit(Chan::main);
 	cube2.Submit(Chan::main);
-	gobber.Submit(Chan::main);
+	//gobber.Submit(Chan::main);
 	nano.Submit(Chan::main);
 	cameras.Submit(Chan::main);
 	// Shadow Channel
 	sponza.Submit(Chan::shadow);
 	cube.Submit(Chan::shadow);
 	cube2.Submit(Chan::shadow);
-	gobber.Submit(Chan::shadow);
+	//gobber.Submit(Chan::shadow);
 	nano.Submit(Chan::shadow);
 
 	rg.Execute(wnd.Gfx());
 
 #ifdef _DEBUG
 	// imgui windows
-	if (savingDepth)
-	{
-		rg.DumpShadowMap(wnd.Gfx(), "shadow.png");
-		savingDepth = false;
-	}
 	static MP sponzeProbe{ "Sponza" };
 	static MP gobberProbe{ "Gobber" };
 	static MP nanoProbe{ "Nano" };

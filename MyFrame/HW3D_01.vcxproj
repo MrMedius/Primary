@@ -221,7 +221,6 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelException.cpp" />
-    <ClCompile Include="ModelWindow.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NullPixelShader.cpp" />
@@ -323,7 +322,6 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelException.h" />
     <ClInclude Include="ModelProbe.h" />
-    <ClInclude Include="ModelWindow.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NullPixelShader.h" />
@@ -352,7 +350,7 @@
     <ClInclude Include="StepLinkingProbe.h" />
     <ClInclude Include="Technique.h" />
     <ClInclude Include="TechniqueProbe.h" />
-    <ClInclude Include="TestModelProbe.h" />
+    <ClInclude Include="ModelWindow.h" />
     <ClInclude Include="ScaleOutlineRenderGraph.h" />
     <ClInclude Include="TexturePreprocessor.h" />
     <ClInclude Include="PixelShader.h" />
@@ -722,14 +720,12 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="_PShadow_Static.hlsli" />
     <None Include="LightVectorData.hlsli" />
     <None Include="PointLight.hlsli" />
     <None Include="PShadow.hlsli" />
     <None Include="ShaderOps.hlsli" />
     <None Include="Transform.hlsli" />
     <None Include="VShadow.hlsli" />
-    <None Include="_PShadow_Dynamic.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

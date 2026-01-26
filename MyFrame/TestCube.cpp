@@ -107,36 +107,53 @@ TestCube::TestCube(Graphics& gfx, float size)
 	}
 }
 
+void TestCube::Update(float dt)
+{
+	trans.RotateDegreeToRad(1.0f, 1.0f, 1.0f);
+}
+
 void TestCube::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
-	this->pos = pos;
+	trans.SetPosition(pos.x, pos.y, pos.z);
 }
 
 void TestCube::SetRotation(float roll, float pitch, float yaw) noexcept
 {
-	this->roll = roll;
-	this->pitch = pitch;
-	this->yaw = yaw;
+	trans.SetRotationDegreeToRad(roll, pitch, yaw);
 }
 
 DirectX::XMMATRIX TestCube::GetTransformXM() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(roll, pitch, yaw) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	return trans.GetTransformXM();
 }
 
 void TestCube::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
 {
 	if (ImGui::Begin(name))
 	{
+		auto translation = trans.GetPosition();
+		auto angles = trans.GetRotation();
+		auto scales = trans.GetScale();
+
+		bool dirty = false;
 		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+		dirty |= ImGui::SliderFloat("X", &translation.x, -80.0f, 80.0f, "%.1f");
+		dirty |= ImGui::SliderFloat("Y", &translation.y, -80.0f, 80.0f, "%.1f");
+		dirty |= ImGui::SliderFloat("Z", &translation.z, -80.0f, 80.0f, "%.1f");
 		ImGui::Text("Orientation");
-		ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
-		ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
-		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+		dirty |= ImGui::SliderAngle("Roll", &angles.x, -180.0f, 180.0f);
+		dirty |= ImGui::SliderAngle("Pitch", &angles.y, -180.0f, 180.0f);
+		dirty |= ImGui::SliderAngle("Yaw", &angles.z, -180.0f, 180.0f);
+		ImGui::Text("Scale");
+		dirty |= ImGui::SliderFloat("ScaleX", &scales.x, 1.0f, 100.0f);
+		dirty |= ImGui::SliderFloat("ScaleY", &scales.y, 1.0f, 100.0f);
+		dirty |= ImGui::SliderFloat("ScaleZ", &scales.z, 1.0f, 100.0f);
+		if (dirty)
+		{
+			trans.SetPosition(translation.x, translation.y, translation.z);
+			trans.SetRotationRad(angles.x, angles.y, angles.z);
+			trans.SetScale(scales.x, scales.y, scales.z);
+		}
 		
 		class Probe : public TechniqueProbe
 		{

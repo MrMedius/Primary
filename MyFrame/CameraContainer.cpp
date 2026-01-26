@@ -22,9 +22,49 @@ Camera* CameraContainer::operator->()
 CameraContainer::~CameraContainer()
 {}
 
-void CameraContainer::Update(float dt) noexcept
+void CameraContainer::Update(float dt, Window* wnd) noexcept
 {
-	GetControlledCamera().Update(dt);
+	while (const auto e = wnd->kbd.ReadKey())
+	{
+		if (!e->IsPress())
+		{
+			continue;
+		}
+
+		switch (e->GetCode())
+		{
+		case VK_ESCAPE:
+			if (wnd->CursorEnabled())
+			{
+				wnd->DisableCursor();
+				wnd->mouse.EnableRaw();
+			}
+			else
+			{
+				wnd->EnableCursor();
+				wnd->mouse.DisableRaw();
+			}
+			break;
+		}
+	}
+
+	if (!wnd->CursorEnabled())
+	{
+		if (wnd->kbd.KeyIsPressed('W')) GetControlledCamera().Translate({   0,  0, dt });
+		if (wnd->kbd.KeyIsPressed('S')) GetControlledCamera().Translate({   0,  0,-dt });
+		if (wnd->kbd.KeyIsPressed('A')) GetControlledCamera().Translate({ -dt,  0,  0 });
+		if (wnd->kbd.KeyIsPressed('D')) GetControlledCamera().Translate({  dt,  0,  0 });
+		if (wnd->kbd.KeyIsPressed('R')) GetControlledCamera().Translate({   0, dt,  0 });
+		if (wnd->kbd.KeyIsPressed('F')) GetControlledCamera().Translate({   0,-dt,  0 });
+	}
+
+	while (const auto delta = wnd->mouse.ReadRawDelta())
+	{
+		if (!wnd->CursorEnabled())
+		{
+			GetControlledCamera().Rotate(delta->x, delta->y);
+		}
+	}
 }
 
 void CameraContainer::Submit(size_t channels) const

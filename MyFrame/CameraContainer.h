@@ -1,4 +1,5 @@
 #pragma once
+#include "Window.h"
 #include <vector>
 #include <memory>
 
@@ -16,7 +17,7 @@ public:
 	void AddCamera( std::shared_ptr<Camera> pCam );
 	Camera* operator->();
 	~CameraContainer();
-	void Update(float dt) noexcept;
+	void Update(float dt, Window* wnd) noexcept;
 	void Submit(size_t channels) const;
 	void SpawnWindow(Graphics& gfx);
 	void LinkTechniques(Rgph::RenderGraph& rg);

@@ -3,10 +3,10 @@
 #include <string>
 #include <memory>
 #include <filesystem>
+#include "Transformation.h"
 
 class Node;
 class Mesh;
-class ModelWindow;
 struct aiMesh;
 struct aiMaterial;
 struct aiNode;
@@ -19,6 +19,7 @@ class Model
 {
 public:
 	Model(Graphics& gfx, const std::string& pathString, float scale = 1.0f);
+	void Update(float dt) noexcept;
 	void Submit(size_t channels) const noxnd;
 	void SetRootTransform(DirectX::FXMMATRIX tf) noexcept;
 	void Accept(class ModelProbe& probe);
@@ -30,4 +31,12 @@ private:
 private:
 	std::unique_ptr<Node> pRoot;
 	std::vector<std::unique_ptr<Mesh>> meshPtrs;
+
+public:
+	void Translate(float x, float y, float z) noexcept;
+	void SetPosition(float x, float y, float z) noexcept;
+	void Rotate(float x, float y, float z) noexcept;
+	void SetRotation(float x, float y, float z) noexcept;
+private:
+	Transformation trans;
 };

@@ -44,6 +44,11 @@ Model::Model(Graphics& gfx, const std::string& pathString, const float scale)
 	pRoot = ParseNode(nextId, *pScene->mRootNode, scale);
 }
 
+void Model::Update(float dt) noexcept
+{
+
+}
+
 void Model::Submit(size_t channels) const noxnd
 {
 	pRoot->Submit(channels, dx::XMMatrixIdentity());
@@ -92,4 +97,31 @@ std::unique_ptr<Node> Model::ParseNode(int& nextId, const aiNode& node, float sc
 	}
 
 	return pNode;
+}
+
+// ==========================
+// Transform controls
+// ==========================
+void Model::Translate(float x, float y, float z) noexcept
+{
+	trans.Translate(x, y, z);
+	pRoot->SetAppliedTransform(trans.GetTransformXM());
+}
+
+void Model::SetPosition(float x, float y, float z) noexcept
+{
+	trans.SetPosition(x, y, z);
+	pRoot->SetAppliedTransform(trans.GetTransformXM());
+}
+
+void Model::Rotate(float x, float y, float z) noexcept
+{
+	trans.RotateDegreeToRad(x, y, z);
+	pRoot->SetAppliedTransform(trans.GetTransformXM());
+}
+
+void Model::SetRotation(float x, float y, float z) noexcept
+{
+	trans.SetRotationDegreeToRad(x, y, z);
+	pRoot->SetAppliedTransform(trans.GetTransformXM());
 }

@@ -7,18 +7,19 @@ namespace dx = DirectX;
 Camera::Camera(Graphics& gfx, std::string name, DirectX::XMFLOAT3 homePos, float homePitch, float homeYaw, bool tethered) noexcept 
 	:
 	name(std::move(name)),
-	homePos(homePos),
-	homePitch(homePitch),
-	homeYaw(homeYaw),
 	proj(gfx, 1.0f, 9.0f / 16.0f, 0.5f, 400.0f), 
 	indicator(gfx),
 	tethered(tethered)
 {
+	transHome.SetPosition(homePos.x, homePos.y, homePos.z);
+	transHome.SetRotationRad(homePitch, homeYaw, 0.0f);
+
 	if (tethered)
 	{
-		pos = homePos;
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
+		trans.SetPosition(homePos.x, homePos.y, homePos.z);
+		trans.SetRotationRad(homePitch, homeYaw, 0.0f);
+		indicator.SetPos(trans.GetPosition());
+		proj.SetPos(trans.GetPosition());
 	}
 	Reset(gfx);
 }
@@ -31,19 +32,7 @@ void Camera::BindToGraphics(Graphics& gfx) const
 
 DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 {
-	using namespace dx;
-
-	const dx::XMVECTOR forwardBaseVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	// apply the camera rotations to a base vector
-	const auto lookVector = XMVector3Transform(forwardBaseVector,
-		XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f)
-	);
-	// generate camera transform (applied to all objects to arrange them relative
-	// to camera position/orientation in world) from cam position and direction
-	// camera "top" always faces towards +Y (cannot do a barrel roll)
-	const auto camPosition = XMLoadFloat3(&pos);
-	const auto camTarget = camPosition + lookVector;
-	return XMMatrixLookAtLH(camPosition, camTarget, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+	return dx::XMMatrixInverse(nullptr, trans.GetTransformXM());
 }
 
 DirectX::XMMATRIX Camera::GetProjection() const noexcept
@@ -53,62 +42,67 @@ DirectX::XMMATRIX Camera::GetProjection() const noexcept
 
 void Camera::SpawnControlWidgets(Graphics& gfx) noexcept
 {
-	bool rotDirty = false;
-	bool posDirty = false;
-	const auto dcheck = [](bool d, bool& carry) { carry = carry || d; };
+	auto pos = trans.GetPosition();
+	auto rot = trans.GetRotation();
+
 	if (!tethered)
 	{
 		ImGui::Text("Position");
-		dcheck(ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f"), posDirty);
-		dcheck(ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f"), posDirty);
-		dcheck(ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f"), posDirty);
+		ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f);
+		ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f);
+		ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f);
 	}
 	ImGui::Text("Orientation");
-	dcheck(ImGui::SliderAngle("Pitch", &pitch, 0.995f * -90.0f, 0.995f * 90.0f), rotDirty);
-	dcheck(ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f), rotDirty);
+	ImGui::SliderAngle("Pitch", &rot.x, -89.0f, 89.0f);
+	ImGui::SliderAngle("Yaw", &rot.y, -180.0f, 180.0f);
+
 	proj.RenderWidgets(gfx);
 	ImGui::Checkbox("Camera Indicator", &enableCameraIndicator);
 	ImGui::Checkbox("Frustum Indicator", &enableFrustumIndicator);
-	if (ImGui::Button("Reset"))
-	{
-		Reset(gfx);
-	}
 
-	if (rotDirty)
-	{
-		const dx::XMFLOAT3 angles = { pitch,yaw,0.0f };
-		indicator.SetRotation(angles);
-		proj.SetRotation(angles);
-	}
-	if (posDirty)
-	{
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
-	}
+	if (ImGui::Button("Reset")) Reset(gfx);
+
+	trans.SetPosition(pos.x, pos.y, pos.z);
+	trans.SetRotationRad(rot.x, rot.y, 0.0f);
+
+	indicator.SetRotation(rot);
+	proj.SetRotation(rot);
+
+	indicator.SetPos(pos);
+	proj.SetPos(pos);
 }
 
 void Camera::Reset(Graphics& gfx) noexcept 
 {
+	const auto homePos = transHome.GetPosition();
+	const auto homeRot = transHome.GetRotation();
+
 	if (!tethered)
 	{
-		pos = homePos;
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
+		trans.SetPosition(homePos.x, homePos.y, homePos.z);
 	}
-	pitch = homePitch;
-	yaw = homeYaw;
+	trans.SetRotationRad(homeRot.x, homeRot.y, homeRot.z);
 
-	const dx::XMFLOAT3 angles = { pitch,yaw,0.0f };
-	indicator.SetRotation(angles);
-	proj.SetRotation(angles);
+	indicator.SetPos(trans.GetPosition());
+	proj.SetPos(trans.GetPosition());
+
+	indicator.SetRotation(homeRot);
+	proj.SetRotation(homeRot);
+
 	proj.Reset(gfx);
 }
 
 void Camera::Rotate(float dx, float dy) noexcept
 {
-	yaw = wrap_angle(yaw + dx * rotationSpeed);
-	pitch = std::clamp(pitch + dy * rotationSpeed, 0.995f * -PI / 2.0f, 0.995f * PI / 2.0f);
-	const dx::XMFLOAT3 angles = { pitch,yaw,0.0f };
+	auto rot = trans.GetRotation();
+
+	rot.y += dx * rotationSpeed;
+	rot.x += dy * rotationSpeed;
+	constexpr float limit = 0.995f * DirectX::XM_PIDIV2;
+	rot.x = std::clamp(rot.x, -limit, limit);
+	trans.SetRotationRad(rot.x, rot.y, 0.0f);
+
+	const dx::XMFLOAT3 angles = { rot.x,rot.y,rot.z };
 	indicator.SetRotation(angles);
 	proj.SetRotation(angles);
 }
@@ -117,29 +111,36 @@ void Camera::Translate(DirectX::XMFLOAT3 translation) noexcept
 {
 	if (!tethered)
 	{
-		dx::XMStoreFloat3(&translation, dx::XMVector3Transform(
-			dx::XMLoadFloat3(&translation),
-			dx::XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f) *
-			dx::XMMatrixScaling(travelSpeed, travelSpeed, travelSpeed)
-		));
-		pos = {
-			pos.x + translation.x,
-			pos.y + translation.y,
-			pos.z + translation.z
+		const auto rot = trans.GetRotation();
+
+		auto move = DirectX::XMFLOAT3{ 
+			translation.x * travelSpeed,
+			translation.y * travelSpeed, 
+			translation.z * travelSpeed 
 		};
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
+
+		DirectX::XMVECTOR local = DirectX::XMLoadFloat3(&move);
+		DirectX::XMMATRIX rotMat = DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z);
+		DirectX::XMVECTOR worldDelta = DirectX::XMVector3TransformNormal(local, rotMat);
+
+		DirectX::XMFLOAT3 d;
+		DirectX::XMStoreFloat3(&d, worldDelta);
+		trans.Translate(d.x, d.y, d.z);
+
+		const auto newPos = trans.GetPosition();
+		indicator.SetPos(newPos);
+		proj.SetPos(newPos);
 	}
 }
 
 const DirectX::XMFLOAT3& Camera::GetPos() const noexcept
 {
-	return pos;
+	return trans.GetPosition();
 }
 
 void Camera::SetPos(const DirectX::XMFLOAT3& pos) noexcept
 {
-	this->pos = pos;
+	this->trans.SetPosition(pos.x, pos.y, pos.z);
 	indicator.SetPos(pos);
 	proj.SetPos(pos);
 }
@@ -153,11 +154,6 @@ void Camera::LinkTechniques(Rgph::RenderGraph& rg)
 {
 	indicator.LinkTechniques(rg);
 	proj.LinkTechniques(rg);
-}
-
-void Camera::Update(float dt) noexcept
-{
-
 }
 
 void Camera::Submit(size_t channels) const

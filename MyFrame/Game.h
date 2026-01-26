@@ -38,7 +38,6 @@ private:
 	/*         Game Related         */
 	/********************************/
 	PointLight light;
-	bool savingDepth = false;
 	CameraContainer cameras;
 
 	Rgph::BlurOutlineRenderGraph rg{ wnd.Gfx() };

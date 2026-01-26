@@ -1,6 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <string>
+#include "Transformation.h"
 #include "Projection.h"
 #include "CameraIndicator.h"
 
@@ -25,18 +26,13 @@ public:
 	void SetPos(const DirectX::XMFLOAT3& pos) noexcept;
 	const std::string& GetName() const noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);
-	void Update(float dt) noexcept;
 	void Submit(size_t channel) const;
 private:
 	bool tethered;
 	std::string name;
-	DirectX::XMFLOAT3 homePos;
-	float homePitch;
-	float homeYaw;
-	DirectX::XMFLOAT3 pos;
-	float pitch;
-	float yaw;
-	static constexpr float travelSpeed = 12.0f;
+	Transformation transHome;
+	Transformation trans;
+		static constexpr float travelSpeed = 12.0f;
 	static constexpr float rotationSpeed = 0.004f;
 	bool enableCameraIndicator = false;
 	bool enableFrustumIndicator = false;

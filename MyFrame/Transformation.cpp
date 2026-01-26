@@ -3,7 +3,7 @@
 
 namespace dx = DirectX;
 
-void Transformation::SetTranslation(float x, float y, float z) noexcept
+void Transformation::SetPosition(float x, float y, float z) noexcept
 {
     position = { x,y,z };
 }
@@ -15,9 +15,7 @@ void Transformation::SetRotationRad(float roll, float pitch, float yaw) noexcept
 
 void Transformation::SetRotationDegreeToRad(float roll, float pitch, float yaw) noexcept
 {
-    rotation = { wrap_angle(rotation.x),
-                 wrap_angle(rotation.y),
-                 wrap_angle(rotation.z) };
+    rotation = { to_rad(roll), to_rad(pitch), to_rad(yaw) };
 }
 
 void Transformation::SetScale(float x, float y, float z) noexcept

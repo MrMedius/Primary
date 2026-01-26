@@ -8,7 +8,7 @@ class Transformation
 public:
     Transformation() noexcept = default;
 
-    void SetTranslation(float x, float y, float z) noexcept;
+    void SetPosition(float x, float y, float z) noexcept;
     void SetRotationRad(float roll, float pitch, float yaw) noexcept;
     void SetRotationDegreeToRad(float roll, float pitch, float yaw) noexcept;
 
