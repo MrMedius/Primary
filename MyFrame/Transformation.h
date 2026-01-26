@@ -1,0 +1,32 @@
+#pragma once
+#include <DirectXMath.h>
+#include "XMath.h"
+#include "Math.h"
+
+class Transformation
+{
+public:
+    Transformation() noexcept = default;
+
+    void SetTranslation(float x, float y, float z) noexcept;
+    void SetRotationRad(float roll, float pitch, float yaw) noexcept;
+    void SetRotationDegreeToRad(float roll, float pitch, float yaw) noexcept;
+
+    void SetScale(float x, float y, float z) noexcept;
+    void SetScale(float size) noexcept;
+    void Translate(float x, float y, float z) noexcept;
+    void RotateRad(float roll, float pitch, float yaw) noexcept;
+    void RotateDegreeToRad(float roll, float pitch, float yaw) noexcept;
+    void Scale(float x, float y, float z) noexcept;
+    void Scale(float size) noexcept;
+
+    DirectX::XMMATRIX GetTransformXM() const noexcept;
+    DirectX::XMFLOAT3 GetPosition() const noexcept;
+    DirectX::XMFLOAT3 GetRotation() const noexcept;
+    DirectX::XMFLOAT3 GetScale() const noexcept;
+
+private:
+    DirectX::XMFLOAT3 position{ 0,0,0 };
+    DirectX::XMFLOAT3 rotation{ 0,0,0 };
+    DirectX::XMFLOAT3 scale{ 1,1,1 };
+};
