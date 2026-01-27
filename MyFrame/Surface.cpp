@@ -90,16 +90,12 @@ Surface Surface::FromFile(const std::string& name)
 		throw Surface::Exception(__LINE__, __FILE__, name, "Failed to load image", hr);
 	}
 
-	if (scratch.GetImage(0, 0, 0)->format != format)
+	const DirectX::Image* pImage = LoadCheck(hr, scratch);
+
+	if (pImage->format != format)
 	{
 		DirectX::ScratchImage converted;
-		hr = DirectX::Convert(
-			*scratch.GetImage(0, 0, 0),
-			format,
-			DirectX::TEX_FILTER_DEFAULT,
-			DirectX::TEX_THRESHOLD_DEFAULT,
-			converted
-		);
+		hr = DirectX::Convert(*pImage, format, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, converted);
 
 		if (FAILED(hr))
 		{
@@ -107,6 +103,54 @@ Surface Surface::FromFile(const std::string& name)
 		}
 
 		return Surface(std::move(converted));
+	}
+
+	return Surface(std::move(scratch));
+}
+
+Surface Surface::FromMemory(const void* data, size_t size)
+{
+	DirectX::ScratchImage scratch;
+	HRESULT hr = DirectX::LoadFromWICMemory(data, size, DirectX::WIC_FLAGS_IGNORE_SRGB, nullptr, scratch);
+
+	// Check the image
+	const DirectX::Image* pImage = LoadCheck(hr, scratch);
+
+	// Change to standard format
+	if (pImage->format != format)
+	{
+		DirectX::ScratchImage converted;
+		hr = DirectX::Convert(*pImage, format, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, converted);
+
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("Failed to convert image format from memory data");
+		}
+
+		return Surface(std::move(converted));
+	}
+
+	return Surface(std::move(scratch));
+}
+
+Surface Surface::FromPixels(const void* pixels, unsigned int width, unsigned int height)
+{
+	DirectX::ScratchImage scratch;
+	HRESULT hr = scratch.Initialize2D(format, width, height, 1u, 1u);
+
+	// Check the image
+	const DirectX::Image* pImage = LoadCheck(hr, scratch);
+
+	// Copy pixel data
+	const size_t srcRowPitch = width * sizeof(Color);
+	const auto* srcPtr = reinterpret_cast<const uint8_t*>(pixels);
+	auto* dstPtr = pImage->pixels;
+
+	for (unsigned int y = 0; y < height; y++)
+	{
+		memcpy(dstPtr, srcPtr, srcRowPitch);
+		srcPtr += srcRowPitch;
+		dstPtr += pImage->rowPitch;
 	}
 
 	return Surface(std::move(scratch));
@@ -152,7 +196,26 @@ bool Surface::AlphaLoaded() const noexcept
 Surface::Surface(DirectX::ScratchImage scratch) noexcept
 	:
 	scratch(std::move(scratch))
+{}
+
+const DirectX::Image* Surface::LoadCheck(HRESULT hr, DirectX::ScratchImage& scratch) noexcept
 {
+	// Check if the load was successful
+	if (FAILED(hr))
+	{
+		std::ostringstream oss;
+		oss << "Failed to load image from memory (HRESULT: 0x" << std::hex << hr << ")";
+		throw std::runtime_error(oss.str());
+	}
+
+	// Verify that the image data is valid
+	const auto* pImage = scratch.GetImage(0, 0, 0);
+	if (pImage == nullptr)
+	{
+		throw std::runtime_error("Failed to get image data from memory");
+	}
+
+	return pImage;
 }
 
 
@@ -198,3 +261,4 @@ const std::string& Surface::Exception::GetNote() const noexcept
 {
 	return note;
 }
+

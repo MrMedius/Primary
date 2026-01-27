@@ -166,10 +166,13 @@ public:
 	const Color* GetBufferPtr() const noexcept;
 	const Color* GetBufferPtrConst() const noexcept;
 	static Surface FromFile(const std::string& name);
+	static Surface FromMemory(const void* data, size_t size);
+	static Surface FromPixels(const void* pixels, unsigned int width, unsigned int height);
 	void Save(const std::string& filename) const;
 	bool AlphaLoaded() const noexcept;
 private:
 	Surface(DirectX::ScratchImage scratch) noexcept;
+	static const DirectX::Image* LoadCheck(HRESULT hr, DirectX::ScratchImage& scratch) noexcept;
 private:
 	static constexpr DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
 	DirectX::ScratchImage scratch;

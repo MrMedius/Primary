@@ -139,6 +139,9 @@
     <Filter Include="Source Files\Object">
       <UniqueIdentifier>{ebfdf23a-e08a-4aca-be28-a153f65a4329}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Object\Character">
+      <UniqueIdentifier>{1371f3a0-3435-43fe-94f3-acebfe8c4228}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -372,14 +375,26 @@
     <ClCompile Include="SolidSphere.cpp">
       <Filter>Source Files\Drawable\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Sprite3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpriteUVCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicTexture.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicTexture.cpp">
+      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Player_ResourceSystem.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -716,7 +731,7 @@
     <ClInclude Include="ModelWindow.h">
       <Filter>Header Files\Drawable\Model</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="ObjectBase.h">
       <Filter>Header Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="Sprite3D.h">
@@ -724,6 +739,21 @@
     </ClInclude>
     <ClInclude Include="SpriteUVCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectCodex.h">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="FSM.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files\Object\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Object\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Player_ResourceSystem.h">
+      <Filter>Header Files\Object\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2022, assimp team
 
 
 
@@ -43,12 +43,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** @file Defines the StreamWriter class which writes data to
  *  a binary stream with a well-defined endianness. */
-
+#pragma once
 #ifndef AI_STREAMWRITER_H_INCLUDED
 #define AI_STREAMWRITER_H_INCLUDED
 
+#ifdef __GNUC__
+#   pragma GCC system_header
+#endif
+
 #include "ByteSwapper.h"
-#include <assimp/IOStream.hpp>
+#include "IOStream.hpp>
 
 #include <memory>
 #include <vector>

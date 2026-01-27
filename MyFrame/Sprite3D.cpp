@@ -7,8 +7,9 @@
 #include "DynamicConstant.h"
 #include "Channels.h"
 #include "SpriteUVCbuf.h"
+#include "DynamicTexture.h"
 
-Sprite3D::Sprite3D(Graphics& gfx, float size)
+Sprite3D::Sprite3D(Graphics& gfx, float size, std::vector<std::string> paths)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
@@ -22,14 +23,15 @@ Sprite3D::Sprite3D(Graphics& gfx, float size)
 	pTopology = Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	auto tcb = std::make_shared<TransformCbuf>(gfx);
-	auto uvcb = std::make_shared<Bind::SpriteUVCbuf>(gfx);
+	auto uvcb = std::make_shared<SpriteUVCbuf>(gfx);
+	auto dynTex = std::make_shared<DynamicTexture>(gfx, paths);
 
 	{
 		Technique shade("Shade", Chan::main);
 		{
 			Step only("lambertian");
 
-			only.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Player\\Player_Usual.png"));
+			only.AddBindable(dynTex);
 			only.AddBindable(Sampler::Resolve(gfx));
 
 			auto pvs = VertexShader::Resolve(gfx, "GeneralSprite3D_VS.cso");
@@ -67,7 +69,7 @@ Sprite3D::Sprite3D(Graphics& gfx, float size)
 			draw.AddBindable(std::move(pvs));
 			draw.AddBindable(Bind::PixelShader::Resolve(gfx, "ShadowAlpha_PS.cso"));
 
-			draw.AddBindable(Bind::Texture::Resolve(gfx, "asset\\Images\\Player\\Player_Usual.png"));
+			draw.AddBindable(dynTex);
 			draw.AddBindable(Bind::Sampler::Resolve(gfx));
 
 			draw.AddBindable(tcb);
@@ -83,7 +85,7 @@ Sprite3D::Sprite3D(Graphics& gfx, float size)
 
 void Sprite3D::Update(float dt)
 {
-	accum += dt;
+	accum += 2 * dt;
 	while (accum >= frameTime)
 	{
 		accum -= frameTime;
@@ -97,6 +99,14 @@ void Sprite3D::Update(float dt)
 
 	uvScale = { 1.0f / float(numU), 1.0f / float(numV) };
 	uvOffset = { float(u) / float(numU), float(v) / float(numV) };
+
+
+	texAccum += dt;
+	if (texAccum >= 5.0f)
+	{
+		texAccum = 0.0f;
+		texIndex++;
+	}
 }
 
 void Sprite3D::SetPos(DirectX::XMFLOAT3 pos) noexcept

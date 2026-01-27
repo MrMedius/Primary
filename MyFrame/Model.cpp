@@ -31,7 +31,7 @@ Model::Model(Graphics& gfx, const std::string& pathString, const float scale)
 	materials.reserve(pScene->mNumMaterials);
 	for (size_t i = 0; i < pScene->mNumMaterials; i++)
 	{
-		materials.emplace_back(gfx, *pScene->mMaterials[i], pathString);
+		materials.emplace_back(gfx, pScene, *pScene->mMaterials[i], pathString);
 	}
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)

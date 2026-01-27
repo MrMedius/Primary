@@ -7,7 +7,7 @@
 class Sprite3D : public Drawable
 {
 public:
-	Sprite3D(Graphics& gfx, float size);
+	Sprite3D(Graphics& gfx, float size, std::vector<std::string> paths);
 	void Update(float dt);
 	void SetPos(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;
@@ -18,6 +18,9 @@ public:
 
 	void SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noexcept;
 	void SetFPS(float fps) noexcept;
+
+	int GetTextureFrameIndex() const noexcept { return texIndex; }
+	void SetTextureFrameIndex(int i) noexcept { texIndex = i; }
 private:
 	Transformation trans;
 
@@ -34,5 +37,9 @@ private:
 
 	DirectX::XMFLOAT2 uvOffset = { 0.0f,0.0f };
 	DirectX::XMFLOAT2 uvScale = { 1.0f,1.0f };
+
+
+	int texIndex = 0;
+	float texAccum = 0.0f;
 };
 

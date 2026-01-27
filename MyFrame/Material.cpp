@@ -5,8 +5,11 @@
 #include "Stencil.h"
 #include <filesystem>
 #include "Channels.h"
+#include <assimp/scene.h>
+#include <fstream>
+#include <chrono>
 
-Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesystem::path& path) noxnd
+Material::Material(Graphics& gfx, const aiScene* pScene, const aiMaterial& material, const std::filesystem::path& path) noxnd
 	:
 	modelPath(path.string())
 {
@@ -17,6 +20,43 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 		material.Get(AI_MATKEY_NAME, tempName);
 		name = tempName.C_Str();
 	}
+
+	// lamda: Load textures based on texture path (embedded textures supported)
+	auto loadTexture = [&](const aiString& texFileName, UINT slot) -> std::shared_ptr<Texture> {
+		const std::string texPath = texFileName.C_Str();
+
+		// Check if it is an embedded texture
+		if (const aiTexture* pEmbeddedTex = GetEmbeddedTexture(texPath, pScene))
+		{
+			// For embedded textures, use "model path + texture path" as ID
+			const std::string embeddedId = modelPath + "#" + texPath;
+			return Texture::Resolve(gfx, embeddedId, pEmbeddedTex, slot);
+		}
+		else
+		{
+			// External Texture Files
+			std::string resolvedPath;
+
+			// Check if the path is absolute
+			const bool isAbsolutePath = (texPath.length() >= 2 && texPath[1] == ':') || (texPath.length() >= 1 && texPath[0] == '/');
+
+			if (isAbsolutePath)
+			{
+				// If it is an absolute path, extract the file name and create a relative path where the model is located.
+				const size_t lastSlash = texPath.find_last_of("/\\");
+				const std::string fileName = (lastSlash != std::string::npos) ? texPath.substr(lastSlash + 1) : texPath;
+				resolvedPath = rootPath + fileName;
+			}
+			else
+			{
+				// If it's a relative path, place it directly
+				resolvedPath = rootPath + texPath;
+			}
+
+			return Texture::Resolve(gfx, resolvedPath, slot);
+		}
+	};
+
 	// phong technique
 	{
 		Technique phong{ "Phong",Chan::main };
@@ -39,7 +79,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				hasTexture = true;
 				shaderCode += "Dif";
 				vtxLayout.Append(Dvtx::VertexLayout::Texture2D);
-				auto tex = Texture::Resolve(gfx, rootPath + texFileName.C_Str());
+				auto tex = loadTexture(texFileName, 0);
 				if (tex->HasAlpha())
 				{
 					hasAlpha = true;
@@ -60,7 +100,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				hasTexture = true;
 				shaderCode += "Spc";
 				vtxLayout.Append(Dvtx::VertexLayout::Texture2D);
-				auto tex = Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 1);
+				auto tex = loadTexture(texFileName, 1);
 				hasGlossAlpha = tex->HasAlpha();
 				step.AddBindable(std::move(tex));
 				pscLayout.Add<Dcb::Bool>("useGlossAlpha");
@@ -79,7 +119,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				vtxLayout.Append(Dvtx::VertexLayout::Texture2D);
 				vtxLayout.Append(Dvtx::VertexLayout::Tangent);
 				vtxLayout.Append(Dvtx::VertexLayout::Bitangent);
-				step.AddBindable(Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 2));
+				step.AddBindable(loadTexture(texFileName, 2));
 				pscLayout.Add<Dcb::Bool>("useNormalMap");
 				pscLayout.Add<Dcb::Float>("normalMapWeight");
 			}
@@ -131,12 +171,10 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 		{
 			Step mask("outlineMask");
 
-			// TODO: better sub-layout generation tech for future consideration maybe
 			mask.AddBindable(InputLayout::Resolve(gfx, vtxLayout, *VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 			mask.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-			// TODO: might need to specify rasterizer when doubled-sided models start being used
 			outline.AddStep(std::move(mask));
 		}
 		{
@@ -148,12 +186,10 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				buf["materialColor"] = DirectX::XMFLOAT3{ 1.0f,0.4f,0.4f };
 				draw.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 1u));
 
-				// TODO: better sub-layout generation tech for future consideration maybe
 				draw.AddBindable(InputLayout::Resolve(gfx, vtxLayout, *VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-				// TODO: might need to specify rasterizer when doubled-sided models start being used
 				outline.AddStep(std::move(draw));
 			}
 			techniques.push_back(std::move(outline));
@@ -164,7 +200,6 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			{
 				Step draw("shadowMap");
 
-				// TODO: better sub-layout generation tech for future consideration maybe
 				auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
 				draw.AddBindable(InputLayout::Resolve(gfx, vtxLayout, *pvs));
 				draw.AddBindable(std::move(pvs));
@@ -173,7 +208,6 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 
 				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-				// TODO: might need to specify rasterizer when doubled-sided models start being used
 				map.AddStep(std::move(draw));
 			}
 			techniques.push_back(std::move(map));
@@ -224,4 +258,14 @@ std::string Material::MakeMeshTag(const aiMesh& mesh) const noexcept
 std::vector<Technique> Material::GetTechniques() const noexcept
 {
 	return techniques;
+}
+
+const aiTexture* Material::GetEmbeddedTexture(const std::string& texPath, const aiScene* pScene) noexcept
+{
+	if (pScene == nullptr || texPath.empty())
+	{
+		return nullptr;
+	}
+
+	return pScene->GetEmbeddedTexture(texPath.c_str());
 }

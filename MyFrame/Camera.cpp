@@ -11,8 +11,8 @@ Camera::Camera(Graphics& gfx, std::string name, DirectX::XMFLOAT3 homePos, float
 	indicator(gfx),
 	tethered(tethered)
 {
-	transHome.SetPosition(homePos.x, homePos.y, homePos.z);
-	transHome.SetRotationRad(homePitch, homeYaw, 0.0f);
+	transHome.position = { homePos.x, homePos.y, homePos.z };
+	transHome.rotation = { homePitch, homeYaw, 0.0f };
 
 	if (tethered)
 	{
@@ -74,8 +74,8 @@ void Camera::SpawnControlWidgets(Graphics& gfx) noexcept
 
 void Camera::Reset(Graphics& gfx) noexcept 
 {
-	const auto homePos = transHome.GetPosition();
-	const auto homeRot = transHome.GetRotation();
+	const auto homePos = transHome.position;
+	const auto homeRot = transHome.rotation;
 
 	if (!tethered)
 	{

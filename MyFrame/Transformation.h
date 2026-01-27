@@ -3,6 +3,13 @@
 #include "XMath.h"
 #include "Math.h"
 
+struct TransInfo
+{
+    DirectX::XMFLOAT3 position{ 0,0,0 };
+    DirectX::XMFLOAT3 rotation{ 0,0,0 };
+    DirectX::XMFLOAT3 scale{ 1,1,1 };
+};
+
 class Transformation
 {
 public:
@@ -26,7 +33,5 @@ public:
     DirectX::XMFLOAT3 GetScale() const noexcept;
 
 private:
-    DirectX::XMFLOAT3 position{ 0,0,0 };
-    DirectX::XMFLOAT3 rotation{ 0,0,0 };
-    DirectX::XMFLOAT3 scale{ 1,1,1 };
+    TransInfo info;
 };

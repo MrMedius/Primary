@@ -1,6 +1,5 @@
 #include "Texture.h"
 #include "Surface.h"
-#include "GraphicsThrowMacros.h"
 #include "BindableCodex.h"
 
 namespace Bind
@@ -9,17 +8,37 @@ namespace Bind
 
 	Texture::Texture(Graphics& gfx, const std::string& path, UINT slot)
 		:
-		slot(slot)
+		slot(slot),
+		path(path)
 	{
-		INFOMAN(gfx);
-
-		if (slot == 3u)
-		{
-			int a = 0;
-		}
-
 		// load surface
 		const auto s = Surface::FromFile(path);
+		CreateTextureFromSurface(gfx, s);
+	}
+
+	Texture::Texture(Graphics& gfx, const std::string& embeddedId, const aiTexture* pAiTexture, UINT slot)
+		:
+		slot(slot),
+		path(embeddedId)
+	{
+		Surface s = [&]() {
+			if (pAiTexture->mHeight == 0)
+			{
+				// Compression format (e.g. PNG/JPG, where mWidth is the size of the compressed data in bytes)
+				return Surface::FromMemory(pAiTexture->pcData, static_cast<size_t>(pAiTexture->mWidth));
+			}
+			else
+			{
+				// Uncompressed format (BGRA8888, mWidth * mHeight is the actual pixel size)
+				return Surface::FromPixels(pAiTexture->pcData, pAiTexture->mWidth, pAiTexture->mHeight);
+			}
+		}();
+
+		CreateTextureFromSurface(gfx, s);
+	}
+
+	void Texture::CreateTextureFromSurface(Graphics& gfx, const Surface& s)
+	{
 		hasAlpha = s.AlphaLoaded();
 
 		// create texture resource
@@ -36,9 +55,7 @@ namespace Bind
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 		wrl::ComPtr<ID3D11Texture2D> pTexture;
-		GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(
-			&textureDesc, nullptr, &pTexture
-		));
+		GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, &pTexture);
 
 		// write image data into top mip level
 		GetContext(gfx)->UpdateSubresource(
@@ -51,9 +68,7 @@ namespace Bind
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = -1;
-		GFX_THROW_INFO(GetDevice(gfx)->CreateShaderResourceView(
-			pTexture.Get(), &srvDesc, &pTextureView
-		));
+		GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &srvDesc, &pTextureView);
 
 		// generate the mip chain using the gpu rendering pipeline
 		GetContext(gfx)->GenerateMips(pTextureView.Get());
@@ -61,17 +76,25 @@ namespace Bind
 
 	void Texture::Bind(Graphics& gfx) noxnd
 	{
-		INFOMAN_NOHR(gfx);
-		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf()));
+		GetContext(gfx)->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
 	}
 	std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::string& path, UINT slot)
 	{
 		return Codex::Resolve<Texture>(gfx, path, slot);
 	}
+	std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::string& embeddedId, const aiTexture* pAiTexture, UINT slot)
+	{
+		return Codex::Resolve<Texture>(gfx, embeddedId, pAiTexture, slot);
+	}
 	std::string Texture::GenerateUID(const std::string& path, UINT slot)
 	{
 		using namespace std::string_literals;
 		return typeid(Texture).name() + "#"s + path + "#" + std::to_string(slot);
+	}
+	std::string Texture::GenerateUID(const std::string& embeddedId, const aiTexture*, UINT slot)
+	{
+		using namespace std::string_literals;
+		return typeid(Texture).name() + "#embedded#"s + embeddedId + "#" + std::to_string(slot);
 	}
 	std::string Texture::GetUID() const noexcept
 	{
