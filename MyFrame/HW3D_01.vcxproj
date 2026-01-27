@@ -183,6 +183,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DynamicTexture.cpp" />
     <ClCompile Include="DynamicTexture.h" />
     <ClCompile Include="Game.cpp" />
@@ -253,7 +254,7 @@
     <ClCompile Include="StepLinkingProbe.cpp" />
     <ClCompile Include="Surface.cpp" />
     <ClCompile Include="Technique.cpp" />
-    <ClCompile Include="TestCube.cpp" />
+    <ClCompile Include="CubeBase.cpp" />
     <ClCompile Include="ScaleOutlineRenderGraph.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TexturePreprocessor.cpp" />
@@ -268,7 +269,9 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Bindable.h" />
@@ -374,7 +377,7 @@
     <ClInclude Include="SolidSphere.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Surface.h" />
-    <ClInclude Include="TestCube.h" />
+    <ClInclude Include="CubeBase.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransformCbuf.h" />

@@ -4,12 +4,13 @@
 #include "ImguiManager.h"
 #include "CameraContainer.h"
 #include "PointLight.h"
-#include "TestCube.h"
+#include "CubeBase.h"
 #include "Model.h"
 #include "ScriptCommander.h"
 #include "BlurOutlineRenderGraph.h"
 
 #include "Player.h"
+#include "Block.h"
 
 class Game
 {
@@ -40,14 +41,12 @@ private:
 	/*         Game Related         */
 	/********************************/
 	PointLight light;
-	CameraContainer cameras;
+	CameraContainer cameras{ wnd.Gfx() };
 
 	Rgph::BlurOutlineRenderGraph rg{ wnd.Gfx() };
-	TestCube cube{ wnd.Gfx(),4.0f };
-	TestCube cube2{ wnd.Gfx(),4.0f };
-	Model sponza{ wnd.Gfx(),"asset\\Models\\sponza\\sponza.obj",1.0f / 20.0f };
-	//Model gobber{ wnd.Gfx(),"asset\\Models\\gobber\\GoblinX.obj",4.0f };
-	//Model nano{ wnd.Gfx(),"asset\\Models\\nano_textured\\nanosuit.obj",2.0f };
-
+	//CubeBase cube{ wnd.Gfx(),{4.0f,4.0f,4.0f} };
+	//Model sponza{ wnd.Gfx(),"asset\\Models\\sponza\\sponza.obj",1.0f / 20.0f };
+	
 	Player p;
+	Block b;
 };

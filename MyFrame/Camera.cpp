@@ -145,6 +145,13 @@ void Camera::SetPos(const DirectX::XMFLOAT3& pos) noexcept
 	proj.SetPos(pos);
 }
 
+void Camera::SetRot(const DirectX::XMFLOAT3& rot) noexcept
+{
+	this->trans.SetRotationRad(rot.x, rot.y, rot.z);
+	indicator.SetRotation(rot);
+	proj.SetRotation(rot);
+}
+
 const std::string& Camera::GetName() const noexcept
 {
 	return name;

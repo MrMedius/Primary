@@ -4,6 +4,14 @@
 #include "Graphics.h"
 #include "RenderGraph.h"
 
+namespace dx = DirectX;
+
+CameraContainer::CameraContainer(Graphics& gfx)
+{
+	AddCamera(std::make_unique<Camera>(gfx, "Main Camera", dx::XMFLOAT3{ 0.0f,25.0f,-30.0f }, PI / 6.0f, 0.0f));
+	AddCamera(std::make_unique<Camera>(gfx, "Observer", dx::XMFLOAT3{ -13.5f,28.8f,-6.4f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+}
+
 void CameraContainer::Bind( Graphics& gfx )
 {
 	gfx.SetCamera((*this)->GetMatrix());
@@ -22,8 +30,27 @@ Camera* CameraContainer::operator->()
 CameraContainer::~CameraContainer()
 {}
 
-void CameraContainer::Update(float dt, Window* wnd) noexcept
+void CameraContainer::Update(float dt, DirectX::XMFLOAT3 pos,Window* wnd) noexcept
 {
+	// Main Camera Follow
+	FollowTarget.x += (pos.x - FollowTarget.x) * FollowLerp;
+	FollowTarget.y += (pos.y - FollowTarget.y) * FollowLerp;
+	FollowTarget.z += (pos.z - FollowTarget.z) * FollowLerp;
+	constexpr float yaw = 0.0f;
+	const float sx = sinf(FollowPitch);
+	const float cx = cosf(FollowPitch);
+	const float sy = sinf(yaw);
+	const float cy = cosf(yaw);
+
+	dx::XMFLOAT3 camPos;
+	camPos.x = FollowTarget.x + sy * cx * FollowRadius;
+	camPos.y = FollowTarget.y + sx * FollowRadius;
+	camPos.z = FollowTarget.z - cy * cx * FollowRadius;
+	const dx::XMFLOAT3 camRot = { FollowPitch, yaw, 0.0f };
+	cameras[0]->SetPos(camPos);
+	cameras[0]->SetRot(camRot);
+
+#ifdef _DEBUG
 	while (const auto e = wnd->kbd.ReadKey())
 	{
 		if (!e->IsPress())
@@ -48,23 +75,22 @@ void CameraContainer::Update(float dt, Window* wnd) noexcept
 		}
 	}
 
-	if (!wnd->CursorEnabled())
+	if (!wnd->CursorEnabled() && controlled != 0)
 	{
-		if (wnd->kbd.KeyIsPressed('W')) GetControlledCamera().Translate({   0,  0, dt });
-		if (wnd->kbd.KeyIsPressed('S')) GetControlledCamera().Translate({   0,  0,-dt });
-		if (wnd->kbd.KeyIsPressed('A')) GetControlledCamera().Translate({ -dt,  0,  0 });
-		if (wnd->kbd.KeyIsPressed('D')) GetControlledCamera().Translate({  dt,  0,  0 });
-		if (wnd->kbd.KeyIsPressed('R')) GetControlledCamera().Translate({   0, dt,  0 });
-		if (wnd->kbd.KeyIsPressed('F')) GetControlledCamera().Translate({   0,-dt,  0 });
+		if (wnd->kbd.KeyIsPressed(KK_UP))	 GetControlledCamera().Translate({   0,  0, dt });
+		if (wnd->kbd.KeyIsPressed(KK_DOWN))  GetControlledCamera().Translate({   0,  0,-dt });
+		if (wnd->kbd.KeyIsPressed(KK_LEFT))  GetControlledCamera().Translate({ -dt,  0,  0 });
+		if (wnd->kbd.KeyIsPressed(KK_RIGHT)) GetControlledCamera().Translate({  dt,  0,  0 });
 	}
 
 	while (const auto delta = wnd->mouse.ReadRawDelta())
 	{
-		if (!wnd->CursorEnabled())
+		if (!wnd->CursorEnabled() && controlled != 0)
 		{
 			GetControlledCamera().Rotate(delta->x, delta->y);
 		}
 	}
+#endif
 }
 
 void CameraContainer::Submit(size_t channels) const

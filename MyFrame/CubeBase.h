@@ -4,10 +4,10 @@
 #include "IndexBuffer.h"
 #include "Transformation.h"
 
-class TestCube : public Drawable
+class CubeBase : public Drawable
 {
 public:
-	TestCube(Graphics& gfx, float size);
+	CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size);
 	void Update(float dt);
 	void SetPos(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;

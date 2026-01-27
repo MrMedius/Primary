@@ -142,6 +142,15 @@
     <Filter Include="Header Files\Object\Character">
       <UniqueIdentifier>{1371f3a0-3435-43fe-94f3-acebfe8c4228}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Object\Environment">
+      <UniqueIdentifier>{7c88b073-9b81-4808-9912-54097c5f2ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Environment">
+      <UniqueIdentifier>{cb14d018-0aae-4e9c-9f76-c6b5f4d8a407}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Character">
+      <UniqueIdentifier>{3c47f553-0bb6-44d9-a601-fea9a2eba4b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -165,7 +174,7 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestCube.cpp">
+    <ClCompile Include="CubeBase.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Step.cpp">
@@ -375,9 +384,6 @@
     <ClCompile Include="SolidSphere.cpp">
       <Filter>Source Files\Drawable\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteUVCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
@@ -387,14 +393,20 @@
     <ClCompile Include="DynamicTexture.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite3D.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
     <ClCompile Include="Character.cpp">
-      <Filter>Source Files\Object</Filter>
+      <Filter>Source Files\Object\Character</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Source Files\Object</Filter>
+      <Filter>Source Files\Object\Character</Filter>
     </ClCompile>
     <ClCompile Include="Player_ResourceSystem.cpp">
-      <Filter>Source Files\Object</Filter>
+      <Filter>Source Files\Object\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files\Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -428,7 +440,7 @@
     <ClInclude Include="IndexedTriangleList.h">
       <Filter>Header Files\Drawable\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="TestCube.h">
+    <ClInclude Include="CubeBase.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="Step.h">
@@ -734,9 +746,6 @@
     <ClInclude Include="ObjectBase.h">
       <Filter>Header Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteUVCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
     </ClInclude>
@@ -754,6 +763,15 @@
     </ClInclude>
     <ClInclude Include="Player_ResourceSystem.h">
       <Filter>Header Files\Object\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite3D.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files\Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

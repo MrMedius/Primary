@@ -26,7 +26,6 @@ class Drawable
 public:
 	Drawable() = default;
 	Drawable(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale = 1.0f) noexcept;
-	Drawable(const Drawable&) = delete;
 	void AddTechnique(Technique tech_in) noexcept;
 	virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
 	void Submit(size_t channelFilter) const noexcept;

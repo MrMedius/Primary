@@ -1,6 +1,6 @@
 #pragma once
-#include "RenderGraph.h"
 #include "Character.h"
+#include "RenderGraph.h"
 #include "ObjectCodex.h"
 #include "Keyboard.h"
 #include "Mouse.h"
@@ -29,24 +29,24 @@ static const std::string PLAYER_STATE[] = {
 	"PLAYER_DEATH",
 	"PLAYER_CHANGE",
 };
-//class Player_IdleState;
-//class Player_MoveState;
-//class Player_DashState;
-//class Player_AttackState;
-//class Player_SkillState;
-//class Player_HurtState;
-//class Player_DeathState;
-//class Player_ChangeState;
+class Player_IdleState;
+class Player_MoveState;
+class Player_DashState;
+class Player_AttackState;
+class Player_SkillState;
+class Player_HurtState;
+class Player_DeathState;
+class Player_ChangeState;
 
 class Player : public Character
 {
 public:
-	Player(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT3 collisionSize, bool onCollision, Keyboard* kbd, Mouse* mouse)
+	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT3 collisionSize, bool onCollision)
 		:
 		Character(tag, position, size, collisionSize, true),
 		pKbd(kbd),
 		pMouse(mouse),
-		visualPre(gfx,1.0,
+		visualPre(gfx, size.x,
 			std::vector<std::string>{
 		"asset\\Images\\Player\\Player_Usual.png",
 		"asset\\Images\\Player\\Player_Red.png",
@@ -55,20 +55,20 @@ public:
 		"asset\\Images\\Player\\Player_Fever.png"})
 	{
 		// FSM state init
-		//FSM = std::make_unique<StateMachine<Player>>(this);
-		//FSM->AddState(PLAYER_STATE[PLAYER_IDLE], std::make_unique<Player_IdleState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_MOVE], std::make_unique<Player_MoveState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_DASH], std::make_unique<Player_DashState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_ATTACK], std::make_unique<Player_AttackState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_SKILL], std::make_unique<Player_SkillState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_HURT], std::make_unique<Player_HurtState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_DEATH], std::make_unique<Player_DeathState>());
-		//FSM->AddState(PLAYER_STATE[PLAYER_CHANGE], std::make_unique<Player_ChangeState>());
+		FSM = std::make_unique<StateMachine<Player>>(this);
+		FSM->AddState(PLAYER_STATE[PLAYER_IDLE], std::make_unique<Player_IdleState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_MOVE], std::make_unique<Player_MoveState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_DASH], std::make_unique<Player_DashState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_ATTACK], std::make_unique<Player_AttackState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_SKILL], std::make_unique<Player_SkillState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_HURT], std::make_unique<Player_HurtState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_DEATH], std::make_unique<Player_DeathState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_CHANGE], std::make_unique<Player_ChangeState>());
 
 		// FSM state transitions
 		SetupTransitions();
 		// init the state
-		//FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
+		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
 
 		// parameters init
 		SetPosition(position);
@@ -88,8 +88,6 @@ public:
 		// graphics init
 		visualPre.SetPos({ 0.0f,5.0f,6.0f });
 		visualPre.LinkTechniques(rg);
-		visualPre.SetAtlas(12, 12, 108, 48);
-		visualPre.SetFPS(12.0f);
 	}
 	void OnEnable(void) override
 	{
@@ -102,7 +100,7 @@ public:
 		pWeapon->Reset();
 	}
 	void Update(float dt) override;
-	void Draw(void) override;
+	void Submit(void) override;
 	Keyboard* GetKbd(void) const { return pKbd; }
 	Mouse* GetMouse(void) const { return pMouse; }
 	float GetHpDrawParameter(void)
@@ -127,6 +125,7 @@ public:
 	bool GetIsGameOver(void) const { return IsGameOver; }
 	void DoMove(float ratio);
 	bool AttackCollide(float damage, XMFLOAT3 repel) override;
+	Sprite3D& GetVisualPre(void) { return visualPre; }
 private:
 	void SetupTransitions(void) override;
 private:
@@ -145,115 +144,115 @@ private:
 	bool IsGameOver{ false };
 };
 
-///*------------------------------------------------------------------------------
-//   Player_IdleState
-//------------------------------------------------------------------------------*/
-//class Player_IdleState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override {};
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_IDLE]; }
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_MoveState
-//------------------------------------------------------------------------------*/
-//class Player_MoveState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override {};
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_MOVE]; }
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_DashState
-//------------------------------------------------------------------------------*/
-//class Player_DashState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override;
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_DASH]; }
-//private:
-//	unsigned int FrameNoOld{ 0 };
-//	bool isInput{ false };
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_AttackState
-//------------------------------------------------------------------------------*/
-//class Player_AttackState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override;
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_ATTACK]; }
-//private:
-//	unsigned int FrameNoOld{ 0 };
-//	bool isCombo{ false };
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_SkillState
-//------------------------------------------------------------------------------*/
-//class Player_SkillState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override;
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_SKILL]; }
-//private:
-//	unsigned int FrameNoOld{ 0 };
-//	WEAPON_TYPE_ID WeaponType{ WEAPON_TYPE_NONE };
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_HurtState
-//------------------------------------------------------------------------------*/
-//class Player_HurtState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override;
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_HURT]; }
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_DeathState
-//------------------------------------------------------------------------------*/
-//class Player_DeathState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override {};
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_DEATH]; }
-//};
-//
-///*------------------------------------------------------------------------------
-//   Player_ChangeState
-//------------------------------------------------------------------------------*/
-//class Player_ChangeState : public State<Player>
-//{
-//public:
-//	void OnEnter(Player* owner) override;
-//	void OnExit(Player* owner) override;
-//	void Update(Player* owner) override;
-//	void Draw(Player* owner) override;
-//	std::string GetName() const override { return PLAYER_STATE[PLAYER_CHANGE]; }
-//};
+/*------------------------------------------------------------------------------
+   Player_IdleState
+------------------------------------------------------------------------------*/
+class Player_IdleState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override {};
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_IDLE]; }
+};
+
+/*------------------------------------------------------------------------------
+   Player_MoveState
+------------------------------------------------------------------------------*/
+class Player_MoveState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override {};
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_MOVE]; }
+};
+
+/*------------------------------------------------------------------------------
+   Player_DashState
+------------------------------------------------------------------------------*/
+class Player_DashState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override;
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_DASH]; }
+private:
+	unsigned int FrameNoOld{ 0 };
+	bool isInput{ false };
+};
+
+/*------------------------------------------------------------------------------
+   Player_AttackState
+------------------------------------------------------------------------------*/
+class Player_AttackState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override;
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_ATTACK]; }
+private:
+	unsigned int FrameNoOld{ 0 };
+	bool isCombo{ false };
+};
+
+/*------------------------------------------------------------------------------
+   Player_SkillState
+------------------------------------------------------------------------------*/
+class Player_SkillState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override;
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_SKILL]; }
+private:
+	unsigned int FrameNoOld{ 0 };
+	WEAPON_TYPE_ID WeaponType{ WEAPON_TYPE_NONE };
+};
+
+/*------------------------------------------------------------------------------
+   Player_HurtState
+------------------------------------------------------------------------------*/
+class Player_HurtState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override;
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_HURT]; }
+};
+
+/*------------------------------------------------------------------------------
+   Player_DeathState
+------------------------------------------------------------------------------*/
+class Player_DeathState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override {};
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_DEATH]; }
+};
+
+/*------------------------------------------------------------------------------
+   Player_ChangeState
+------------------------------------------------------------------------------*/
+class Player_ChangeState : public State<Player>
+{
+public:
+	void OnEnter(Player* owner) override;
+	void OnExit(Player* owner) override;
+	void Update(Player* owner) override;
+	void Draw(Player* owner) override;
+	std::string GetName() const override { return PLAYER_STATE[PLAYER_CHANGE]; }
+};

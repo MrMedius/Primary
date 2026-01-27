@@ -29,7 +29,7 @@ public:
 	{}
 	virtual void OnEnable(void) = 0;
 	virtual void Update(float dt) = 0;
-	virtual void Draw(void) = 0;
+	virtual void Submit(void) = 0;
 	Object_Type_Tag GetTag(void) const		{ return Tag; }					// オブジェクト種類をチェット
 	bool IsActive(void) const				{ return IsUse; }				// 使用状態をチェット
 	void Activate()							{ IsUse = true;	OnEnable(); }	// 使用始まる

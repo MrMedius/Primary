@@ -221,10 +221,8 @@ void Sprite3D::SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noex
 	startTex = (startTex_ > 0) ? startTex_ : 1;
 	totalTex = (totalTex_ > 0) ? totalTex_ : 1;
 
-
 	frame = 1;
 	accum = 0.0f;
-
 
 	uvScale = { 1.0f / float(numU), 1.0f / float(numV) };
 	uvOffset = { 0.0f, 0.0f };
@@ -234,4 +232,23 @@ void Sprite3D::SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noex
 void Sprite3D::SetFPS(float fps) noexcept
 {
 	frameTime = (fps > 0.0f) ? (1.0f / fps) : 0.1f;
+}
+
+void Sprite3D::SetFrame(int numU_, int numV_, int startTex_, int totalTex_, int countTex_, int indexTex_) noexcept
+{
+	texIndex = indexTex_;
+
+	numU = (numU_ > 0) ? numU_ : 1;
+	numV = (numV_ > 0) ? numV_ : 1;
+	startTex = (startTex_ > 0) ? startTex_ : 1;
+	totalTex = (totalTex_ > 0) ? totalTex_ : 1;
+
+	frame = countTex_;
+
+	const int frameNo = (frame - 1) % totalTex + (startTex - 1);
+	const int u = frameNo % numU;
+	const int v = frameNo / numU;
+
+	uvScale = { 1.0f / float(numU), 1.0f / float(numV) };
+	uvOffset = { float(u) / float(numU), float(v) / float(numV) };
 }

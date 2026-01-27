@@ -74,7 +74,6 @@ namespace Rgph
 				AddGlobalSource( DirectBindableSource<Bind::CachingPixelConstantBufferEX>::Make( "blurDirection",blurDirection ) );
 			}
 		}
-
 		{
 			auto pass = std::make_unique<BlurOutlineDrawingPass>( gfx,"outlineDraw",gfx.GetWidth(),gfx.GetHeight() );
 			AppendPass( std::move( pass ) );

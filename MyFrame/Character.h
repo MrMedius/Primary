@@ -1,6 +1,6 @@
 #pragma once
 #include "ObjectBase.h"
-//#include "Collision.h"
+#include "Collision.h"
 #include "FSM.h"
 
 enum Attack_Type_Tag
@@ -37,7 +37,7 @@ public:
 	}
 	virtual void OnEnable(void) override = 0;
 	virtual void Update(float dt) override = 0;
-	virtual void Draw(void) override = 0;
+	virtual void Submit(void) override = 0;
 	void CalculateHpCurrent(float offset)	{ HpCurrent += offset; HpCurrent = std::clamp(HpCurrent, 0.0f, HpMax); }	// 今の体力の計算
 	float GetHpCurrent(void) const			{ return HpCurrent; }														// 今の体力をゲット
 	void CalculateMoveVelocity(float X, float Y, float Z)	{ MoveVelocity.x += X; MoveVelocity.y += Y; MoveVelocity.z += Z; }			// 移動値をセット

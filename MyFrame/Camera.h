@@ -24,6 +24,7 @@ public:
 	void Translate(DirectX::XMFLOAT3 translation) noexcept;
 	const DirectX::XMFLOAT3& GetPos() const noexcept;
 	void SetPos(const DirectX::XMFLOAT3& pos) noexcept;
+	void SetRot(const DirectX::XMFLOAT3& rot) noexcept;
 	const std::string& GetName() const noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);
 	void Submit(size_t channel) const;
@@ -32,7 +33,7 @@ private:
 	std::string name;
 	TransInfo transHome;
 	Transformation trans;
-		static constexpr float travelSpeed = 12.0f;
+	static constexpr float travelSpeed = 12.0f;
 	static constexpr float rotationSpeed = 0.004f;
 	bool enableCameraIndicator = false;
 	bool enableFrustumIndicator = false;

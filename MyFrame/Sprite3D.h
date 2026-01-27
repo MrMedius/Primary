@@ -19,6 +19,8 @@ public:
 	void SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noexcept;
 	void SetFPS(float fps) noexcept;
 
+	void SetFrame(int numU_, int numV_, int startTex_, int totalTex_, int countTex_, int indexTex_) noexcept;
+
 	int GetTextureFrameIndex() const noexcept { return texIndex; }
 	void SetTextureFrameIndex(int i) noexcept { texIndex = i; }
 private:
@@ -42,4 +44,3 @@ private:
 	int texIndex = 0;
 	float texAccum = 0.0f;
 };
-

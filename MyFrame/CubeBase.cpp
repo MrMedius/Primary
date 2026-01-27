@@ -1,4 +1,4 @@
-#include "TestCube.h"
+#include "CubeBase.h"
 #include "Cube.h"
 #include "BindableCommon.h"
 #include "ConstantBuffersEx.h"
@@ -7,15 +7,15 @@
 #include "DynamicConstant.h"
 #include "Channels.h"
 
-TestCube::TestCube(Graphics& gfx, float size)
+CubeBase::CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
 
-	auto model = Cube::MakeIndependentTextured();
-	model.Transform(dx::XMMatrixScaling(size, size, size));
+	auto model = Cube::MakeIndependentBlockTextured();
+	model.Transform(dx::XMMatrixScaling(size.x, size.y, size.z));
 	model.SetNormalsIndependentFlat();
-	const auto geometryTag = "$cube." + std::to_string(size);
+	const auto geometryTag = "$cube." + std::to_string(size.x);
 	pVertices = VertexBuffer::Resolve(gfx, geometryTag, model.vertices);
 	pIndices = IndexBuffer::Resolve(gfx, geometryTag, model.indices);
 	pTopology = Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -27,7 +27,7 @@ TestCube::TestCube(Graphics& gfx, float size)
 		{
 			Step only("lambertian");
 
-			only.AddBindable(Texture::Resolve(gfx, "asset\\Images\\brickwall.jpg"));
+			only.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_field.png"));
 			only.AddBindable(Sampler::Resolve(gfx));
 
 			auto pvs = VertexShader::Resolve(gfx, "General_VS.cso");
@@ -59,12 +59,10 @@ TestCube::TestCube(Graphics& gfx, float size)
 		{
 			Step mask("outlineMask");
 
-			// TODO: better sub-layout generation tech for future consideration maybe
 			mask.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 			mask.AddBindable(std::move(tcb));
 
-			// TODO: might need to specify rasterizer when doubled-sided models start being used
 			outline.AddStep(std::move(mask));
 		}
 		{
@@ -76,12 +74,10 @@ TestCube::TestCube(Graphics& gfx, float size)
 			buf["color"] = DirectX::XMFLOAT4{ 1.0f,0.4f,0.4f,1.0f };
 			draw.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 1u));
 
-			// TODO: better sub-layout generation tech for future consideration maybe
 			draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 			draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-			// TODO: might need to specify rasterizer when doubled-sided models start being used
 			outline.AddStep(std::move(draw));
 		}
 		AddTechnique(std::move(outline));
@@ -91,7 +87,6 @@ TestCube::TestCube(Graphics& gfx, float size)
 			{
 				Step draw("shadowMap");
 
-				// TODO: better sub-layout generation tech for future consideration maybe
 				auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
 				draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 				draw.AddBindable(std::move(pvs));
@@ -100,8 +95,6 @@ TestCube::TestCube(Graphics& gfx, float size)
 
 				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-				// TODO: might need to specify rasterizer when doubled-sided models start being used
-
 				map.AddStep(std::move(draw));
 			}
 			AddTechnique(std::move(map));
@@ -109,27 +102,27 @@ TestCube::TestCube(Graphics& gfx, float size)
 	}
 }
 
-void TestCube::Update(float dt)
+void CubeBase::Update(float dt)
 {
 	trans.RotateDegreeToRad(1.0f, 1.0f, 1.0f);
 }
 
-void TestCube::SetPos(DirectX::XMFLOAT3 pos) noexcept
+void CubeBase::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {
 	trans.SetPosition(pos.x, pos.y, pos.z);
 }
 
-void TestCube::SetRotation(float roll, float pitch, float yaw) noexcept
+void CubeBase::SetRotation(float roll, float pitch, float yaw) noexcept
 {
 	trans.SetRotationDegreeToRad(roll, pitch, yaw);
 }
 
-DirectX::XMMATRIX TestCube::GetTransformXM() const noexcept
+DirectX::XMMATRIX CubeBase::GetTransformXM() const noexcept
 {
 	return trans.GetTransformXM();
 }
 
-void TestCube::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
+void CubeBase::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
 {
 	if (ImGui::Begin(name))
 	{

@@ -125,4 +125,48 @@ public:
 
 		return itl;
 	}
+	static IndexedTriangleList MakeIndependentBlockTextured()
+	{
+		using namespace Dvtx;
+		using Type = Dvtx::VertexLayout::ElementType;
+
+		auto itl = MakeIndependent(std::move(VertexLayout{}
+			.Append(Type::Position3D)
+			.Append(Type::Normal)
+			.Append(Type::Texture2D)
+		));
+
+		// right face
+		itl.vertices[0].Attr<Type::Texture2D>() = { 0.0f,0.5f }; 
+		itl.vertices[1].Attr<Type::Texture2D>() = { 1.0f,0.5f }; 
+		itl.vertices[2].Attr<Type::Texture2D>() = { 0.0f,0.25f };
+		itl.vertices[3].Attr<Type::Texture2D>() = { 1.0f,0.25f };
+		// left face
+		itl.vertices[4].Attr<Type::Texture2D>() = { 0.0f,0.5f };
+		itl.vertices[5].Attr<Type::Texture2D>() = { 1.0f,0.5f };
+		itl.vertices[6].Attr<Type::Texture2D>() = { 0.0f,0.25f };
+		itl.vertices[7].Attr<Type::Texture2D>() = { 1.0f,0.25f };
+		// front face
+		itl.vertices[8].Attr<Type::Texture2D>() = { 0.0f,0.5f }; 
+		itl.vertices[9].Attr<Type::Texture2D>() = { 0.0f,0.25f }; 
+		itl.vertices[10].Attr<Type::Texture2D>() = { 1.0f,0.5f };
+		itl.vertices[11].Attr<Type::Texture2D>() = { 1.0f,0.25f };
+		// back face
+		itl.vertices[12].Attr<Type::Texture2D>() = { 0.0f,0.5f };
+		itl.vertices[13].Attr<Type::Texture2D>() = { 0.0f,0.25f };
+		itl.vertices[14].Attr<Type::Texture2D>() = { 1.0f,0.5f };
+		itl.vertices[15].Attr<Type::Texture2D>() = { 1.0f,0.25f };
+		// down face
+		itl.vertices[16].Attr<Type::Texture2D>() = { 0.0f,0.75f };
+		itl.vertices[17].Attr<Type::Texture2D>() = { 1.0f,0.75f };
+		itl.vertices[18].Attr<Type::Texture2D>() = { 0.0f,1.0f };
+		itl.vertices[19].Attr<Type::Texture2D>() = { 1.0f,1.0f };
+		// upper face
+		itl.vertices[20].Attr<Type::Texture2D>() = { 0.0f,0.0f };
+		itl.vertices[21].Attr<Type::Texture2D>() = { 1.0f,0.0f };
+		itl.vertices[22].Attr<Type::Texture2D>() = { 0.0f,0.25f };
+		itl.vertices[23].Attr<Type::Texture2D>() = { 1.0f,0.25f };
+
+		return itl;
+	}
 };
