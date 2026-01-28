@@ -1,10 +1,8 @@
 #include "Collision.h"
 
-namespace collide3d
+namespace Collider3D
 {
-    // -----------------------------
-    // Box build: extract center/axes/scale
-    // -----------------------------
+    // Box build
     BoxCollider BoxCollider::BuildFromWorldMatrix(const dx::XMFLOAT4X4& world, const dx::XMFLOAT3& localHalf, float axisAlignedEps)
     {
         BoxCollider b{};
@@ -33,14 +31,40 @@ namespace collide3d
         dx::XMStoreFloat3(&b.axisY, ay);
         dx::XMStoreFloat3(&b.axisZ, az);
 
-        b.axisAligned = IsAxisAlignedAxes(ax, ay, az, axisAlignedEps);
+        const bool axisAligned = IsAxisAlignedAxes(ax, ay, az, axisAlignedEps);
+
+        if (axisAligned)
+        {
+            if (IsIdentityAxes(ax, ay, az, 1e-4f))
+            {
+                b.aabbKind = BoxAABBKind::IdentityAABB;
+                b.axisX = { 1,0,0 };
+                b.axisY = { 0,1,0 };
+                b.axisZ = { 0,0,1 };
+            }
+            else
+            {
+                dx::XMVECTOR halfLocalV = dx::XMLoadFloat3(&b.half);
+                dx::XMVECTOR halfWorldV = ComputeAABBHalfFromAxes(ax, ay, az, halfLocalV);
+                dx::XMStoreFloat3(&b.half, halfWorldV);
+
+                b.axisX = { 1,0,0 };
+                b.axisY = { 0,1,0 };
+                b.axisZ = { 0,0,1 };
+
+
+                b.aabbKind = BoxAABBKind::NormalizedAABB;
+            }
+        }
+        else
+        {
+            b.aabbKind = BoxAABBKind::OBB;
+        }
 
         return b;
     }
 
-    // -----------------------------
-    // Typed intersections
-    // -----------------------------
+    // Intersection Types
     bool Intersect(const SphereCollider& a, const SphereCollider& b)
     {
         dx::XMVECTOR ca = dx::XMLoadFloat3(&a.center);
@@ -58,43 +82,40 @@ namespace collide3d
         dx::XMVECTOR d = dx::XMVectorSubtract(c, pt);
         return LengthSq3(d) <= s.radius * s.radius;
     }
+    bool Intersect(const PointCollider& p, const SphereCollider& s)
+    {
+        return Intersect(s, p);
+    }
 
     // Point vs Box: if axisAligned, treat as AABB in world axes; else OBB local test.
     bool Intersect(const PointCollider& p, const BoxCollider& b)
     {
         dx::XMVECTOR pt = dx::XMLoadFloat3(&p.position);
         dx::XMVECTOR c = dx::XMLoadFloat3(&b.center);
-        dx::XMVECTOR halfLocal = dx::XMLoadFloat3(&b.half);
+        dx::XMVECTOR d = dx::XMVectorSubtract(pt, c);
 
+        if (b.aabbKind != BoxAABBKind::OBB)
+        {
+            dx::XMVECTOR ad = AbsV3(d);
+            return (dx::XMVectorGetX(ad) <= b.half.x) &&
+                   (dx::XMVectorGetY(ad) <= b.half.y) &&
+                   (dx::XMVectorGetZ(ad) <= b.half.z);
+        }
+
+        // OBB local coordinates
         dx::XMVECTOR ax = dx::XMLoadFloat3(&b.axisX);
         dx::XMVECTOR ay = dx::XMLoadFloat3(&b.axisY);
         dx::XMVECTOR az = dx::XMLoadFloat3(&b.axisZ);
 
-        dx::XMVECTOR d = dx::XMVectorSubtract(pt, c);
+        float lx = Dot3(d, ax);
+        float ly = Dot3(d, ay);
+        float lz = Dot3(d, az);
 
-        if (b.axisAligned)
-        {
-            // AABB half extents in world axes (exact when axisAligned even with 90-degree swaps)
-            dx::XMVECTOR halfWorld = ComputeAABBHalfFromAxes(ax, ay, az, halfLocal);
-            dx::XMVECTOR ad = AbsV3(d);
-
-            return (dx::XMVectorGetX(ad) <= dx::XMVectorGetX(halfWorld)) &&
-                (dx::XMVectorGetY(ad) <= dx::XMVectorGetY(halfWorld)) &&
-                (dx::XMVectorGetZ(ad) <= dx::XMVectorGetZ(halfWorld));
-        }
-        else
-        {
-            // OBB local coordinates
-            float lx = Dot3(d, ax);
-            float ly = Dot3(d, ay);
-            float lz = Dot3(d, az);
-
-            float hx = b.half.x;
-            float hy = b.half.y;
-            float hz = b.half.z;
-
-            return (Abs(lx) <= hx) && (Abs(ly) <= hy) && (Abs(lz) <= hz);
-        }
+        return (Abs(lx) <= b.half.x) && (Abs(ly) <= b.half.y) && (Abs(lz) <= b.half.z);
+    }
+    bool Intersect(const BoxCollider& b, const PointCollider& p)
+    {
+        return Intersect(p, b);
     }
 
     // Sphere vs Box: clamp closest point
@@ -102,24 +123,14 @@ namespace collide3d
     {
         dx::XMVECTOR sc = dx::XMLoadFloat3(&s.center);
         dx::XMVECTOR c = dx::XMLoadFloat3(&b.center);
-        dx::XMVECTOR halfLocal = dx::XMLoadFloat3(&b.half);
-
-        dx::XMVECTOR ax = dx::XMLoadFloat3(&b.axisX);
-        dx::XMVECTOR ay = dx::XMLoadFloat3(&b.axisY);
-        dx::XMVECTOR az = dx::XMLoadFloat3(&b.axisZ);
-
         dx::XMVECTOR d = dx::XMVectorSubtract(sc, c);
 
-        if (b.axisAligned)
+        if (b.aabbKind != BoxAABBKind::OBB)
         {
-            // Compute exact world AABB half extents
-            dx::XMVECTOR halfWorld = ComputeAABBHalfFromAxes(ax, ay, az, halfLocal);
+            float hx = b.half.x;
+            float hy = b.half.y;
+            float hz = b.half.z;
 
-            float hx = dx::XMVectorGetX(halfWorld);
-            float hy = dx::XMVectorGetY(halfWorld);
-            float hz = dx::XMVectorGetZ(halfWorld);
-
-            // Closest point on AABB to sphere center
             float cx = dx::XMVectorGetX(sc);
             float cy = dx::XMVectorGetY(sc);
             float cz = dx::XMVectorGetZ(sc);
@@ -136,33 +147,34 @@ namespace collide3d
             dx::XMVECTOR diff = dx::XMVectorSubtract(sc, q);
             return LengthSq3(diff) <= s.radius * s.radius;
         }
-        else
-        {
-            // Sphere vs OBB: transform to OBB local, clamp, transform back
-            float lx = Dot3(d, ax);
-            float ly = Dot3(d, ay);
-            float lz = Dot3(d, az);
 
-            float hx = b.half.x;
-            float hy = b.half.y;
-            float hz = b.half.z;
+        // Sphere vs OBB: transform to OBB local, clamp, transform back
+        dx::XMVECTOR ax = dx::XMLoadFloat3(&b.axisX);
+        dx::XMVECTOR ay = dx::XMLoadFloat3(&b.axisY);
+        dx::XMVECTOR az = dx::XMLoadFloat3(&b.axisZ);
 
-            float clx = Clamp(lx, -hx, hx);
-            float cly = Clamp(ly, -hy, hy);
-            float clz = Clamp(lz, -hz, hz);
+        float lx = Dot3(d, ax);
+        float ly = Dot3(d, ay);
+        float lz = Dot3(d, az);
 
-            // closestWorld = c + ax*clx + ay*cly + az*clz
-            dx::XMVECTOR closest =
-                dx::XMVectorAdd(c,
-                    dx::XMVectorAdd(
-                        dx::XMVectorScale(ax, clx),
-                        dx::XMVectorAdd(dx::XMVectorScale(ay, cly), dx::XMVectorScale(az, clz))
-                    )
-                );
+        float hx = b.half.x;
+        float hy = b.half.y;
+        float hz = b.half.z;
 
-            dx::XMVECTOR diff = dx::XMVectorSubtract(sc, closest);
-            return LengthSq3(diff) <= s.radius * s.radius;
-        }
+        float clx = Clamp(lx, -hx, hx);
+        float cly = Clamp(ly, -hy, hy);
+        float clz = Clamp(lz, -hz, hz);
+
+        dx::XMVECTOR closest = dx::XMVectorAdd(dx::XMVectorScale(ay, cly), dx::XMVectorScale(az, clz));
+        closest = dx::XMVectorAdd(dx::XMVectorScale(ax, clx), closest);
+        closest = dx::XMVectorAdd(c, closest);
+
+        dx::XMVECTOR diff = dx::XMVectorSubtract(sc, closest);
+        return LengthSq3(diff) <= s.radius * s.radius;
+    }
+    bool Intersect(const BoxCollider& b, const SphereCollider& s)
+    {
+        return Intersect(s, b);
     }
 
     // OBB-OBB SAT helper (standard 15-axis test).
@@ -197,14 +209,14 @@ namespace collide3d
         float AbsR[3][3];
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < 3; ++j)
-                AbsR[i][j] = std::fabs(R[i][j]) + EPS;
+                AbsR[i][j] = Abs(R[i][j]) + EPS;
 
         const float a[3] = { A.half.x, A.half.y, A.half.z };
         const float b[3] = { B.half.x, B.half.y, B.half.z };
 
         auto Sep = [&](float dist, float ra, float rb) -> bool
             {
-                return std::fabs(dist) > (ra + rb);
+                return Abs(dist) > (ra + rb);
             };
 
         // 1) Axes A0,A1,A2
@@ -269,70 +281,47 @@ namespace collide3d
     // Box vs Box: fast path AABB-AABB when both are axisAligned, otherwise SAT.
     bool Intersect(const BoxCollider& a, const BoxCollider& b)
     {
-        dx::XMVECTOR ca = dx::XMLoadFloat3(&a.center);
-        dx::XMVECTOR cb = dx::XMLoadFloat3(&b.center);
-        dx::XMVECTOR d = dx::XMVectorSubtract(ca, cb);
-
-        dx::XMVECTOR axA = dx::XMLoadFloat3(&a.axisX);
-        dx::XMVECTOR ayA = dx::XMLoadFloat3(&a.axisY);
-        dx::XMVECTOR azA = dx::XMLoadFloat3(&a.axisZ);
-
-        dx::XMVECTOR axB = dx::XMLoadFloat3(&b.axisX);
-        dx::XMVECTOR ayB = dx::XMLoadFloat3(&b.axisY);
-        dx::XMVECTOR azB = dx::XMLoadFloat3(&b.axisZ);
-
-        dx::XMVECTOR halfA = dx::XMLoadFloat3(&a.half);
-        dx::XMVECTOR halfB = dx::XMLoadFloat3(&b.half);
-
-        if (a.axisAligned && b.axisAligned)
+        if (a.aabbKind != BoxAABBKind::OBB && b.aabbKind != BoxAABBKind::OBB)
         {
-            // exact AABB extents in world axes (works even for 90-degree swaps)
-            dx::XMVECTOR extA = ComputeAABBHalfFromAxes(axA, ayA, azA, halfA);
-            dx::XMVECTOR extB = ComputeAABBHalfFromAxes(axB, ayB, azB, halfB);
-
+            dx::XMVECTOR ca = dx::XMLoadFloat3(&a.center);
+            dx::XMVECTOR cb = dx::XMLoadFloat3(&b.center);
+            dx::XMVECTOR d = dx::XMVectorSubtract(ca, cb);
             dx::XMVECTOR ad = AbsV3(d);
 
-            return (dx::XMVectorGetX(ad) <= dx::XMVectorGetX(dx::XMVectorAdd(extA, extB))) &&
-                (dx::XMVectorGetY(ad) <= dx::XMVectorGetY(dx::XMVectorAdd(extA, extB))) &&
-                (dx::XMVectorGetZ(ad) <= dx::XMVectorGetZ(dx::XMVectorAdd(extA, extB)));
+
+            return (dx::XMVectorGetX(ad) <= (a.half.x + b.half.x)) &&
+                   (dx::XMVectorGetY(ad) <= (a.half.y + b.half.y)) &&
+                   (dx::XMVectorGetZ(ad) <= (a.half.z + b.half.z));
         }
 
-        // General OBB vs OBB SAT
         return IntersectOBB_OBB_SAT(a, b);
     }
 
-    // -----------------------------
-    // Dispatch table
-    // -----------------------------
+    
+    // Dispatch Table
     template<class A, class B>
     static bool Dispatch(const Collision3D& a, const Collision3D& b)
     {
         return Intersect(static_cast<const A&>(a), static_cast<const B&>(b));
     }
 
-    const std::array<std::array<CollideFn, (size_t)CollideType::Count>, (size_t)CollideType::Count>&
-        CollisionSystem::Table()
+    const std::array<std::array<CollideFn, (size_t)CollideType::Count>, (size_t)CollideType::Count>& CollisionSystem::Table()
     {
         static std::array<std::array<CollideFn, (size_t)CollideType::Count>, (size_t)CollideType::Count> tbl = [] {
             decltype(tbl) t{};
             for (auto& row : t) row.fill(nullptr);
 
             auto set = [&](CollideType A, CollideType B, CollideFn fnAB, CollideFn fnBA = nullptr)
-                {
-                    t[(size_t)A][(size_t)B] = fnAB;
-                    t[(size_t)B][(size_t)A] = fnBA ? fnBA : fnAB; // symmetric by default
-                };
+            {
+                t[(size_t)A][(size_t)B] = fnAB;
+                t[(size_t)B][(size_t)A] = fnBA ? fnBA : fnAB;
+            };
 
             set(CollideType::Sphere, CollideType::Sphere, &Dispatch<SphereCollider, SphereCollider>);
-            set(CollideType::Sphere, CollideType::Point, &Dispatch<SphereCollider, PointCollider>);
-
-            // Point-Box is not symmetric if you want Point-Box to call Intersect(Point,Box) directly:
-            set(CollideType::Point, CollideType::Box, &Dispatch<PointCollider, BoxCollider>);
-
-            // Sphere-Box: implement as Intersect(Sphere,Box); symmetric dispatch uses the same function
-            set(CollideType::Sphere, CollideType::Box, &Dispatch<SphereCollider, BoxCollider>);
-
-            set(CollideType::Box, CollideType::Box, &Dispatch<BoxCollider, BoxCollider>);
+            set(CollideType::Sphere, CollideType::Point,  &Dispatch<SphereCollider, PointCollider>, &Dispatch<PointCollider, SphereCollider>);
+            set(CollideType::Point,  CollideType::Box,    &Dispatch<PointCollider, BoxCollider>,    &Dispatch<BoxCollider, PointCollider>);
+            set(CollideType::Sphere, CollideType::Box,    &Dispatch<SphereCollider, BoxCollider>,   &Dispatch<BoxCollider, SphereCollider>);
+            set(CollideType::Box,    CollideType::Box,    &Dispatch<BoxCollider, BoxCollider>);
 
             return t;
             }();
@@ -347,4 +336,4 @@ namespace collide3d
         return fn ? fn(a, b) : false;
     }
 
-} // namespace collide3d
+}

@@ -15,6 +15,7 @@ class PointLight
 {
 public:
 	PointLight(Graphics& gfx, DirectX::XMFLOAT3 pos = { 10.0f,9.0f,2.5f }, float radius = 0.5f);
+	void Update(float dt, DirectX::XMFLOAT3 pos) noexcept;
 	void SpawnControlWindow() noexcept;
 	void Reset() noexcept;
 	void Submit(size_t channels) const noxnd;

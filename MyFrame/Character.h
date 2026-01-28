@@ -26,6 +26,10 @@ enum Attack_Type_Tag
 class Character : public ObjectBase
 {
 public:
+	Character(Object_Type_Tag tag)
+		:
+		ObjectBase(tag)
+	{}
 	Character(Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT3 collisionSize, bool onCollision)
 		:
 		ObjectBase(tag)

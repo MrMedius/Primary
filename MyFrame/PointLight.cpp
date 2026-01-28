@@ -10,15 +10,29 @@ PointLight::PointLight(Graphics& gfx, DirectX::XMFLOAT3 pos, float radius)
 {
 	home = {
 		pos,
-		{ 0.05f,0.05f,0.05f },
+		{ 0.5f,0.5f,0.5f },
 		{ 1.0f,1.0f,1.0f },
 		1.0f,
-		1.0f,
-		0.025f,
-		0.0030f,
+		0.1f,
+		0.02f,
+		0.0001f,
 	};
 	Reset();
 	pCamera = std::make_shared<Camera>(gfx, "Light", cbData.pos, 0.0f, PI / 2.0f, true);
+}
+
+void PointLight::Update(float dt, DirectX::XMFLOAT3 pos) noexcept
+{
+	float dx = pos.x - cbData.pos.x;
+	float dz = pos.z - cbData.pos.z;
+
+	if (dx * dx + dz * dz > 200)
+	{
+		const float angle = atan2f(dz, dx);
+		cbData.pos.x += cosf(angle) * 20.0f * dt;
+		cbData.pos.z += sinf(angle) * 20.0f * dt;
+		pCamera->SetPos(cbData.pos);
+	}
 }
 
 void PointLight::SpawnControlWindow() noexcept

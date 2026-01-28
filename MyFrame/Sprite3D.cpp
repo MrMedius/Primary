@@ -9,15 +9,14 @@
 #include "SpriteUVCbuf.h"
 #include "DynamicTexture.h"
 
-Sprite3D::Sprite3D(Graphics& gfx, float size, std::vector<std::string> paths)
+Sprite3D::Sprite3D(Graphics& gfx, std::vector<std::string> paths, std::string tag)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
 
 	auto model = Plane::Make();
-	model.Transform(dx::XMMatrixScaling(size, size, size));
 	model.SetNormalsIndependentFlat();
-	const auto geometryTag = "$plane." + std::to_string(size);
+	const auto geometryTag = "$plane." + tag;
 	pVertices = VertexBuffer::Resolve(gfx, geometryTag, model.vertices);
 	pIndices = IndexBuffer::Resolve(gfx, geometryTag, model.indices);
 	pTopology = Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -109,7 +108,7 @@ void Sprite3D::Update(float dt)
 	}
 }
 
-void Sprite3D::SetPos(DirectX::XMFLOAT3 pos) noexcept
+void Sprite3D::SetPosition(DirectX::XMFLOAT3 pos) noexcept
 {
 	trans.SetPosition(pos.x, pos.y, pos.z);
 }
@@ -117,6 +116,11 @@ void Sprite3D::SetPos(DirectX::XMFLOAT3 pos) noexcept
 void Sprite3D::SetRotation(float roll, float pitch, float yaw) noexcept
 {
 	trans.SetRotationDegreeToRad(roll, pitch, yaw);
+}
+
+void Sprite3D::SetScale(DirectX::XMFLOAT3 size) noexcept
+{
+	trans.SetScale(size.x, size.y, size.z);
 }
 
 DirectX::XMMATRIX Sprite3D::GetTransformXM() const noexcept
@@ -213,7 +217,7 @@ void Sprite3D::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
 
 
 
-
+// auto animation
 void Sprite3D::SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noexcept
 {
 	numU = (numU_ > 0) ? numU_ : 1;
@@ -228,13 +232,15 @@ void Sprite3D::SetAtlas(int numU_, int numV_, int startTex_, int totalTex_) noex
 	uvOffset = { 0.0f, 0.0f };
 }
 
-
 void Sprite3D::SetFPS(float fps) noexcept
 {
 	frameTime = (fps > 0.0f) ? (1.0f / fps) : 0.1f;
 }
 
-void Sprite3D::SetFrame(int numU_, int numV_, int startTex_, int totalTex_, int countTex_, int indexTex_) noexcept
+
+
+// manual animation
+void Sprite3D::SetFrame(int numU_, int numV_, int startTex_, int totalTex_, int countTex_, int indexTex_, bool isFlip_) noexcept
 {
 	texIndex = indexTex_;
 
@@ -249,6 +255,14 @@ void Sprite3D::SetFrame(int numU_, int numV_, int startTex_, int totalTex_, int 
 	const int u = frameNo % numU;
 	const int v = frameNo / numU;
 
-	uvScale = { 1.0f / float(numU), 1.0f / float(numV) };
-	uvOffset = { float(u) / float(numU), float(v) / float(numV) };
+	if (isFlip_)
+	{
+		uvScale = { -1.0f / float(numU), 1.0f / float(numV) };
+		uvOffset = { float(u + 1) / float(numU), float(v) / float(numV) };
+	}
+	else
+	{
+		uvScale = { 1.0f / float(numU), 1.0f / float(numV) };
+		uvOffset = { float(u) / float(numU), float(v) / float(numV) };
+	}
 }

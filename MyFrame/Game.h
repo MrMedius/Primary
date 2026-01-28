@@ -4,7 +4,6 @@
 #include "ImguiManager.h"
 #include "CameraContainer.h"
 #include "PointLight.h"
-#include "CubeBase.h"
 #include "Model.h"
 #include "ScriptCommander.h"
 #include "BlurOutlineRenderGraph.h"
@@ -48,5 +47,5 @@ private:
 	//Model sponza{ wnd.Gfx(),"asset\\Models\\sponza\\sponza.obj",1.0f / 20.0f };
 	
 	Player p;
-	Block b;
+	Block* b;
 };

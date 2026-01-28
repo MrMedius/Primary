@@ -41,29 +41,28 @@ class Player_ChangeState;
 class Player : public Character
 {
 public:
-	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT3 collisionSize, bool onCollision)
+	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, XMFLOAT3 position)
 		:
-		Character(tag, position, size, collisionSize, true),
+		Character(tag),
 		pKbd(kbd),
 		pMouse(mouse),
-		visualPre(gfx, size.x,
-			std::vector<std::string>{
+		visualPre(gfx, std::vector<std::string>{
 		"asset\\Images\\Player\\Player_Usual.png",
 		"asset\\Images\\Player\\Player_Red.png",
 		"asset\\Images\\Player\\Player_Green.png",
 		"asset\\Images\\Player\\Player_Blue.png",
-		"asset\\Images\\Player\\Player_Fever.png"})
+		"asset\\Images\\Player\\Player_Fever.png"},std::to_string(tag))
 	{
 		// FSM state init
 		FSM = std::make_unique<StateMachine<Player>>(this);
-		FSM->AddState(PLAYER_STATE[PLAYER_IDLE], std::make_unique<Player_IdleState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_MOVE], std::make_unique<Player_MoveState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_DASH], std::make_unique<Player_DashState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_ATTACK], std::make_unique<Player_AttackState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_SKILL], std::make_unique<Player_SkillState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_HURT], std::make_unique<Player_HurtState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_DEATH], std::make_unique<Player_DeathState>());
-		FSM->AddState(PLAYER_STATE[PLAYER_CHANGE], std::make_unique<Player_ChangeState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_IDLE],	std::make_unique<Player_IdleState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_MOVE],	std::make_unique<Player_MoveState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_DASH],	std::make_unique<Player_DashState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_ATTACK],	std::make_unique<Player_AttackState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_SKILL],	std::make_unique<Player_SkillState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_HURT],	std::make_unique<Player_HurtState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_DEATH],	std::make_unique<Player_DeathState>());
+		FSM->AddState(PLAYER_STATE[PLAYER_CHANGE],	std::make_unique<Player_ChangeState>());
 
 		// FSM state transitions
 		SetupTransitions();
@@ -72,13 +71,13 @@ public:
 
 		// parameters init
 		SetPosition(position);
-		SetSize({ 25.0f, 25.0f, 0.0f });
-		SetCollisionSize({ 15.0f, 25.0f, 1.0f });
+		SetSize({ 10.0f, 10.0f, 0.0f });
+		SetCollisionSize({ 5.0f, 8.0f, 1.0f });
 		SetCollisionOnOff(true);
 		SetHpMax(3.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.1f);
-		SetAttackCollisionSize({ 20.0f,10.0f,4.0f });
+		SetAttackCollisionSize({ 10.0f,5.0f,2.0f });
 		SetAttackInterval(1.5f);
 
 		// game resources
@@ -86,8 +85,15 @@ public:
 		pResource = std::make_unique<ResourceBars>(pWeapon.get());
 
 		// graphics init
-		visualPre.SetPos({ 0.0f,5.0f,6.0f });
+		visualPre.SetPosition({ 0.0f,5.0f,6.0f });
+		visualPre.SetScale(transInfo.scale);
 		visualPre.LinkTechniques(rg);
+
+		// collider init
+#ifdef _DEBUG
+		boxColliderWire = std::make_unique<CubeWireframe>(gfx, XMFLOAT3(1.0f, 0.0f, 0.0f));
+		boxColliderWire->LinkTechniques(rg);
+#endif
 	}
 	void OnEnable(void) override
 	{

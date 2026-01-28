@@ -1,4 +1,4 @@
-#include "CubeBase.h"
+#include "CubeBlock.h"
 #include "Cube.h"
 #include "BindableCommon.h"
 #include "ConstantBuffersEx.h"
@@ -71,7 +71,7 @@ CubeBase::CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size)
 			Dcb::RawLayout lay;
 			lay.Add<Dcb::Float4>("color");
 			auto buf = Dcb::Buffer(std::move(lay));
-			buf["color"] = DirectX::XMFLOAT4{ 1.0f,0.4f,0.4f,1.0f };
+			buf["color"] = DirectX::XMFLOAT4{ 4.0f,0.4f,0.4f,1.0f };
 			draw.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 1u));
 
 			draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
@@ -107,7 +107,7 @@ void CubeBase::Update(float dt)
 	trans.RotateDegreeToRad(1.0f, 1.0f, 1.0f);
 }
 
-void CubeBase::SetPos(DirectX::XMFLOAT3 pos) noexcept
+void CubeBase::SetPosition(DirectX::XMFLOAT3 pos) noexcept
 {
 	trans.SetPosition(pos.x, pos.y, pos.z);
 }
@@ -115,6 +115,11 @@ void CubeBase::SetPos(DirectX::XMFLOAT3 pos) noexcept
 void CubeBase::SetRotation(float roll, float pitch, float yaw) noexcept
 {
 	trans.SetRotationDegreeToRad(roll, pitch, yaw);
+}
+
+void CubeBase::SetScale(DirectX::XMFLOAT3 size) noexcept
+{
+	trans.SetScale(size.x, size.y, size.z);
 }
 
 DirectX::XMMATRIX CubeBase::GetTransformXM() const noexcept

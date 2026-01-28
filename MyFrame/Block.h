@@ -1,8 +1,9 @@
 #pragma once
 #include "ObjectBase.h"
 #include "RenderGraph.h"
-#include "CubeBase.h"
+#include "CubeBlock.h"
 #include "Channels.h"
+#include "Surface.h"
 
 class Block : public ObjectBase
 {
@@ -20,6 +21,15 @@ public:
 
 		// graphics init
 		visualPre.LinkTechniques(rg);
+		visualPre.SetPosition(transInfo.position);
+
+		// collider init
+		DirectX::XMFLOAT3 localHalf{ 0.5f, 0.5f, 0.5f };
+		boxCollider = BoxCollider::BuildFromWorldMatrix(transInfo.GetWorldMatrix(), localHalf);
+#ifdef _DEBUG
+		boxColliderWire = std::make_unique<CubeWireframe>(gfx, XMFLOAT3(1.0f, 0.0f, 0.0f));
+		boxColliderWire->LinkTechniques(rg);
+#endif
 	}
 	void OnEnable(void) override {}
 	void Update(float dt) override {}
@@ -27,9 +37,8 @@ public:
 	{
 		visualPre.Submit(Chan::main);
 		visualPre.Submit(Chan::shadow);
-
 #ifdef _DEBUG
-		//Collision::DrawBoxWireFrame(Position, CollisionSize, pGfx, pCamera, Colors::Red);
+		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
 	CubeBase visualPre;

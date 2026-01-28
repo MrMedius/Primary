@@ -128,10 +128,15 @@ public://演算子のオーバーロード
 		SetB(std::clamp(GetB(), static_cast<unsigned char>(0), static_cast<unsigned char>(255)));
 		SetA(std::clamp(GetA(), static_cast<unsigned char>(0), static_cast<unsigned char>(255)));
 	}
-	inline const XMFLOAT4 GetNormalized()
+	inline DirectX::XMFLOAT4 GetNormalized() const noexcept
 	{
-		this->Normalize();
-		return XMFLOAT4(static_cast<float>(this->GetR()), static_cast<float>(this->GetG()), static_cast<float>(this->GetB()), static_cast<float>(this->GetA()));
+		constexpr float inv255 = 1.0f / 255.0f;
+		return DirectX::XMFLOAT4(
+			GetR() * inv255,
+			GetG() * inv255,
+			GetB() * inv255,
+			GetA() * inv255
+		);
 	}
 public:
 	unsigned int dword;

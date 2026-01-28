@@ -7,14 +7,12 @@
 
 namespace dx = DirectX;
 
-namespace collide3d
+namespace Collider3D
 {
-    // -----------------------------
-    // Helpers (DirectXMath based)
-    // -----------------------------
-    inline float Clamp(float v, float lo, float hi)
+	// helper functions
+    inline float Clamp(float v, float low, float high)
     {
-        return std::max(lo, std::min(v, hi));
+        return std::clamp(v, low, high);
     }
 
     inline float Abs(float v) { return std::fabs(v); }
@@ -48,6 +46,17 @@ namespace collide3d
         float ls = dx::XMVectorGetX(lenSq);
         if (ls < 1e-12f) return dx::XMVectorSet(1.f, 0.f, 0.f, 0.f);
         return dx::XMVector3Normalize(v);
+    }
+
+    inline bool IsIdentityAxes(dx::FXMVECTOR ax, dx::FXMVECTOR ay, dx::FXMVECTOR az, float eps = 1e-4f)
+    {
+        auto n = [&](dx::FXMVECTOR v, float x, float y, float z)->bool
+        {
+            return Abs(dx::XMVectorGetX(v) - x) < eps &&
+                   Abs(dx::XMVectorGetY(v) - y) < eps &&
+                   Abs(dx::XMVectorGetZ(v) - z) < eps;
+        };
+        return n(ax, 1, 0, 0) && n(ay, 0, 1, 0) && n(az, 0, 0, 1);
     }
 
     // Project an OBB (center + axes + half) onto world axes to get its AABB half extents.
@@ -98,9 +107,8 @@ namespace collide3d
         return true;
     }
 
-    // -----------------------------
-    // Collision Types
-    // -----------------------------
+
+	// 3D Collider Types
     enum class CollideType : uint8_t
     {
         Point = 0,
@@ -116,9 +124,7 @@ namespace collide3d
         virtual CollideType GetType() const = 0;
     };
 
-    // -----------------------------
-    // Colliders (data-only)
-    // -----------------------------
+    // Colliders only save data
     class PointCollider final : public Collision3D
     {
     public:
@@ -140,32 +146,31 @@ namespace collide3d
         float radius{};
     };
 
-    // BoxCollider: unified AABB/OBB
-    // - center: world center
-    // - half: half extents along local axes (after scale extraction)
-    // - axisX/Y/Z: orthonormal axes in world space (Right/Up/Forward). For AABB: identity axes.
-    // - axisAligned: whether this OBB is aligned to world axes (incl. 90-degree swaps)
+    enum class BoxAABBKind : uint8_t
+    {
+        OBB = 0,        // general OBB
+        IdentityAABB,   // no rotation
+        NormalizedAABB  // axis-aligned (maybe 90‹ swap/flip)
+    };
     class BoxCollider final : public Collision3D
     {
     public:
         CollideType GetType() const override { return CollideType::Box; }
 
         dx::XMFLOAT3 center{};
-        dx::XMFLOAT3 half{};      // local half extents in world units (scale already applied)
+        dx::XMFLOAT3 half{};
         dx::XMFLOAT3 axisX{ 1,0,0 };
         dx::XMFLOAT3 axisY{ 0,1,0 };
         dx::XMFLOAT3 axisZ{ 0,0,1 };
-        bool axisAligned{ true };
 
-        // Build from world matrix + local half extents (model space).
-        // This extracts translation, basis, and scale.
-        // NOTE: assumes row-major matrix with translation at _41,_42,_43 (matches your ExtractTranslation()).
+        BoxAABBKind aabbKind{ BoxAABBKind::IdentityAABB };
+
         static BoxCollider BuildFromWorldMatrix(const dx::XMFLOAT4X4& world, const dx::XMFLOAT3& localHalf, float axisAlignedEps = 1e-3f);
+
+        const dx::XMFLOAT3 GetSize() { return dx::XMFLOAT3(half.x * 2.0f, half.y * 2.0f, half.z * 2.0f); }
     };
 
-    // -----------------------------
-    // Collision System (function table dispatch)
-    // -----------------------------
+	// Real Collision System
     using CollideFn = bool(*)(const Collision3D&, const Collision3D&);
     class CollisionSystem
     {
@@ -175,13 +180,13 @@ namespace collide3d
         static const std::array<std::array<CollideFn, (size_t)CollideType::Count>, (size_t)CollideType::Count>& Table();
     };
 
-    // -----------------------------
-    // Intersection API (typed)
-    // -----------------------------
+    // Intersection Types
     bool Intersect(const SphereCollider& a, const SphereCollider& b);
     bool Intersect(const SphereCollider& s, const PointCollider& p);
+    bool Intersect(const PointCollider& p, const SphereCollider& s);
     bool Intersect(const PointCollider& p, const BoxCollider& b);
+    bool Intersect(const BoxCollider& b, const PointCollider& p);
     bool Intersect(const SphereCollider& s, const BoxCollider& b);
+    bool Intersect(const BoxCollider& b, const SphereCollider& s);
     bool Intersect(const BoxCollider& a, const BoxCollider& b);
-
-} // namespace collide3d
+}

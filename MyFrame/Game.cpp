@@ -16,15 +16,13 @@
 
 namespace dx = DirectX;
 
-
 Game::Game(const std::string& commandLine)
 	:
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,5.0f,0.0f }),
-	p(wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, { 4.0f,4.0f ,4.0f }, { 4.0f,4.0f ,4.0f }, { 4.0f,4.0f ,4.0f }, false),
-	b(wnd.Gfx(), rg, environment_Block, { -10.0f,0.0f,-10.0f }, { 200.0f,2.0f,200.0f }, { 20.0f,2.0f,20.0f }, true)
+	light(wnd.Gfx(), { 0.0f,60.0f,0.0f }),
+	p(wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, { 4.0f,20.0f ,4.0f })
 {
 	cameras.AddCamera(light.ShareCamera());
 
@@ -35,7 +33,7 @@ Game::Game(const std::string& commandLine)
 
 	rg.BindShadowCamera(*light.ShareCamera());
 
-	ObjectCodex::Push(environment_Block, &b);
+	b = ObjectCodex::Acquire<Block>(environment_Block, wnd.Gfx(), rg, environment_Block, XMFLOAT3(0.0f, -5.0f, 0.0f), XMFLOAT3(200.0f, 10.0f, 200.0f), XMFLOAT3(200.0f, 10.0f, 200.0f), true);
 }
 
 Game::~Game()
@@ -85,9 +83,10 @@ int Game::RunGame()
 void Game::Update(float dt)
 {
 	cameras.Update(dt, p.GetPosition(), &wnd);
+	light.Update(dt, p.GetPosition());
 
 	p.Update(dt);
-	b.Update(dt);
+	b->Update(dt);
 
 	light.Bind(wnd.Gfx(), cameras->GetMatrix());
 	rg.BindMainCamera(cameras.GetActiveCamera());
@@ -106,7 +105,7 @@ void Game::Draw()
 
 
 	p.Submit();
-	b.Submit();
+	b->Submit();
 
 	rg.Execute(wnd.Gfx());
 

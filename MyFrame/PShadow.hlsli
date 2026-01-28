@@ -3,7 +3,7 @@ SamplerComparisonState ssam : register(s1);
 
 #define PCF_RANGE 1 // PCF kernel taps = PCF_RANGE * 2 + 1
 #define PCF_RADIUS_SCALE 1.0f // PCF angular radius scale, adjust the softness
-#define CONST_BIAS 0.001f // Bias applied in "projected depth space"
+#define CONST_BIAS 0.0001f // Bias applied in "projected depth space"
 #define BIAS_DISTANCE_SCALE 0.001f // Additional bias scaled by distance along major axis
 //bias += PSHADOW_BIAS_DISTANCE_SCALE / major
 

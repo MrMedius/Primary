@@ -74,6 +74,7 @@ private:
                 // Type matching is required for use
                 if (auto* typed = dynamic_cast<T*>(obj.get()))
                 {
+                    obj->OnEnable();
                     return typed;
                 }
             }

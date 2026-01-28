@@ -2,8 +2,12 @@
 #include "Graphics.h"
 #include <memory>
 #include "Transformation.h"
+#include "Collision.h"
+
+#include "CubeWireframe.h"
 
 using namespace DirectX;
+using namespace Collider3D;
 
 enum Object_Type_Tag
 {
@@ -37,7 +41,8 @@ public:
 	XMFLOAT3 GetPosition(void) const		{ return transInfo.position; }
 	XMFLOAT3 GetRotation(void) const		{ return transInfo.rotation; }
 	XMFLOAT3 GetSize(void) const			{ return transInfo.scale; }
-	XMFLOAT3 GetCollisionSize(void) const	{ return CollisionSize; }
+	BoxCollider	GetBoxCollider(void) const	{ return boxCollider; }
+	XMFLOAT3 GetCollisionSize(void) const	{ return boxCollider.half; }
 	void SetCollisionOnOff(bool OnOff)		{ OnCollision = OnOff; }
 	bool GetCollisionOnOff(void) const		{ return OnCollision; }
 protected:
@@ -47,14 +52,18 @@ protected:
 	void SetRotate(XMFLOAT3 rotate)				{ transInfo.rotation = rotate; }
 	void Scale(float X, float Y, float Z)		{ transInfo.scale.x += X; transInfo.scale.y += Y; transInfo.scale.z += Z; }
 	void SetSize(XMFLOAT3 size)					{ transInfo.scale = size; }
-	void SetCollisionSize(XMFLOAT3 size)		{ CollisionSize = size; }
+	void SetCollisionSize(XMFLOAT3 size)		{ boxCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }
 protected:
 	bool IsUse{ true };
 	
 	Object_Type_Tag Tag{ Item_Type_None };
 	
 	TransInfo transInfo;
-	
-	XMFLOAT3 CollisionSize{ 0.0f, 0.0f,0.0f };
+
+	BoxCollider boxCollider;
+#ifdef _DEBUG
+	std::unique_ptr<CubeWireframe> boxColliderWire;
+#endif
+
 	bool OnCollision{ false };
 };

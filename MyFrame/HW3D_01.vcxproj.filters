@@ -174,7 +174,7 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CubeBase.cpp">
+    <ClCompile Include="CubeBlock.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Step.cpp">
@@ -408,6 +408,9 @@
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files\Tool</Filter>
     </ClCompile>
+    <ClCompile Include="CubeWireframe.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -440,7 +443,7 @@
     <ClInclude Include="IndexedTriangleList.h">
       <Filter>Header Files\Drawable\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="CubeBase.h">
+    <ClInclude Include="CubeBlock.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="Step.h">
@@ -772,6 +775,9 @@
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeWireframe.h">
+      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

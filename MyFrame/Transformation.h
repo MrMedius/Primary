@@ -8,6 +8,19 @@ struct TransInfo
     DirectX::XMFLOAT3 position{ 0,0,0 };
     DirectX::XMFLOAT3 rotation{ 0,0,0 };
     DirectX::XMFLOAT3 scale{ 1,1,1 };
+
+    inline DirectX::XMFLOAT4X4 GetWorldMatrix()
+    {
+        using namespace DirectX;
+
+        const XMMATRIX S = XMMatrixScaling(scale.x, scale.y, scale.z);
+        const XMMATRIX R = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+        const XMMATRIX T = XMMatrixTranslation(position.x, position.y, position.z);
+
+        XMFLOAT4X4 out{};
+        XMStoreFloat4x4(&out, S * R * T);
+        return out;
+    }
 };
 
 class Transformation
