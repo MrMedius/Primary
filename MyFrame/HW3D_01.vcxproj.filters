@@ -34,23 +34,8 @@
     <Filter Include="Shader\Common">
       <UniqueIdentifier>{54352f59-5a07-47b8-b385-3e06ca138a69}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Joobber">
-      <UniqueIdentifier>{7f97a1a6-f237-4df2-b770-bc29598e1d5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Joobber">
-      <UniqueIdentifier>{bea3408d-6b5d-444b-8c77-3e1c55fe8212}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Macros">
       <UniqueIdentifier>{de165f29-0b33-4fd7-ab21-7578281eb3f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Joobber\Passlib">
-      <UniqueIdentifier>{6d71c442-1430-4410-a1a2-e58ed766fb0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Joobber\Graphlib">
-      <UniqueIdentifier>{715bb513-57aa-4e6d-947b-628af9499244}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Joobber\Passlib\Base">
-      <UniqueIdentifier>{d10abd4e-cc5f-43c3-b951-78df77135d19}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Bindable\Core">
       <UniqueIdentifier>{347ddc35-0f36-4c47-9910-510d9603ca5d}</UniqueIdentifier>
@@ -75,15 +60,6 @@
     </Filter>
     <Filter Include="Source Files\Bindable\Shadow">
       <UniqueIdentifier>{447e1a72-d090-49d5-9bbf-596dace17949}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Joobber\GraphLib">
-      <UniqueIdentifier>{16845e0d-d4f1-4b9d-872c-7a5de417257c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Joobber\PassLib">
-      <UniqueIdentifier>{5874eb0b-7dc4-4c78-b923-1bb3edf689eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Joobber\PassLib\Base">
-      <UniqueIdentifier>{5c9aed78-91de-446e-a81c-cb250a11d09b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\Model">
       <UniqueIdentifier>{fd2579ac-b15c-4bd9-8cdf-18b66e56edc2}</UniqueIdentifier>
@@ -157,6 +133,30 @@
     <Filter Include="Source Files\Object\Character\Enemy">
       <UniqueIdentifier>{095b4d9c-54d8-40b6-b90f-29623c0b5f55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GraphPass">
+      <UniqueIdentifier>{7f97a1a6-f237-4df2-b770-bc29598e1d5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphPass\GraphLib">
+      <UniqueIdentifier>{16845e0d-d4f1-4b9d-872c-7a5de417257c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphPass\PassLib">
+      <UniqueIdentifier>{5874eb0b-7dc4-4c78-b923-1bb3edf689eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GraphPass\PassLib\Base">
+      <UniqueIdentifier>{5c9aed78-91de-446e-a81c-cb250a11d09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphPass">
+      <UniqueIdentifier>{bea3408d-6b5d-444b-8c77-3e1c55fe8212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphPass\Passlib">
+      <UniqueIdentifier>{6d71c442-1430-4410-a1a2-e58ed766fb0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphPass\Passlib\Base">
+      <UniqueIdentifier>{d10abd4e-cc5f-43c3-b951-78df77135d19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphPass\Graphlib">
+      <UniqueIdentifier>{715bb513-57aa-4e6d-947b-628af9499244}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -184,13 +184,13 @@
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Step.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="Technique.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="Job.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Source Files\Drawable\Model</Filter>
@@ -208,40 +208,40 @@
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Pass.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="StepLinkingProbe.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="RenderGraph.cpp">
-      <Filter>Source Files\Joobber</Filter>
+      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="BufferClearPass.cpp">
-      <Filter>Source Files\Joobber\Passlib</Filter>
+      <Filter>Source Files\GraphPass\Passlib</Filter>
     </ClCompile>
     <ClCompile Include="VerticalBlurPass.cpp">
-      <Filter>Source Files\Joobber\Passlib</Filter>
+      <Filter>Source Files\GraphPass\Passlib</Filter>
     </ClCompile>
     <ClCompile Include="HorizontalBlurPass.cpp">
-      <Filter>Source Files\Joobber\Passlib</Filter>
+      <Filter>Source Files\GraphPass\Passlib</Filter>
     </ClCompile>
-    <ClCompile Include="BlurOutlineRenderGraph.cpp">
-      <Filter>Source Files\Joobber\Graphlib</Filter>
+    <ClCompile Include="InGameRenderGraph.cpp">
+      <Filter>Source Files\GraphPass\Graphlib</Filter>
     </ClCompile>
     <ClCompile Include="BindingPass.cpp">
-      <Filter>Source Files\Joobber\Passlib\Base</Filter>
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
     </ClCompile>
     <ClCompile Include="FullscreenPass.cpp">
-      <Filter>Source Files\Joobber\Passlib\Base</Filter>
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
     </ClCompile>
     <ClCompile Include="Source.cpp">
-      <Filter>Source Files\Joobber\Passlib\Base</Filter>
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
     </ClCompile>
     <ClCompile Include="Sink.cpp">
-      <Filter>Source Files\Joobber\Passlib\Base</Filter>
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
     </ClCompile>
     <ClCompile Include="RenderQueuePass.cpp">
-      <Filter>Source Files\Joobber\Passlib\Base</Filter>
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
     </ClCompile>
     <ClCompile Include="Projection.cpp">
       <Filter>Source Files</Filter>
@@ -304,7 +304,7 @@
       <Filter>Source Files\Bindable\Shadow</Filter>
     </ClCompile>
     <ClCompile Include="ScaleOutlineRenderGraph.cpp">
-      <Filter>Source Files\Joobber\Graphlib</Filter>
+      <Filter>Source Files\GraphPass\Graphlib</Filter>
     </ClCompile>
     <ClCompile Include="DynamicVertex.cpp">
       <Filter>Source Files\Bindable\Dyanmics</Filter>
@@ -465,16 +465,16 @@
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="Step.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="Technique.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="Job.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="TechniqueProbe.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\Drawable\Model</Filter>
@@ -510,58 +510,58 @@
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="BufferClearPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="LambertianPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="StepLinkingProbe.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="BindingPass.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="FullscreenPass.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="Pass.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="RenderQueuePass.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="OutlineMaskGenerationPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="OutlineDrawingPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="VerticalBlurPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="HorizontalBlurPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
-    <ClInclude Include="BlurOutlineRenderGraph.h">
-      <Filter>Header Files\Joobber\GraphLib</Filter>
+    <ClInclude Include="InGameRenderGraph.h">
+      <Filter>Header Files\GraphPass\GraphLib</Filter>
     </ClInclude>
     <ClInclude Include="Source.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="Sink.h">
-      <Filter>Header Files\Joobber\PassLib\Base</Filter>
+      <Filter>Header Files\GraphPass\PassLib\Base</Filter>
     </ClInclude>
     <ClInclude Include="Projection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WireframePass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMappingPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="Bindable.h">
       <Filter>Header Files\Bindable\Core</Filter>
@@ -645,16 +645,16 @@
       <Filter>Header Files\Bindable\RenderRelated</Filter>
     </ClInclude>
     <ClInclude Include="ScaleOutlineRenderGraph.h">
-      <Filter>Header Files\Joobber\GraphLib</Filter>
+      <Filter>Header Files\GraphPass\GraphLib</Filter>
     </ClInclude>
     <ClInclude Include="Channels.h">
-      <Filter>Header Files\Joobber</Filter>
+      <Filter>Header Files\GraphPass</Filter>
     </ClInclude>
     <ClInclude Include="BlurOutlineDrawingPass.h">
-      <Filter>Header Files\Joobber\PassLib</Filter>
+      <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="RenderGraph.h">
-      <Filter>Header Files\Joobber\GraphLib</Filter>
+      <Filter>Header Files\GraphPass\GraphLib</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>Header Files\Tool</Filter>

@@ -26,16 +26,15 @@ Game::Game(const std::string& commandLine)
 	cameras.AddCamera(light.ShareCamera());
 
 	light.LinkTechniques(rg);
-	//sponza.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
 
-	pEM = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
 
 	rg.BindShadowCamera(*light.ShareCamera());
 
 	b = ObjectCodex::Acquire<Block>(environment_Block, wnd.Gfx(), rg, environment_Block, 
 		XMFLOAT3{ 0.0f, 0.0f, 0.0f }, XMFLOAT3{ 200.0f, 10.0f, 200.0f }, XMFLOAT3{ 200.0f, 0.0f, 200.0f }, true);
-	p = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, XMFLOAT3{ 4.0f,10.0f ,4.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,10.0f ,4.0f });
 }
 
 Game::~Game()
@@ -84,39 +83,43 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
-	cameras.Update(dt, p->GetPosition(), &wnd);
-	light.Update(dt, p->GetPosition());
+	if (!Pause)
+	{
+		//// ゲームオーバーの判断
+		//if (pPlayer->GetIsGameOver())	SetScene(SCENE_RESULT);
 
-	p->Update(dt);
-	b->Update(dt);
-	pEM->Update(dt, p->GetPosition());
+		cameras.Update(dt, pPlayer->GetPosition(), &wnd);
+		if (!cameras.GetScreenFroze())
+		{
+			light.Update(dt, pPlayer->GetPosition());
 
-	light.Bind(wnd.Gfx(), cameras->GetMatrix());
-	rg.BindMainCamera(cameras.GetActiveCamera());
+			pPlayer->Update(dt);
+
+			if (!pPlayer->GetIsChange())
+			{
+				b->Update(dt);
+				pEnemyManager->Update(dt, pPlayer->GetPosition());
+			}
+		}
+	}
 }
 
 void Game::Draw()
 {
-	// Main Channel
+	light.Bind(wnd.Gfx(), cameras->GetMatrix());
+	rg.BindMainCamera(cameras.GetActiveCamera());
+
 	light.Submit(Chan::main);
-	//sponza.Submit(Chan::main);
 	cameras.Submit(Chan::main);
 
-
-	// Shadow Channel
-	//sponza.Submit(Chan::shadow);
-
-
-	p->Submit();
+	pPlayer->Submit();
 	b->Submit();
-	pEM->Submit();
+	pEnemyManager->Submit();
 
 	rg.Execute(wnd.Gfx());
 
 #ifdef _DEBUG
 	// imgui windows
-	//static MP sponzeProbe{ "Sponza" };
-	//sponzeProbe.SpawnWindow(sponza);
 	cameras.SpawnWindow(wnd.Gfx());
 	light.SpawnControlWindow();
 

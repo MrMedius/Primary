@@ -35,4 +35,28 @@ private:
 	float FollowPitch = DirectX::XM_PI / 6.0f;
 	float FollowLerp = 0.1f;
 	DirectX::XMFLOAT3 FollowTarget{ 0.0f,0.0f,0.0f };
+
+
+
+
+	// Screen Effects
+public:
+	// 画面振動をセットする
+	void SetScreenShake(int frames, float minRange, float maxRange);
+	// フレーム一時停止をセットする
+	void SetScreenFroze(int frames);
+	// フレーム一時停止をゲットする
+	bool GetScreenFroze(void) const { return FrozeScreen; }
+private:
+	void ScreenShake(void);
+	void ScreenFroze(void);
+private:
+	// Camera Shake
+	int ShakeFrames{ 0 };
+	float ShakeMinRange{ 0.0f };
+	float ShakeMaxRange{ 0.0f };
+
+	// Frame Freeze
+	int FrozeFrames{ 0 };
+	bool FrozeScreen{ false };
 };

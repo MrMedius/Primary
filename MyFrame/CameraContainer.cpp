@@ -50,6 +50,10 @@ void CameraContainer::Update(float dt, DirectX::XMFLOAT3 pos,Window* wnd) noexce
 	cameras[0]->SetPos(camPos);
 	cameras[0]->SetRot(camRot);
 
+	// Screen Effects
+	if (ShakeFrames > 0) ScreenShake();
+	if (FrozeFrames > 0) ScreenFroze();
+
 #ifdef _DEBUG
 	while (const auto e = wnd->kbd.ReadKey())
 	{
@@ -155,4 +159,48 @@ Camera& CameraContainer::GetActiveCamera()
 Camera& CameraContainer::GetControlledCamera()
 {
 	return *cameras[controlled];
+}
+
+
+
+
+
+// Camera Shake Setter
+void CameraContainer::SetScreenShake(int frames, float minRange, float maxRange)
+{
+	ShakeFrames = frames;
+	ShakeMinRange = minRange;
+	ShakeMaxRange = maxRange;
+}
+
+// Frame Freeze Setter
+void CameraContainer::SetScreenFroze(int frames)
+{
+	FrozeFrames = frames;
+	FrozeScreen = true;
+}
+
+// Camera Shake
+void CameraContainer::ScreenShake(void)
+{
+	std::mt19937 rng(std::random_device{}());
+	std::uniform_real_distribution<float> rad(1, 360);
+	std::uniform_real_distribution<float> range(ShakeMinRange, ShakeMaxRange);
+
+	float shake_rad = rad(rng);
+	float shake_range = range(rng);
+
+	float shake_x = shake_range * sinf(shake_rad * PI / 180);
+	float shake_y = shake_range * cosf(shake_rad * PI / 180);
+
+	FollowTarget = { FollowTarget.x + shake_x ,FollowTarget.y + shake_y, FollowTarget.z };
+
+	ShakeFrames--;
+}
+
+// Frame Freeze
+void CameraContainer::ScreenFroze(void)
+{
+	if (--FrozeFrames <= 0)
+		FrozeScreen = false;
 }

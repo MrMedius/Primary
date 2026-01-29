@@ -15,10 +15,10 @@ namespace Bind
 
 namespace Rgph
 {
-	class BlurOutlineRenderGraph : public RenderGraph
+	class InGameRenderGraph : public RenderGraph
 	{
 	public:
-		BlurOutlineRenderGraph( Graphics& gfx );
+		InGameRenderGraph( Graphics& gfx );
 		void RenderWindows(Graphics& gfx);
 		void DumpShadowMap(Graphics& gfx, const std::string& path);
 		void BindMainCamera(Camera& cam);

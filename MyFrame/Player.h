@@ -4,6 +4,7 @@
 #include "ObjectCodex.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "CameraContainer.h"
 #include "Sprite3D.h"
 #include "Player_ResourceSystem.h"
 
@@ -41,11 +42,12 @@ class Player_ChangeState;
 class Player : public Character
 {
 public:
-	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, XMFLOAT3 position)
+	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, CameraContainer* camera, XMFLOAT3 position)
 		:
 		Character(tag),
 		pKbd(kbd),
-		pMouse(mouse)
+		pMouse(mouse),
+		pCamera(camera)
 	{
 		// FSM state init
 		FSM = std::make_unique<StateMachine<Player>>(this);
@@ -70,7 +72,7 @@ public:
 		SetCollisionOnOff(true);
 		SetHpMax(3.0f);
 		ResetHpCurrent();
-		SetMoveAccel(0.03f);
+		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
 		SetAttackInterval(1.5f);
 
@@ -140,6 +142,7 @@ private:
 	std::unique_ptr<Sprite3D> visualPre;
 	Keyboard* pKbd;
 	Mouse* pMouse;
+	CameraContainer* pCamera;
 	std::unique_ptr<StateMachine<Player>> FSM;
 	std::unique_ptr<ResourceBars> pResource;
 	std::unique_ptr<WeaponSlots> pWeapon;

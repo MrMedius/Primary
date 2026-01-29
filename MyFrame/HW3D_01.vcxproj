@@ -194,7 +194,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="BindingPass.cpp" />
     <ClCompile Include="Blender.cpp" />
-    <ClCompile Include="BlurOutlineRenderGraph.cpp" />
+    <ClCompile Include="InGameRenderGraph.cpp" />
     <ClCompile Include="BufferClearPass.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraContainer.cpp" />
@@ -291,7 +291,7 @@
     <ClInclude Include="BindingPass.h" />
     <ClInclude Include="Blender.h" />
     <ClInclude Include="BlurOutlineDrawingPass.h" />
-    <ClInclude Include="BlurOutlineRenderGraph.h" />
+    <ClInclude Include="InGameRenderGraph.h" />
     <ClInclude Include="BufferClearPass.h" />
     <ClInclude Include="BufferResource.h" />
     <ClInclude Include="Camera.h" />

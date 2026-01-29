@@ -114,17 +114,17 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				pResource->AttackSettlement(e->GetEnemyType(), IsFever);
 
 				// ƒJƒƒ‰Œø‰Ê
-				//switch (DoAttackType)
-				//{
-				//case Player_Attack_1: pCamera->SetScreenShake(2, 0.1f, 0.5f); break;
-				//case Player_Attack_2: pCamera->SetScreenShake(2, 0.5f, 1.0f); break;
-				//case Player_Attack_3: pCamera->SetScreenShake(4, 1.0f, 2.0f); break;
-				//case Player_Skill_1:  pCamera->SetScreenShake(4, 2.0f, 3.0f); pCamera->SetScreenFroze(16); break;
-				//case Player_Skill_3:  pCamera->SetScreenShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8); break;
-				//case Player_Fever_1:  pCamera->SetScreenShake(4, 3.0f, 4.0f); pCamera->SetScreenFroze(16); break;
-				//case Player_Fever_2:  pCamera->SetScreenShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(8); break;
-				//case Player_Fever_3:  pCamera->SetScreenShake(1, 1.0f, 2.0f); pCamera->SetScreenFroze(4); break;
-				//}
+				switch (DoAttackType)
+				{
+				case Player_Attack_1: pCamera->SetScreenShake(2, 0.05f, 0.25f); break;
+				case Player_Attack_2: pCamera->SetScreenShake(2, 0.25f,  0.5f); break;
+				case Player_Attack_3: pCamera->SetScreenShake(4,  0.5f,  1.0f); break;
+				case Player_Skill_1:  pCamera->SetScreenShake(4,  1.0f,  1.5f); pCamera->SetScreenFroze(16); break;
+				case Player_Skill_3:  pCamera->SetScreenShake(2, 0.25f,  0.5f); pCamera->SetScreenFroze(8); break;
+				case Player_Fever_1:  pCamera->SetScreenShake(4,  1.5f,  2.0f); pCamera->SetScreenFroze(16); break;
+				case Player_Fever_2:  pCamera->SetScreenShake(2,  0.5f,  1.0f); pCamera->SetScreenFroze(8); break;
+				case Player_Fever_3:  pCamera->SetScreenShake(1,  0.5f,  1.0f); pCamera->SetScreenFroze(4); break;
+				}
 			}
 		}
 	}
@@ -734,7 +734,7 @@ void Player_SkillState::Update(Player* owner)
 		if (FrameNoOld != FrameNo && FrameNo == 46) owner->SetAttackCollisionOnOff(false);
 		// UŒ‚“–‚½‚é”»’è
 		if (owner->GetAttackCollisionOnOff()) 
-			owner->AttackCollide(-3.0f, { 1.0f,1.0f,1.0f });
+			owner->AttackCollide(-3.0f, { 1.0f,0.5f,1.0f });
 		break;
 	}
 	case WEAPON_TYPE_2:

@@ -6,7 +6,7 @@
 #include "PointLight.h"
 #include "Model.h"
 #include "ScriptCommander.h"
-#include "BlurOutlineRenderGraph.h"
+#include "InGameRenderGraph.h"
 
 #include "Player.h"
 #include "Block.h"
@@ -25,6 +25,12 @@ private:
 	/*         Game Related         */
 	/********************************/
 private:
+	// Core components
+	std::string commandLine;
+	ImguiManager imgui;
+	Window wnd;
+	ScriptCommander scriptCommander;
+	bool Pause{ false };
 	// FPS calculation
 	std::chrono::steady_clock::time_point LastFrameTime;
 	std::chrono::steady_clock::time_point StartFrameTime;
@@ -32,23 +38,15 @@ private:
 	Timer timer_update;
 	Timer timer_FPS;
 	float speed_factor = 1.0f;
-	// Core components
-	std::string commandLine;
-	ImguiManager imgui;
-	Window wnd;
-	ScriptCommander scriptCommander;
 	/********************************/
 	/*         Game Related         */
 	/********************************/
 	PointLight light;
 	CameraContainer cameras{ wnd.Gfx() };
 
-	Rgph::BlurOutlineRenderGraph rg{ wnd.Gfx() };
-	//CubeBase cube{ wnd.Gfx(),{4.0f,4.0f,4.0f} };
-	//Model sponza{ wnd.Gfx(),"asset\\Models\\sponza\\sponza.obj",1.0f / 20.0f };
+	Rgph::InGameRenderGraph rg{ wnd.Gfx() };
 	
-	std::unique_ptr<EnemyManager> pEM;
-
-	Player* p;
+	std::unique_ptr<EnemyManager> pEnemyManager;
+	Player* pPlayer;
 	Block* b;
 };
