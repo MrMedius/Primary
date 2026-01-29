@@ -1,0 +1,107 @@
+#pragma once
+#include "Character.h"
+#include "Sprite3D.h"
+#include "Player.h"
+
+// 敵状態のID
+enum ENEMY_STATE_ID {
+	ENEMY_IDLE,
+	ENEMY_CHASE,
+	ENEMY_ATTACK,
+	ENEMY_HURT,
+	ENEMY_DEATH,
+};
+// 敵状態の名前
+static const std::string ENEMY_STATE[] = {
+	"ENEMY_IDLE",
+	"ENEMY_CHASE",
+	"ENEMY_ATTACK",
+	"ENEMY_HURT",
+	"ENEMY_DEATH",
+};
+// 敵の種類
+enum ENEMY_TYPE_ID {
+	ENEMY_TYPE_NONE,
+
+	ENEMY_TYPE_1,
+	ENEMY_TYPE_2,
+	ENEMY_TYPE_3,
+};
+
+
+class Enemy : public Character
+{
+public:
+	Enemy(Object_Type_Tag tag)
+		:
+		Character(tag)
+	{
+		AttackTarget = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
+	}
+	void OnEnable(void) override = 0;
+	void Update(float dt) override = 0;
+	void Submit(void) override = 0;
+	void DoChase(void)	// ターゲットを追いかける
+	{
+		if (!IsInAttackArea)
+		{
+			float dx = AttackTarget->GetPosition().x + AttackTarget->GetCollisionSize().x * AttackTarget->GetIsFlip() - transInfo.position.x;
+			float dz = AttackTarget->GetPosition().z - transInfo.position.z;
+			float angle = atan2f(dx, dz);
+			CalculateMoveVelocity(sinf(angle) * GetMoveAccel(), 0.0f, cosf(angle) * GetMoveAccel());
+		}
+	}
+	void CheckIsFlip(void) { SetIsFlip(transInfo.position.x > AttackTarget->GetPosition().x); }	// 向いている方向の判断
+	bool CheckIsAttack(void)	// 攻撃するかどうかを判断
+	{
+		if (IsInAttackArea && AttackCountDown == 0) SetIsAttack(true);
+		return IsAttack;
+	}
+	bool AttackCollide(float damage, XMFLOAT3 repel) override
+	{
+		if (!AttackTarget->GetIsFever() && !AttackTarget->GetIsHurt() && !AttackTarget->GetIsDeath() && AttackTarget->GetCollisionOnOff())
+		{
+			bool isHit = CollisionSystem::IsOverlap(attackCollider, AttackTarget->GetBoxCollider());
+
+			if (isHit)
+			{
+				AttackTarget->SetIsHurt(true);
+				AttackTarget->CalculateHpCurrent(damage);
+
+				float dx = AttackTarget->GetPosition().x - transInfo.position.x;
+				float dz = AttackTarget->GetPosition().z - transInfo.position.z;
+				float angle = atan2f(dx, dz);
+				AttackTarget->CalculateMoveVelocity(sinf(angle) * repel.x, repel.y, cosf(angle) * repel.z); // 撃退する
+				//AttackTarget->CalculateMoveVelocity(IsFlip ? -repel : repel, 0.0f, 0.0f);
+				return true;
+			}
+		}
+		return false;
+	}
+	ENEMY_TYPE_ID GetEnemyType(void) const { return Type; }
+	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
+protected:
+	void SetEnemyType(ENEMY_TYPE_ID type) { Type = type; }
+	void SetSearchArea(XMFLOAT3 area)	  { searchCollider.half = { area.x / 2,area.y / 2 ,area.z / 2 }; }
+	XMFLOAT3 GetSearchArea(void) const	  { return searchCollider.half; }
+	bool CheckIsInArea(void)
+	{
+		return IsInArea = CollisionSystem::IsOverlap(searchCollider, AttackTarget->GetBoxCollider());
+	}
+	bool CheckIsInAttackArea(void)
+	{
+		return  IsInAttackArea = CollisionSystem::IsOverlap(attackCollider, AttackTarget->GetBoxCollider());
+	}
+private:
+	void SetupTransitions(void) override = 0;
+protected:
+	std::unique_ptr<Sprite3D> visualPre;
+	ENEMY_TYPE_ID Type{ ENEMY_TYPE_NONE };	// 敵の種類
+	Player* AttackTarget;					// ターゲット
+	BoxCollider searchCollider;				// 検査のコリジョン
+	bool IsInArea{ false };					// ターゲットが検査範囲にいる
+	bool IsInAttackArea{ false };			// ターゲットが攻撃範囲にいる
+#ifdef _DEBUG
+	std::unique_ptr<CubeWireframe> searchColliderWire;
+#endif
+};

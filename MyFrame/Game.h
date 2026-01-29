@@ -10,6 +10,7 @@
 
 #include "Player.h"
 #include "Block.h"
+#include "EnemyManager.h"
 
 class Game
 {
@@ -46,6 +47,8 @@ private:
 	//CubeBase cube{ wnd.Gfx(),{4.0f,4.0f,4.0f} };
 	//Model sponza{ wnd.Gfx(),"asset\\Models\\sponza\\sponza.obj",1.0f / 20.0f };
 	
-	Player p;
+	std::unique_ptr<EnemyManager> pEM;
+
+	Player* p;
 	Block* b;
 };

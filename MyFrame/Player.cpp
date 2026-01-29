@@ -1,9 +1,10 @@
 #include "Player.h"
-//#include "Enemy.h"
-//#include "EnemyTest.h"
-//#include "EnemyTestTwo.h"
-//#include "EnemyTestThree.h"
 #include "Channels.h"
+
+#include "Enemy.h"
+#include "EnemyTest.h"
+#include "EnemyTestTwo.h"
+#include "EnemyTestThree.h"
 
 void Player::Update(float dt)
 {
@@ -12,8 +13,8 @@ void Player::Update(float dt)
 	PositionOld = Position;
 
 	// UŒ‚”ÍˆÍ‚ÌXV
-	if (!IsFlip) AttackPosition = { Position.x + boxCollider.half.x, Position.y, Position.z };
-	else AttackPosition = { Position.x - boxCollider.half.x, Position.y, Position.z };
+	if (!IsFlip) attackCollider.center = { Position.x + boxCollider.half.x + attackCollider.half.x, Position.y, Position.z };
+	else attackCollider.center = { Position.x - boxCollider.half.x - attackCollider.half.x, Position.y, Position.z };
 
 	// ó‘Ô‘JˆÚ
 	if (GetWeaponSlots()->GetCanChange().first && !IsDeath)
@@ -36,7 +37,7 @@ void Player::Update(float dt)
 
 	// ˆÚ“®
 	Transform(MoveVelocity.x, MoveVelocity.y, MoveVelocity.z);
-	visualPre.SetPosition(transInfo.position);
+	visualPre->SetPosition(transInfo.position);
 
 	// ƒ}ƒbƒv—v‘f‚Æ‚Ì“–‚½‚è”»’è
 	boxCollider.center = transInfo.position;
@@ -48,16 +49,14 @@ void Player::Submit(void)
 	// •`‰æ
 	FSM->Draw();
 
-	visualPre.Submit(Chan::main);
-	visualPre.Submit(Chan::shadow);
+	visualPre->Submit(Chan::main);
+	visualPre->Submit(Chan::shadow);
 
 #ifdef _DEBUG
 	if (!IsDeath)
 	{
 		boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
-
-		//if (OnAttackCollision)	Collision::DrawBoxWireFrame(AttackPosition, AttackCollision, pGfx, pCamera, Colors::Blue);
-		//else Collision::DrawBoxWireFrame(AttackPosition, AttackCollision, pGfx, pCamera, Colors::Cyan);
+		attackColliderWire->DoSubmit(attackCollider.center, attackCollider.GetSize());
 	}
 #endif
 }
@@ -81,54 +80,54 @@ void Player::DoMove(float ratio)
 
 bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 {
-	//// ƒvƒŒƒCƒ„[‚ğUŒ‚‚Å‚«‚é‘S‚Ä‚Ì“G‚ğ’T‚·
-	//std::vector<EnemyTest*>		 enemyTest = GetObjectPool()->GetObjectsByTag<EnemyTest>(character_Enemy_Test);
-	//std::vector<EnemyTestTwo*>	 enemyTestTwo = GetObjectPool()->GetObjectsByTag<EnemyTestTwo>(character_Enemy_Test_Two);
-	//std::vector<EnemyTestThree*> enemyTestThree = GetObjectPool()->GetObjectsByTag<EnemyTestThree>(character_Enemy_Test_Three);
+	// ƒvƒŒƒCƒ„[‚ğUŒ‚‚Å‚«‚é‘S‚Ä‚Ì“G‚ğ’T‚·
+	std::vector<EnemyTest*>		 enemyTest = ObjectCodex::FindActiveObjectsByTag<EnemyTest>(character_Enemy_Test);
+	std::vector<EnemyTestTwo*>	 enemyTestTwo = ObjectCodex::FindActiveObjectsByTag<EnemyTestTwo>(character_Enemy_Test_Two);
+	std::vector<EnemyTestThree*> enemyTestThree = ObjectCodex::FindActiveObjectsByTag<EnemyTestThree>(character_Enemy_Test_Three);
 
-	//// ‘S‚Ä‚Ì“G‚ğ®—‚·‚é
-	//std::vector<Enemy*> enemies;
-	//enemies.reserve(enemyTest.size() + enemyTestTwo.size() + enemyTestThree.size());
-	//enemies.insert(enemies.end(), enemyTest.begin(), enemyTest.end());
-	//enemies.insert(enemies.end(), enemyTestTwo.begin(), enemyTestTwo.end());
-	//enemies.insert(enemies.end(), enemyTestThree.begin(), enemyTestThree.end());
+	// ‘S‚Ä‚Ì“G‚ğ®—‚·‚é
+	std::vector<Enemy*> enemies;
+	enemies.reserve(enemyTest.size() + enemyTestTwo.size() + enemyTestThree.size());
+	enemies.insert(enemies.end(), enemyTest.begin(), enemyTest.end());
+	enemies.insert(enemies.end(), enemyTestTwo.begin(), enemyTestTwo.end());
+	enemies.insert(enemies.end(), enemyTestThree.begin(), enemyTestThree.end());
 
-	//for (auto e : enemies)
-	//{
-	//	if (e->GetBeAttackedType() != GetDoAttackType() && !e->GetIsDeath())
-	//	{
-	//		bool isHit = Collision::CheckBoxCollider(GetAttackPosition(), GetAttackCollisionSize(), e->GetPosition(), e->GetCollisionSize());
+	for (auto e : enemies)
+	{
+		if (e->GetBeAttackedType() != GetDoAttackType() && !e->GetIsDeath())
+		{
+			bool isHit = CollisionSystem::IsOverlap(attackCollider, e->GetBoxCollider());
 
-	//		if (isHit)
-	//		{
-	//			e->SetIsHurt(true);	// UŒ‚‚³‚ê‚½ó‘Ô‚É‘JˆÚ
-	//			e->CalculateHpCurrent(damage); // ‘Ì—ÍŒvZ
-	//			e->SetBeAttackedType(GetDoAttackType());
+			if (isHit)
+			{
+				e->SetIsHurt(true);	// UŒ‚‚³‚ê‚½ó‘Ô‚É‘JˆÚ
+				e->CalculateHpCurrent(damage); // ‘Ì—ÍŒvZ
+				e->SetBeAttackedType(GetDoAttackType());
 
-	//			float dx = e->GetPosition().x - Position.x;
-	//			float dz = e->GetPosition().z - Position.z;
-	//			float angle = atan2f(dx, dz);
-	//			e->CalculateMoveVelocity(sinf(angle) * repel.x, repel.y, cosf(angle) * repel.z); // Œ‚‘Ş‚·‚é
-	//			//e->CalculateMoveVelocity(IsFlip ? -repel : repel, 0.0f, 0.0f); 
+				float dx = e->GetPosition().x - transInfo.position.x;
+				float dz = e->GetPosition().z - transInfo.position.z;
+				float angle = atan2f(dx, dz);
+				e->CalculateMoveVelocity(sinf(angle) * repel.x, repel.y, cosf(angle) * repel.z); // Œ‚‘Ş‚·‚é
+				//e->CalculateMoveVelocity(IsFlip ? -repel : repel, 0.0f, 0.0f); 
 
-	//			// ƒQ[ƒ€ƒŠƒ\[ƒX”»’f(Fever‚¶‚á‚È‚¢‚¾‚¯ƒGƒlƒ‹ƒM[‚ª‚à‚ç‚¦‚é)
-	//			pResource->AttackSettlement(e->GetEnemyType(), IsFever);
+				// ƒQ[ƒ€ƒŠƒ\[ƒX”»’f(Fever‚¶‚á‚È‚¢‚¾‚¯ƒGƒlƒ‹ƒM[‚ª‚à‚ç‚¦‚é)
+				pResource->AttackSettlement(e->GetEnemyType(), IsFever);
 
-	//			// ƒJƒƒ‰Œø‰Ê
-	//			switch (DoAttackType)
-	//			{
-	//			case Player_Attack_1: pCamera->SetScreenShake(2, 0.1f, 0.5f); break;
-	//			case Player_Attack_2: pCamera->SetScreenShake(2, 0.5f, 1.0f); break;
-	//			case Player_Attack_3: pCamera->SetScreenShake(4, 1.0f, 2.0f); break;
-	//			case Player_Skill_1:  pCamera->SetScreenShake(4, 2.0f, 3.0f); pCamera->SetScreenFroze(16); break;
-	//			case Player_Skill_3:  pCamera->SetScreenShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8); break;
-	//			case Player_Fever_1:  pCamera->SetScreenShake(4, 3.0f, 4.0f); pCamera->SetScreenFroze(16); break;
-	//			case Player_Fever_2:  pCamera->SetScreenShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(8); break;
-	//			case Player_Fever_3:  pCamera->SetScreenShake(1, 1.0f, 2.0f); pCamera->SetScreenFroze(4); break;
-	//			}
-	//		}
-	//	}
-	//}
+				// ƒJƒƒ‰Œø‰Ê
+				//switch (DoAttackType)
+				//{
+				//case Player_Attack_1: pCamera->SetScreenShake(2, 0.1f, 0.5f); break;
+				//case Player_Attack_2: pCamera->SetScreenShake(2, 0.5f, 1.0f); break;
+				//case Player_Attack_3: pCamera->SetScreenShake(4, 1.0f, 2.0f); break;
+				//case Player_Skill_1:  pCamera->SetScreenShake(4, 2.0f, 3.0f); pCamera->SetScreenFroze(16); break;
+				//case Player_Skill_3:  pCamera->SetScreenShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8); break;
+				//case Player_Fever_1:  pCamera->SetScreenShake(4, 3.0f, 4.0f); pCamera->SetScreenFroze(16); break;
+				//case Player_Fever_2:  pCamera->SetScreenShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(8); break;
+				//case Player_Fever_3:  pCamera->SetScreenShake(1, 1.0f, 2.0f); pCamera->SetScreenFroze(4); break;
+				//}
+			}
+		}
+	}
 	return false;
 }
 
@@ -332,16 +331,16 @@ void Player_IdleState::Draw(Player* owner)
 	{
 		switch (owner->GetWeaponSlots()->GetCurrentSlot().GetType())
 		{
-		case WEAPON_TYPE_0:	owner->GetVisualPre().SetFrame(12, 16, 145, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_1: owner->GetVisualPre().SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_2: owner->GetVisualPre().SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_3: owner->GetVisualPre().SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_0:	owner->GetVisualPre()->SetFrame(12, 16, 145, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrame(12, 12,  49, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
 		default: break;
 		}
 	}
 	else
 	{
-		owner->GetVisualPre().SetFrame(12, 10, 97, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
+		owner->GetVisualPre()->SetFrame(12, 10, 97, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
 	}
 }
 
@@ -385,16 +384,16 @@ void Player_MoveState::Draw(Player* owner)
 	{
 		switch (owner->GetWeaponSlots()->GetCurrentSlot().GetType())
 		{
-		case WEAPON_TYPE_0:	owner->GetVisualPre().SetFrame(12, 16, 169, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_1: owner->GetVisualPre().SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_2: owner->GetVisualPre().SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_3: owner->GetVisualPre().SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_0:	owner->GetVisualPre()->SetFrame(12, 16, 169, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrame(12, 12,  73, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
 		default: break;
 		}
 	}
 	else
 	{
-		owner->GetVisualPre().SetFrame(12, 10, 97, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
+		owner->GetVisualPre()->SetFrame(12, 10, 97, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
 	}
 }
 
@@ -460,7 +459,7 @@ void Player_DashState::Update(Player* owner)
 
 void Player_DashState::Draw(Player* owner)
 {
-	owner->GetVisualPre().SetFrame(12, 16, 121, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
+	owner->GetVisualPre()->SetFrame(12, 16, 121, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
 }
 
 
@@ -527,7 +526,7 @@ void Player_AttackState::Update(Player* owner)
 			if (FrameNoOld != FrameNo && FrameNo == 14)
 				owner->SetAttackCollisionOnOff(false);
 			// UŒ‚“–‚½‚é”»’è
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.5f,0.5f });
+			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.2f,0.1f,0.2f });
 			break;
 		}
 		case Player_Attack_2:
@@ -537,7 +536,7 @@ void Player_AttackState::Update(Player* owner)
 			// UŒ‚ƒRƒŠƒWƒ‡ƒ“‚ğ•Â‚¶‚éƒtƒŒ[ƒ€
 			if (FrameNoOld != FrameNo && FrameNo == 30)	owner->SetAttackCollisionOnOff(false);
 			// UŒ‚“–‚½‚é”»’è
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 1.0f,1.0f,1.0f });
+			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.2f,0.2f,0.2f });
 			break;
 		}
 		case Player_Attack_3:
@@ -549,7 +548,7 @@ void Player_AttackState::Update(Player* owner)
 			if (FrameNoOld != FrameNo && FrameNo == 41)
 				owner->SetAttackCollisionOnOff(false);
 			// UŒ‚“–‚½‚é”»’è
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 1.5f ,0.5f,1.5f });
+			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.1f,0.5f });
 			break;
 		}
 		}
@@ -637,16 +636,16 @@ void Player_AttackState::Draw(Player* owner)
 	{
 		switch (owner->GetWeaponSlots()->GetCurrentSlot().GetType())
 		{
-		case WEAPON_TYPE_0:	owner->GetVisualPre().SetFrame(12, 16, 49, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_1: owner->GetVisualPre().SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_2: owner->GetVisualPre().SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_3: owner->GetVisualPre().SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_0:	owner->GetVisualPre()->SetFrame(12, 16, 49, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
+		case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrame(12, 12,  1, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
 		default: break;
 		}
 	}
 	else
 	{
-		owner->GetVisualPre().SetFrame(12, 10, 1, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
+		owner->GetVisualPre()->SetFrame(12, 10, 1, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
 	}
 }
 
@@ -662,21 +661,16 @@ void Player_SkillState::OnEnter(Player* owner)
 	switch (WeaponType)
 	{
 	case WEAPON_TYPE_1:
-	{
-		owner->SetAttackCollisionSize({ 50.0f,10.0f,50.0f });
+		owner->SetAttackCollisionSize({ 20.0f,5.0f,20.0f });
 		owner->SetDoAttackType(Player_Skill_1);
 		break;
-	}
 	case WEAPON_TYPE_2:
-	{
 		owner->SetDoAttackType(Player_Skill_2);
 		break;
-	}
 	case WEAPON_TYPE_3:
-	{
+		owner->SetAttackCollisionSize({ 5.0f,5.0f,5.0f });
 		owner->SetDoAttackType(Player_Skill_3);
 		break;
-	}
 	}
 	FrameTotalCount = 48;
 
@@ -691,7 +685,7 @@ void Player_SkillState::OnExit(Player* owner)
 	{
 	case WEAPON_TYPE_1:
 	{
-		owner->SetAttackCollisionSize({ 20.0f,10.0f,10.0f });
+		owner->SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
 		break;
 	}
 	case WEAPON_TYPE_2:
@@ -700,6 +694,7 @@ void Player_SkillState::OnExit(Player* owner)
 	}
 	case WEAPON_TYPE_3:
 	{
+		owner->SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
 		owner->SetCollisionOnOff(true); // ƒRƒŠƒWƒ…ƒ“‚ğŠJ‚¯‚é
 		break;
 	}
@@ -711,7 +706,7 @@ void Player_SkillState::OnExit(Player* owner)
 
 void Player_SkillState::Update(Player* owner)
 {
-	FrameNo = 5 * (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
 	// I‚í‚Á‚½‚çƒXƒLƒ‹ƒtƒ‰ƒO‚ğ•Â‚¶‚é
 	if (FrameNo > FrameTotalCount) owner->SetIsSkill(false);
 
@@ -738,7 +733,8 @@ void Player_SkillState::Update(Player* owner)
 		// UŒ‚ƒRƒŠƒWƒ‡ƒ“‚ğ•Â‚¶‚éƒtƒŒ[ƒ€
 		if (FrameNoOld != FrameNo && FrameNo == 46) owner->SetAttackCollisionOnOff(false);
 		// UŒ‚“–‚½‚é”»’è
-		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-3.0f, { 3.0f,1.0f,3.0f });
+		if (owner->GetAttackCollisionOnOff()) 
+			owner->AttackCollide(-3.0f, { 1.0f,1.0f,1.0f });
 		break;
 	}
 	case WEAPON_TYPE_2:
@@ -750,12 +746,12 @@ void Player_SkillState::Update(Player* owner)
 		{
 			owner->SetAttackCollisionOnOff(true);
 			owner->SetCollisionOnOff(false);	// ƒRƒŠƒWƒ…ƒ“‚ğ•Â‚¶‚é
-			owner->CalculateMoveVelocity((!owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 100.0f, 0.0f, 0.0f);
+			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.0f, 0.0f);
 		}
 		// UŒ‚ƒRƒŠƒWƒ‡ƒ“‚ğ•Â‚¶‚éƒtƒŒ[ƒ€
 		if (FrameNoOld != FrameNo && FrameNo == 43) owner->SetAttackCollisionOnOff(false);
 		// UŒ‚“–‚½‚é”»’è
-		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 2.0f,0.0f,3.0f });
+		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.0f,1.0f });
 		break;
 	}
 
@@ -770,9 +766,9 @@ void Player_SkillState::Draw(Player* owner)
 {
 	switch (WeaponType)
 	{
-	case WEAPON_TYPE_1: owner->GetVisualPre().SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
-	case WEAPON_TYPE_2: owner->GetVisualPre().SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
-	case WEAPON_TYPE_3: owner->GetVisualPre().SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
+	case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 1, !owner->GetIsFlip()); break;
+	case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 2, !owner->GetIsFlip()); break;
+	case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrame(12, 12, 97, FrameTotalCount, FrameNo, 3, !owner->GetIsFlip()); break;
 	default: break;
 	}
 }
@@ -799,7 +795,7 @@ void Player_HurtState::OnExit(Player* owner)
 
 void Player_HurtState::Update(Player* owner)
 {
-	FrameNo = 5 * (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
 	// UŒ‚‚³‚ê‚½Œã‚Í‰½‚·‚é‚Ì”»’f
 	if (FrameNo > FrameTotalCount)
 	{
@@ -827,7 +823,7 @@ void Player_HurtState::Update(Player* owner)
 
 void Player_HurtState::Draw(Player* owner)
 {
-	owner->GetVisualPre().SetFrame(12, 16, 97, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
+	owner->GetVisualPre()->SetFrame(12, 16, 97, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
 }
 
 
@@ -843,14 +839,14 @@ void Player_DeathState::OnEnter(Player* owner)
 
 void Player_DeathState::Update(Player* owner)
 {
-	FrameNo = 5 * (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
 	// I‚í‚Á‚½‚ç‰½‚ª‚·‚éc
 	if (FrameNo > FrameTotalCount)	owner->SetIsGameOver(true);
 }
 
 void Player_DeathState::Draw(Player* owner)
 {
-	owner->GetVisualPre().SetFrame(12, 16, 1, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
+	owner->GetVisualPre()->SetFrame(12, 16, 1, FrameTotalCount, FrameNo, 0, !owner->GetIsFlip());
 }
 
 
@@ -887,13 +883,13 @@ void Player_ChangeState::OnExit(Player* owner)
 
 void Player_ChangeState::Update(Player* owner)
 {
-	FrameNo = 5 * (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
 	//•ÏgŠ®—¹‚Ì”»’f
 	if (FrameNo > FrameTotalCount)	owner->SetIsChange(false);
 }
 
 void Player_ChangeState::Draw(Player* owner)
 {
-	if (owner->GetIsFever()) owner->GetVisualPre().SetFrame(12, 10, 49, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
-	else owner->GetVisualPre().SetFrame(12, 10, 49, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
+	if (owner->GetIsFever()) owner->GetVisualPre()->SetFrame(12, 10, 49, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
+	else owner->GetVisualPre()->SetFrame(12, 10, 49, FrameTotalCount, FrameNo, 4, !owner->GetIsFlip());
 }

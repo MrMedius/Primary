@@ -115,26 +115,34 @@ namespace Bind
 			INFOMAN_NOHR(gfx);
 			GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf()));
 		}
-		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+		PixelConstantBuffer(Graphics& gfx, const C& consts, UINT slot = 0, std::string tag = "")
+			: ConstantBuffer<C>(gfx, consts, slot), tag(std::move(tag)) 
+		{}
+		PixelConstantBuffer(Graphics& gfx, UINT slot = 0, std::string tag = "")
+			: ConstantBuffer<C>(gfx, slot), tag(std::move(tag)) 
+		{}
+		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0, std::string tag = "")
 		{
-			return Codex::Resolve<PixelConstantBuffer>(gfx, consts, slot);
+			return Codex::Resolve<PixelConstantBuffer>(gfx, consts, slot, tag);
 		}
 		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, UINT slot = 0)
 		{
 			return Codex::Resolve<PixelConstantBuffer>(gfx, slot);
 		}
-		static std::string GenerateUID(const C&, UINT slot)
+		static std::string GenerateUID(const C&, UINT slot, std::string tag = "")
 		{
-			return GenerateUID(slot);
+			return GenerateUID(slot, tag);
 		}
-		static std::string GenerateUID(UINT slot = 0)
+		static std::string GenerateUID(UINT slot = 0, std::string tag = "")
 		{
 			using namespace std::string_literals;
-			return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot);
+			return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot) + tag;
 		}
 		std::string GetUID() const noexcept override
 		{
-			return GenerateUID(slot);
+			return GenerateUID(slot, tag);
 		}
+	private:
+		std::string tag;
 	};
 }

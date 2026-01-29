@@ -7,7 +7,7 @@
 class CubeWireframe : public Drawable
 {
 public:
-	CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color);
+	CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color, std::string tag = "");
 	void DoSubmit(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 size);
 	void SetPosition(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;
@@ -16,8 +16,8 @@ public:
 private:
 	struct PSColorConstant
 	{
-		DirectX::XMFLOAT3 color{ 1.0f,1.0f ,1.0f };
+		DirectX::XMFLOAT3 color;
 		float padding;
-	}colorConst;
+	};
 	Transformation trans;
 };

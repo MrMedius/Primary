@@ -45,13 +45,7 @@ public:
 		:
 		Character(tag),
 		pKbd(kbd),
-		pMouse(mouse),
-		visualPre(gfx, std::vector<std::string>{
-		"asset\\Images\\Player\\Player_Usual.png",
-		"asset\\Images\\Player\\Player_Red.png",
-		"asset\\Images\\Player\\Player_Green.png",
-		"asset\\Images\\Player\\Player_Blue.png",
-		"asset\\Images\\Player\\Player_Fever.png"},std::to_string(tag))
+		pMouse(mouse)
 	{
 		// FSM state init
 		FSM = std::make_unique<StateMachine<Player>>(this);
@@ -64,35 +58,43 @@ public:
 		FSM->AddState(PLAYER_STATE[PLAYER_DEATH],	std::make_unique<Player_DeathState>());
 		FSM->AddState(PLAYER_STATE[PLAYER_CHANGE],	std::make_unique<Player_ChangeState>());
 
-		// FSM state transitions
+		// FSM state transitions init
 		SetupTransitions();
 		// init the state
 		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
 
 		// parameters init
 		SetPosition(position);
-		SetSize({ 10.0f, 10.0f, 0.0f });
-		SetCollisionSize({ 5.0f, 8.0f, 1.0f });
+		SetSize({ 5.0f, 5.0f, 0.0f });
+		SetCollisionSize({ 2.0f, 4.0f, 1.0f });
 		SetCollisionOnOff(true);
 		SetHpMax(3.0f);
 		ResetHpCurrent();
-		SetMoveAccel(0.1f);
-		SetAttackCollisionSize({ 10.0f,5.0f,2.0f });
+		SetMoveAccel(0.03f);
+		SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
 		SetAttackInterval(1.5f);
 
-		// game resources
+		// game resources init
 		pWeapon = std::make_unique<WeaponSlots>();
 		pResource = std::make_unique<ResourceBars>(pWeapon.get());
 
 		// graphics init
-		visualPre.SetPosition({ 0.0f,5.0f,6.0f });
-		visualPre.SetScale(transInfo.scale);
-		visualPre.LinkTechniques(rg);
+		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{
+			"asset\\Images\\Player\\Player_Usual.png",
+			"asset\\Images\\Player\\Player_Red.png",
+			"asset\\Images\\Player\\Player_Green.png",
+			"asset\\Images\\Player\\Player_Blue.png",
+			"asset\\Images\\Player\\Player_Fever.png"}, std::to_string(tag));
+		visualPre->SetPosition(transInfo.position);
+		visualPre->SetScale(transInfo.scale);
+		visualPre->LinkTechniques(rg);
 
 		// collider init
 #ifdef _DEBUG
-		boxColliderWire = std::make_unique<CubeWireframe>(gfx, XMFLOAT3(1.0f, 0.0f, 0.0f));
+		boxColliderWire = std::make_unique<CubeWireframe>(gfx, XMFLOAT3{ 1.0f, 0.0f, 0.0f }, "wireBox");
 		boxColliderWire->LinkTechniques(rg);
+		attackColliderWire = std::make_unique<CubeWireframe>(gfx, XMFLOAT3{ 0.0f, 0.0f, 1.0f }, "wireAttack");
+		attackColliderWire->LinkTechniques(rg);
 #endif
 	}
 	void OnEnable(void) override
@@ -131,11 +133,11 @@ public:
 	bool GetIsGameOver(void) const { return IsGameOver; }
 	void DoMove(float ratio);
 	bool AttackCollide(float damage, XMFLOAT3 repel) override;
-	Sprite3D& GetVisualPre(void) { return visualPre; }
+	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
 private:
 	void SetupTransitions(void) override;
 private:
-	Sprite3D visualPre;
+	std::unique_ptr<Sprite3D> visualPre;
 	Keyboard* pKbd;
 	Mouse* pMouse;
 	std::unique_ptr<StateMachine<Player>> FSM;

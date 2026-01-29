@@ -151,6 +151,12 @@
     <Filter Include="Source Files\Object\Character">
       <UniqueIdentifier>{3c47f553-0bb6-44d9-a601-fea9a2eba4b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Object\Character\Enemy">
+      <UniqueIdentifier>{22b77191-a152-4806-905a-6587ebc11d02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Character\Enemy">
+      <UniqueIdentifier>{095b4d9c-54d8-40b6-b90f-29623c0b5f55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -410,6 +416,18 @@
     </ClCompile>
     <ClCompile Include="CubeWireframe.cpp">
       <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyTest.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyTestTwo.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyTestThree.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -778,6 +796,21 @@
     </ClInclude>
     <ClInclude Include="CubeWireframe.h">
       <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyTest.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyTestTwo.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyTestThree.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

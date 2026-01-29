@@ -8,7 +8,7 @@
 
 namespace dx = DirectX;
 
-CubeWireframe::CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color)
+CubeWireframe::CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color, std::string tag)
 {
 	using namespace Bind;
 
@@ -60,8 +60,8 @@ CubeWireframe::CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color)
 
 		only.AddBindable(PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
-		colorConst.color = color;
-		only.AddBindable(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u));
+		PSColorConstant colorConst{ color };
+		only.AddBindable(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u, tag));
 
 		only.AddBindable(std::make_shared<TransformCbuf>(gfx));
 

@@ -21,19 +21,21 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,60.0f,0.0f }),
-	p(wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, { 4.0f,20.0f ,4.0f })
+	light(wnd.Gfx(), { 0.0f,25.0f,0.0f })
 {
 	cameras.AddCamera(light.ShareCamera());
 
-	
 	light.LinkTechniques(rg);
 	//sponza.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
 
+	pEM = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
+
 	rg.BindShadowCamera(*light.ShareCamera());
 
-	b = ObjectCodex::Acquire<Block>(environment_Block, wnd.Gfx(), rg, environment_Block, XMFLOAT3(0.0f, -5.0f, 0.0f), XMFLOAT3(200.0f, 10.0f, 200.0f), XMFLOAT3(200.0f, 10.0f, 200.0f), true);
+	b = ObjectCodex::Acquire<Block>(environment_Block, wnd.Gfx(), rg, environment_Block, 
+		XMFLOAT3{ 0.0f, 0.0f, 0.0f }, XMFLOAT3{ 200.0f, 10.0f, 200.0f }, XMFLOAT3{ 200.0f, 0.0f, 200.0f }, true);
+	p = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, XMFLOAT3{ 4.0f,10.0f ,4.0f });
 }
 
 Game::~Game()
@@ -82,11 +84,12 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
-	cameras.Update(dt, p.GetPosition(), &wnd);
-	light.Update(dt, p.GetPosition());
+	cameras.Update(dt, p->GetPosition(), &wnd);
+	light.Update(dt, p->GetPosition());
 
-	p.Update(dt);
+	p->Update(dt);
 	b->Update(dt);
+	pEM->Update(dt, p->GetPosition());
 
 	light.Bind(wnd.Gfx(), cameras->GetMatrix());
 	rg.BindMainCamera(cameras.GetActiveCamera());
@@ -104,8 +107,9 @@ void Game::Draw()
 	//sponza.Submit(Chan::shadow);
 
 
-	p.Submit();
+	p->Submit();
 	b->Submit();
+	pEM->Submit();
 
 	rg.Execute(wnd.Gfx());
 

@@ -30,8 +30,7 @@ public:
     unsigned int FrameNo{ 0 };
     unsigned int FrameTotalCount{ 0 };
     std::chrono::steady_clock::time_point startTime;
-    std::chrono::milliseconds frameDuration{ 100 };
-    static constexpr int SPRITE_REFRESH_RATE = 8;
+    std::chrono::milliseconds frameDuration{ 25 };
 };
 
 // Infinite State Machine

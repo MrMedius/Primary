@@ -49,10 +49,10 @@ public:
 	XMFLOAT3 GetMoveVelocity(void) const					{ return MoveVelocity; }													// 移動値をゲット
 	void SetMoveAccel(float accel)							{ MoveAccel = accel; }			// 移動加速値をセット
 	float GetMoveAccel(void) const							{ return MoveAccel; }			// 移動加速値をゲット
-	void SetAttackPosition(XMFLOAT3 position)				{ AttackPosition = position; }	// 攻撃の位置をセット
-	XMFLOAT3 GetAttackPosition(void) const					{ return AttackPosition; }		// 攻撃の位置をゲット
-	void SetAttackCollisionSize(XMFLOAT3 size)				{ AttackCollision = size; }		// 攻撃のコリジョンをセット
-	XMFLOAT3 GetAttackCollisionSize(void) const				{ return AttackCollision; }		// 攻撃のコリジョンをゲット
+	void SetAttackPosition(XMFLOAT3 position)				{ attackCollider.center = position; }	// 攻撃の位置をセット
+	XMFLOAT3 GetAttackPosition(void) const					{ return  attackCollider.center; }		// 攻撃の位置をゲット
+	void SetAttackCollisionSize(XMFLOAT3 size)				{ attackCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }	// 攻撃のコリジョンをセット
+	XMFLOAT3 GetAttackCollisionSize(void) const				{ return attackCollider.half; }	// 攻撃のコリジョンをゲット
 	void SetAttackCollisionOnOff(bool OnOff)				{ OnAttackCollision = OnOff; }	// 攻撃間隔カウントダウンをセット
 	bool GetAttackCollisionOnOff(void) const				{ return OnAttackCollision; }	// 攻撃間隔カウントダウンをゲット
 	void ResetAttackCountDown(void)							{ AttackCountDown = AttackInterval; }			// 攻撃のコリジョンをリセット
@@ -80,15 +80,14 @@ protected:
 	void SetAttackCountDown(float count)	{ AttackCountDown = count; }			// 攻撃間隔カウントダウンをセット
 	float GetAttackCountDown(void) const	{ return AttackCountDown; }				// 攻撃間隔カウントダウンをゲット
 protected:
-	static constexpr float GRAVITY = 0.1f;				// 重力
+	static constexpr float GRAVITY = 1.0f;				// 重力
 	static constexpr float 	FORCE_RATE = 0.1f;			// 摩擦力
 	float HpMax{ 0.0f };								// 最大体力
 	float HpCurrent{ 0.0f };							// 今の体力
 	XMFLOAT3 PositionOld{ transInfo.position };			// 1フレーム前の座標
 	float MoveAccel{ 0.0f };							// 移動加速値
 	XMFLOAT3 MoveVelocity{ 0.0f,0.0f,0.0f };			// 移動値
-	XMFLOAT3 AttackPosition{ 0.0f,0.0f,0.0f };			// 攻撃の位置
-	XMFLOAT3 AttackCollision{ 0.0f,0.0f,0.0f };			// 攻撃のコリジョン
+	BoxCollider attackCollider;							// 攻撃のコリジョン
 	float AttackInterval{ 0 };							// 攻撃間隔
 	float AttackCountDown{ 0 };							// 攻撃間隔カウントダウン
 	bool OnAttackCollision{ false };					// 攻撃のコリジョンスイッチ
@@ -99,4 +98,7 @@ protected:
 	bool IsAttack{ false };								// 攻撃状態の判断
 	bool IsHurt{ false };								// 攻撃された状態の判断
 	bool IsDeath{ false };								// 死亡状態の判断
+#ifdef _DEBUG
+	std::unique_ptr<CubeWireframe> attackColliderWire;
+#endif
 };
