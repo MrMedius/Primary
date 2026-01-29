@@ -1,4 +1,5 @@
 #include "EnemyManager.h"
+#include "ObjectCodex.h"
 #include <random>
 
 EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd)//, Score* score)

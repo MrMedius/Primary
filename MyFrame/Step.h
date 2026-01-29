@@ -26,8 +26,19 @@ public:
 	void InitializeParentReferences( const class Drawable& parent ) noexcept;
 	void Accept( TechniqueProbe& probe );
 	void Link(Rgph::RenderGraph& rg);
+	void SetDrawIndexed(UINT count, UINT startIndex = 0u, INT baseVertex = 0) noexcept;
+	void ClearDrawOverride() noexcept { draw.reset(); }
+	struct DrawCommand
+	{
+		UINT count;
+		UINT startIndex;
+		INT  baseVertex;
+	};
+	const std::optional<DrawCommand>& GetDrawOverride() const noexcept { return draw; }
 private:
 	std::vector<std::shared_ptr<Bind::Bindable>> bindables;
 	Rgph::RenderQueuePass* pTargetPass = nullptr;;
 	std::string targetPassName;
+
+	std::optional<DrawCommand> draw;
 };

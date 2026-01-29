@@ -4,7 +4,7 @@
 #include "Collision.h"
 
 #include "Block.h"
-//#include "BlockTiled.h"
+#include "BlockTiled.h"
 
 #include "Player.h"
 #include "EnemyTest.h"
@@ -37,14 +37,13 @@ void Character::MapItemCollide(void)
 
 	// 全てのマップオブジェクトを探す
 	std::vector<Block*> block =				ObjectCodex::FindActiveObjectsByTag<Block>(environment_Block);
-	//std::vector<BlockTiled*> blockTiled =	ObjectCodex::FindActiveObjectsByTag<BlockTiled>(environment_BlockTiled);
+	std::vector<BlockTiled*> blockTiled =	ObjectCodex::FindActiveObjectsByTag<BlockTiled>(environment_BlockTiled);
 
 	// 全てのマップオブジェクトをマップオブジェクトをして整理する
 	std::vector<ObjectBase*> mapItems;
-	mapItems.reserve(block.size());
-	//mapItems.reserve(block.size() + blockTiled.size());
+	mapItems.reserve(block.size() + blockTiled.size());
 	mapItems.insert(mapItems.end(),	block.begin(),		block.end());
-	//mapItems.insert(mapItems.end(),	blockTiled.begin(),	blockTiled.end());
+	mapItems.insert(mapItems.end(),	blockTiled.begin(),	blockTiled.end());
 
 	// ループでコリジョン判断
 	for (auto b : mapItems)

@@ -135,6 +135,11 @@ void Graphics::DrawIndexed( UINT count ) noxnd
 	GFX_THROW_INFO_ONLY( pContext->DrawIndexed( count,0u,0u ) );
 }
 
+void Graphics::DrawIndexed( UINT count,UINT startIndex,INT baseVertex ) noxnd
+{
+	GFX_THROW_INFO_ONLY( pContext->DrawIndexed( count,startIndex,baseVertex ) );
+}
+
 void Graphics::SetProjection( DirectX::FXMMATRIX proj ) noexcept
 {
 	projection = proj;

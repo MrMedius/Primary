@@ -8,7 +8,7 @@
 class Block : public ObjectBase
 {
 public:
-	Block(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT3 collisionSize, bool onCollision)
+	Block(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, bool onCollision)
 		:
 		ObjectBase(tag),
 		visualPre(gfx, size)
@@ -16,7 +16,7 @@ public:
 		// parameters init
 		SetPosition(position);
 		SetSize(size);
-		SetCollisionSize(collisionSize);
+		SetCollisionSize(size);
 		SetCollisionOnOff(onCollision);
 
 		// graphics init

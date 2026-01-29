@@ -28,12 +28,11 @@ Game::Game(const std::string& commandLine)
 	light.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
 
+	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), rg);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
 
 	rg.BindShadowCamera(*light.ShareCamera());
 
-	b = ObjectCodex::Acquire<Block>(environment_Block, wnd.Gfx(), rg, environment_Block, 
-		XMFLOAT3{ 0.0f, 0.0f, 0.0f }, XMFLOAT3{ 200.0f, 10.0f, 200.0f }, XMFLOAT3{ 200.0f, 0.0f, 200.0f }, true);
 	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,10.0f ,4.0f });
 }
 
@@ -97,7 +96,7 @@ void Game::Update(float dt)
 
 			if (!pPlayer->GetIsChange())
 			{
-				b->Update(dt);
+				pEnvironmentManager->Update(dt);
 				pEnemyManager->Update(dt, pPlayer->GetPosition());
 			}
 		}
@@ -113,7 +112,8 @@ void Game::Draw()
 	cameras.Submit(Chan::main);
 
 	pPlayer->Submit();
-	b->Submit();
+
+	pEnvironmentManager->Submit();
 	pEnemyManager->Submit();
 
 	rg.Execute(wnd.Gfx());

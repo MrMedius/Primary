@@ -24,7 +24,8 @@ Step::Step( std::string targetPassName )
 
 Step::Step( const Step& src ) noexcept
 	:
-	targetPassName( src.targetPassName )
+	targetPassName( src.targetPassName ),
+	draw(src.draw)
 {
 	bindables.reserve( src.bindables.size() );
 	for( auto& pb : src.bindables )
@@ -66,4 +67,9 @@ void Step::Link(Rgph::RenderGraph& rg )
 {
 	assert( pTargetPass == nullptr );
 	pTargetPass = &rg.GetRenderQueue( targetPassName );
+}
+
+void Step::SetDrawIndexed(UINT count, UINT startIndex, INT baseVertex) noexcept
+{
+	draw = DrawCommand{ count,startIndex,baseVertex };
 }

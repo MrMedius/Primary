@@ -33,7 +33,7 @@ private:
 	std::string name;
 	TransInfo transHome;
 	Transformation trans;
-	static constexpr float travelSpeed = 12.0f;
+	static constexpr float travelSpeed = 20.0f;
 	static constexpr float rotationSpeed = 0.004f;
 	bool enableCameraIndicator = false;
 	bool enableFrustumIndicator = false;

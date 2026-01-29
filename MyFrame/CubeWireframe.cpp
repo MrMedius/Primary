@@ -2,7 +2,6 @@
 #include "BindableCommon.h"
 #include "GraphicsThrowMacros.h"
 #include "DynamicVertex.h"
-#include "Sphere.h"
 #include "Stencil.h"
 #include "Channels.h"
 

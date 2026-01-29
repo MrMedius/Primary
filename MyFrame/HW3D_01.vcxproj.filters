@@ -177,9 +177,6 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CubeBlock.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
@@ -242,9 +239,6 @@
     </ClCompile>
     <ClCompile Include="RenderQueuePass.cpp">
       <Filter>Source Files\GraphPass\Passlib\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Projection.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Blender.cpp">
       <Filter>Source Files\Bindable\Core</Filter>
@@ -429,6 +423,18 @@
     <ClCompile Include="EnemyTestThree.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="Projection.cpp">
+      <Filter>Source Files\Drawable\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentManager.cpp">
+      <Filter>Source Files\Object\Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTiled.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -454,9 +460,6 @@
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IndexedTriangleList.h">
       <Filter>Header Files\Drawable\Geometry</Filter>
@@ -550,9 +553,6 @@
     </ClInclude>
     <ClInclude Include="Sink.h">
       <Filter>Header Files\GraphPass\PassLib\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Projection.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WireframePass.h">
       <Filter>Header Files\GraphPass\PassLib</Filter>
@@ -811,6 +811,21 @@
     </ClInclude>
     <ClInclude Include="EnemyTestThree.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Projection.h">
+      <Filter>Header Files\Drawable\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentManager.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockTiled.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTiled.h">
+      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

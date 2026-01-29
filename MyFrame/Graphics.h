@@ -66,6 +66,7 @@ public:
 	void EndFrame();
 	void BeginFrame() noexcept;
 	void DrawIndexed( UINT count ) noxnd;
+	void DrawIndexed( UINT count, UINT startIndex, INT baseVertex = 0) noxnd;
 	void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
 	void SetCamera( DirectX::FXMMATRIX cam ) noexcept;

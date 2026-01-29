@@ -14,6 +14,10 @@ namespace Rgph
 	{
 		pDrawable->Bind(gfx);
 		pStep->Bind(gfx);
-		gfx.DrawIndexed(pDrawable->GetIndexCount());
+
+		if (const auto& ovr = pStep->GetDrawOverride())
+			gfx.DrawIndexed(ovr->count, ovr->startIndex, ovr->baseVertex);
+		else
+			gfx.DrawIndexed(pDrawable->GetIndexCount());
 	}
 }

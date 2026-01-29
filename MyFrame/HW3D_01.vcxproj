@@ -184,6 +184,7 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CubeTiled.cpp" />
     <ClCompile Include="CubeWireframe.cpp" />
     <ClCompile Include="DynamicTexture.cpp" />
     <ClCompile Include="DynamicTexture.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="EnemyTest.cpp" />
     <ClCompile Include="EnemyTestThree.cpp" />
     <ClCompile Include="EnemyTestTwo.cpp" />
+    <ClCompile Include="EnvironmentManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="BindingPass.cpp" />
     <ClCompile Include="Blender.cpp" />
@@ -275,14 +277,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockTiled.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="CubeTiled.h" />
     <ClInclude Include="CubeWireframe.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyTest.h" />
     <ClInclude Include="EnemyTestThree.h" />
     <ClInclude Include="EnemyTestTwo.h" />
+    <ClInclude Include="EnvironmentManager.h" />
     <ClInclude Include="FSM.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Bindable.h" />

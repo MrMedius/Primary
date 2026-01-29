@@ -9,7 +9,7 @@
 #include "InGameRenderGraph.h"
 
 #include "Player.h"
-#include "Block.h"
+#include "EnvironmentManager.h"
 #include "EnemyManager.h"
 
 class Game
@@ -46,7 +46,7 @@ private:
 
 	Rgph::InGameRenderGraph rg{ wnd.Gfx() };
 	
+	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
 	Player* pPlayer;
-	Block* b;
 };
