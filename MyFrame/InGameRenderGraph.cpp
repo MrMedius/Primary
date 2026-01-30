@@ -1,20 +1,23 @@
 #include "InGameRenderGraph.h"
+#include "Sink.h"
 #include "Source.h"
-#include "BufferClearPass.h"
-#include "LambertianPass.h"
-#include "SkyboxPass.h"
-#include "ShadowMappingPass.h"
-#include "OutlineDrawingPass.h"
-#include "OutlineMaskGenerationPass.h"
-#include "HorizontalBlurPass.h"
-#include "VerticalBlurPass.h"
-#include "BlurOutlineDrawingPass.h"
-#include "WireframePass.h"
 #include "RenderTarget.h"
 #include "DynamicConstant.h"
 #include "imgui/imgui.h"
 #include "Math.h"
 #include <filesystem>
+
+#include "BufferClearPass.h"
+#include "ShadowMappingPass.h"
+#include "LambertianPass.h"
+#include "SkyboxPass.h"
+#include "OutlineMaskGenerationPass.h"
+#include "BlurOutlineDrawingPass.h"
+//#include "OutlineDrawingPass.h"
+#include "HorizontalBlurPass.h"
+#include "VerticalBlurPass.h"
+#include "WireframePass.h"
+#include "UIPass.h"
 
 namespace Rgph
 {
@@ -100,7 +103,12 @@ namespace Rgph
 			pass->SetSinkLinkage( "depthStencil","vertical.depthStencil" );
 			AppendPass( std::move( pass ) );
 		}
-		SetSinkTarget( "backbuffer","vertical.renderTarget" );
+		{
+			auto pass = std::make_unique<UIPass>(gfx, "ui");
+			pass->SetSinkLinkage("renderTarget", "wireframe.renderTarget");
+			AppendPass(std::move(pass));
+		}
+		SetSinkTarget( "backbuffer","ui.renderTarget" );
 
 		Finalize();
 	}
@@ -144,7 +152,6 @@ namespace Rgph
 	{
 		RenderShadowWindow(gfx);
 		RenderKernelWindow(gfx);
-		dynamic_cast<SkyboxPass&>(FindPassByName("skybox")).RenderWindow();
 	}
 
 	void InGameRenderGraph::RenderKernelWindow(Graphics& gfx)

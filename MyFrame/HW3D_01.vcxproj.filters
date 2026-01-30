@@ -61,9 +61,6 @@
     <Filter Include="Source Files\Bindable\Shadow">
       <UniqueIdentifier>{447e1a72-d090-49d5-9bbf-596dace17949}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Model">
-      <UniqueIdentifier>{fd2579ac-b15c-4bd9-8cdf-18b66e56edc2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader\PostProcessing">
       <UniqueIdentifier>{1523bd4e-3c8e-4368-b0ce-1e71b8b43f13}</UniqueIdentifier>
     </Filter>
@@ -157,6 +154,12 @@
     <Filter Include="Source Files\GraphPass\Graphlib">
       <UniqueIdentifier>{715bb513-57aa-4e6d-947b-628af9499244}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\3D">
+      <UniqueIdentifier>{fd2579ac-b15c-4bd9-8cdf-18b66e56edc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\2D">
+      <UniqueIdentifier>{e0683dd9-83ad-4428-8a0d-6f8f8ea450ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -203,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="Drawable.cpp">
       <Filter>Source Files\Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="Pass.cpp">
-      <Filter>Source Files\GraphPass</Filter>
     </ClCompile>
     <ClCompile Include="StepLinkingProbe.cpp">
       <Filter>Source Files\GraphPass</Filter>
@@ -434,6 +434,15 @@
     </ClCompile>
     <ClCompile Include="CubeTiled.cpp">
       <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="Pass.cpp">
+      <Filter>Source Files\GraphPass\Passlib\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2D.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform2DCbuf.cpp">
+      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -827,6 +836,15 @@
     <ClInclude Include="CubeTiled.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="UIPass.h">
+      <Filter>Header Files\GraphPass\PassLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2D.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform2DCbuf.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HW3D_01.rc">
@@ -839,53 +857,47 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Skybox_VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Skybox_PS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="Phong_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="Phong_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDif_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDif_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifMskSpc_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifMskSpc_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifMskSpcNrm_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifMskSpcNrm_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifNrm_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifNrm_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifSpc_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifSpc_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifSpcNrm_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifSpcNrm_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="Blur_PS.hlsl">
       <Filter>Shader\PostProcessing</Filter>
@@ -897,31 +909,43 @@
       <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="General_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="General_PS.hlsl">
-      <Filter>Shader\Model</Filter>
-    </FxCompile>
-    <FxCompile Include="Solid_VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Solid_PS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Shadow_VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ShadowAlpha_VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ShadowAlpha_PS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="GeneralSprite3D_VS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="GeneralSprite3D_PS.hlsl">
-      <Filter>Shader\Model</Filter>
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Shadow_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowAlpha_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowAlpha_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Skybox_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Skybox_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Solid_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Solid_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="GeneralSprite2D_VS.hlsl">
+      <Filter>Shader\2D</Filter>
+    </FxCompile>
+    <FxCompile Include="GeneralSprite2D_PS.hlsl">
+      <Filter>Shader\2D</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -944,6 +968,9 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="SpriteUV.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="Transform2D.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>

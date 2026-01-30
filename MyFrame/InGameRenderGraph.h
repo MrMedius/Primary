@@ -2,6 +2,7 @@
 #include "RenderGraph.h"
 #include <memory>
 #include "ConstantBuffersEx.h"
+#include "Camera.h"
 
 class Graphics;
 class Camera;

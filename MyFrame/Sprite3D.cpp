@@ -2,7 +2,6 @@
 #include "Plane.h"
 #include "BindableCommon.h"
 #include "ConstantBuffersEx.h"
-#include "imgui/imgui.h"
 #include "Stencil.h"
 #include "DynamicConstant.h"
 #include "Channels.h"
@@ -136,83 +135,6 @@ DirectX::XMFLOAT2 Sprite3D::GetUVOffset() const noexcept
 DirectX::XMFLOAT2 Sprite3D::GetUVScale() const noexcept
 { 
 	return uvScale; 
-}
-
-void Sprite3D::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
-{
-	if (ImGui::Begin(name))
-	{
-		auto translation = trans.GetPosition();
-		auto angles = trans.GetRotation();
-		auto scales = trans.GetScale();
-
-		bool dirty = false;
-		ImGui::Text("Position");
-		dirty |= ImGui::SliderFloat("X", &translation.x, -80.0f, 80.0f, "%.1f");
-		dirty |= ImGui::SliderFloat("Y", &translation.y, -80.0f, 80.0f, "%.1f");
-		dirty |= ImGui::SliderFloat("Z", &translation.z, -80.0f, 80.0f, "%.1f");
-		ImGui::Text("Orientation");
-		dirty |= ImGui::SliderAngle("Roll", &angles.x, -180.0f, 180.0f);
-		dirty |= ImGui::SliderAngle("Pitch", &angles.y, -180.0f, 180.0f);
-		dirty |= ImGui::SliderAngle("Yaw", &angles.z, -180.0f, 180.0f);
-		ImGui::Text("Scale");
-		dirty |= ImGui::SliderFloat("ScaleX", &scales.x, 1.0f, 100.0f);
-		dirty |= ImGui::SliderFloat("ScaleY", &scales.y, 1.0f, 100.0f);
-		dirty |= ImGui::SliderFloat("ScaleZ", &scales.z, 1.0f, 100.0f);
-		if (dirty)
-		{
-			trans.SetPosition(translation.x, translation.y, translation.z);
-			trans.SetRotationRad(angles.x, angles.y, angles.z);
-			trans.SetScale(scales.x, scales.y, scales.z);
-		}
-
-		class Probe : public TechniqueProbe
-		{
-		public:
-			void OnSetTechnique() override
-			{
-				using namespace std::string_literals;
-				ImGui::TextColored({ 0.4f,1.0f,0.6f,1.0f }, pTech->GetName().c_str());
-				bool active = pTech->IsActive();
-				ImGui::Checkbox(("Tech Active##"s + std::to_string(techIdx)).c_str(), &active);
-				if (pTech->IsActive() != active)
-					pTech->SetActiveState(active);
-			}
-			bool OnVisitBuffer(Dcb::Buffer& buf) override
-			{
-				namespace dx = DirectX;
-				float dirty = false;
-				const auto dcheck = [&dirty](bool changed) {dirty = dirty || changed;};
-				auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufIdx)]
-				(const char* label) mutable
-					{
-						tagScratch = label + tagString;
-						return tagScratch.c_str();
-					};
-
-				if (auto v = buf["scale"]; v.Exists())
-				{
-					dcheck(ImGui::SliderFloat(tag("Scale"), &v, 1.0f, 2.0f, "%.3f", 3.5f));
-				}
-				if (auto v = buf["color"]; v.Exists())
-				{
-					dcheck(ImGui::ColorPicker4(tag("Color"), reinterpret_cast<float*>(&static_cast<dx::XMFLOAT4&>(v))));
-				}
-				if (auto v = buf["specularIntensity"]; v.Exists())
-				{
-					dcheck(ImGui::SliderFloat(tag("Spec. Intens."), &v, 0.0f, 1.0f));
-				}
-				if (auto v = buf["specularPower"]; v.Exists())
-				{
-					dcheck(ImGui::SliderFloat(tag("Glossiness"), &v, 1.0f, 100.0f, "%.1f", 1.5f));
-				}
-				return dirty;
-			}
-		} probe;
-
-		Accept(probe);
-	}
-	ImGui::End();
 }
 
 

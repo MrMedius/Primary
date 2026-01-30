@@ -12,6 +12,8 @@
 #include "EnvironmentManager.h"
 #include "EnemyManager.h"
 
+#include "Sprite2D.h"
+
 class Game
 {
 public:
@@ -49,4 +51,6 @@ private:
 	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
 	Player* pPlayer;
+
+	Sprite2D s2d;
 };

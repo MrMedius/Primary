@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include <cassert>
 #include "Sprite3D.h"
+#include "Sprite2D.h"
 
 namespace Bind
 {
@@ -27,11 +28,13 @@ namespace Bind
 
 	void DynamicTexture::Bind(Graphics& gfx) noxnd
 	{
-		int idx = 0;
-
 		assert(pParent != nullptr);
-		const auto& spr = dynamic_cast<const Sprite3D&>(*pParent);
-		idx = spr.GetTextureFrameIndex();
+
+		int idx = 0;
+		if (auto* p3 = dynamic_cast<const Sprite3D*>(pParent))
+			idx = p3->GetTextureFrameIndex();
+		else if (auto* p2 = dynamic_cast<const Sprite2D*>(pParent))
+			idx = p2->GetTextureFrameIndex();
 
 		const int n = (int)frames.size();
 		if (n <= 0) return;

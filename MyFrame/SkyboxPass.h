@@ -1,26 +1,15 @@
 #pragma once
 #include "RenderQueuePass.h"
+#include "BindableCommon.h"
 #include "Job.h"
 #include <vector>
 #include "Sink.h"
 #include "Source.h"
-#include "Stencil.h"
 #include "Camera.h"
-#include "Sampler.h"
-#include "Rasterizer.h"
 #include "DepthStencil.h"
 #include "Cube.h"
 #include "CubeTexture.h"
 #include "SkyboxTransformCbuf.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-#include "Topology.h"
-#include "InputLayout.h"
-#include "Sphere.h"
-
-#include "imgui/imgui.h"
 
 class Graphics;
 
@@ -43,25 +32,15 @@ namespace Rgph
 			AddBind(std::make_shared<SkyboxTransformCbuf>(gfx));
 			AddBind(PixelShader::Resolve(gfx, "Skybox_PS.cso"));
 			AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-			{ 
-				// geometry-related
-				auto pvs = VertexShader::Resolve(gfx, "Skybox_VS.cso");
-				{ // cube
-					auto model = Cube::Make();
-					const auto geometryTag = "$cube_map";
-					pCubeVertices = VertexBuffer::Resolve(gfx, geometryTag, std::move(model.vertices));
-					pCubeIndices = IndexBuffer::Resolve(gfx, geometryTag, std::move(model.indices));
-					cubeCount = (UINT)model.indices.size();
-					// layout is shared between cube and sphere; use cube data to generate
-					AddBind(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
-				}
-				{ // sphere
-					auto model = Sphere::Make();
-					const auto geometryTag = "$sphere_map";
-					pSphereVertices = VertexBuffer::Resolve(gfx, geometryTag, std::move(model.vertices));
-					pSphereIndices = IndexBuffer::Resolve(gfx, geometryTag, std::move(model.indices));
-					sphereCount = (UINT)model.indices.size();
-				}
+			{
+				auto pvs = Bind::VertexShader::Resolve(gfx, "Skybox_VS.cso");
+				auto model = Cube::Make();
+				model.Transform(DirectX::XMMatrixScaling(3.0f, 3.0f, 3.0f));
+				const auto geometryTag = "$cube_map";
+				AddBind(VertexBuffer::Resolve(gfx, geometryTag, std::move(model.vertices)));
+				count = (UINT)model.indices.size();
+				AddBind(IndexBuffer::Resolve(gfx, geometryTag, std::move(model.indices)));
+				AddBind(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 				AddBind(std::move(pvs));
 			}
 			RegisterSource(DirectBufferSource<RenderTarget>::Make("renderTarget", renderTarget));
@@ -74,39 +53,12 @@ namespace Rgph
 		void Execute(Graphics& gfx) const noxnd override
 		{
 			assert(pMainCamera);
-			UINT indexCount;
 			pMainCamera->BindToGraphics(gfx);
-			if (useSphere)
-			{
-				pSphereVertices->Bind(gfx);
-				pSphereIndices->Bind(gfx);
-				indexCount = sphereCount;
-			}
-			else
-			{
-				pCubeVertices->Bind(gfx);
-				pCubeIndices->Bind(gfx);
-				indexCount = cubeCount;
-			}
 			BindAll(gfx);
-			gfx.DrawIndexed(indexCount);
-		}
-		void RenderWindow()
-		{
-			if (ImGui::Begin("Skybox"))
-			{
-				ImGui::Checkbox("Use sphere", &useSphere);
-			}
-			ImGui::End();
+			gfx.DrawIndexed(count);
 		}
 	private:
-		bool useSphere = false;
+		UINT count;
 		const Camera* pMainCamera = nullptr;
-		std::shared_ptr<Bind::VertexBuffer> pCubeVertices;
-		std::shared_ptr<Bind::IndexBuffer> pCubeIndices;
-		UINT cubeCount;
-		std::shared_ptr<Bind::VertexBuffer> pSphereVertices;
-		std::shared_ptr<Bind::IndexBuffer> pSphereIndices;
-		UINT sphereCount;
 	};
 }

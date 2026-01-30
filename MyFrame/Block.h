@@ -41,6 +41,7 @@ public:
 		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
+private:
 	CubeBase visualPre;
 };
 

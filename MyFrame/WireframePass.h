@@ -1,7 +1,5 @@
 #pragma once
 #include "RenderQueuePass.h"
-#include "Job.h"
-#include <vector>
 #include "Sink.h"
 #include "Source.h"
 #include "Stencil.h"

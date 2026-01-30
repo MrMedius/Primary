@@ -21,12 +21,18 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,25.0f,0.0f })
+	light(wnd.Gfx(), { 0.0f,25.0f,0.0f }),
+	s2d(wnd.Gfx(), { "asset\\Images\\Player_HP_Bar.png" }, "TitleSprite")
 {
 	cameras.AddCamera(light.ShareCamera());
 
 	light.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
+
+
+	s2d.LinkTechniques(rg);
+	s2d.SetPosition(500.0f, 500.0f);
+	s2d.SetScale(300.0f, 150.0f);
 
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), rg);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
@@ -101,6 +107,8 @@ void Game::Update(float dt)
 			}
 		}
 	}
+
+	s2d.SetFrame(2, 2, 1, 1, 1, 0, false);
 }
 
 void Game::Draw()
@@ -115,6 +123,10 @@ void Game::Draw()
 
 	pEnvironmentManager->Submit();
 	pEnemyManager->Submit();
+
+
+	s2d.Submit(Chan::ui);
+
 
 	rg.Execute(wnd.Gfx());
 

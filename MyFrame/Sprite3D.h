@@ -28,20 +28,17 @@ public:
 private:
 	Transformation trans;
 
+	DirectX::XMFLOAT2 uvOffset = { 0.0f,0.0f };
+	DirectX::XMFLOAT2 uvScale = { 1.0f,1.0f };
+
 	int numU = 1;
 	int numV = 1;
 	int startTex = 1;
 	int totalTex = 1;
 	int frame = 1;
 
-
 	float frameTime = 0.1f;
 	float accum = 0.0f;
-
-
-	DirectX::XMFLOAT2 uvOffset = { 0.0f,0.0f };
-	DirectX::XMFLOAT2 uvScale = { 1.0f,1.0f };
-
 
 	int texIndex = 0;
 	float texAccum = 0.0f;
