@@ -42,7 +42,7 @@ public:
 		SetSearchArea({ 15.0f,4.0f,15.0f });
 
 		// graphics init
-		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{"asset\\Images\\EnemyTestTwo.png"}, std::to_string(tag));
+		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{"asset\\Images\\EnemyTestTwo.png"});
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetScale(transInfo.scale);
 		visualPre->LinkTechniques(rg);

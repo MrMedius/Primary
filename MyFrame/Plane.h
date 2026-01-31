@@ -148,3 +148,58 @@ public:
 		return{ std::move(vb),std::move(indices) };
 	}
 };
+
+
+
+
+
+class PlanePolygon
+{
+public:
+	static IndexedTriangleList Make2D(int sides)
+	{
+		using Dvtx::VertexLayout;
+		VertexLayout layout;
+		layout.Append(VertexLayout::Position3D);
+		layout.Append(VertexLayout::Texture2D);
+
+		Dvtx::VertexBuffer vb{ std::move(layout) };
+
+		// center
+		vb.EmplaceBack(
+			DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+			DirectX::XMFLOAT2{ 0.5f, 0.5f }
+		);
+
+		// perimeter (sides+1 to close)
+		const float step = 2.0f * PI / float(sides);
+		const float start = PI / 2;
+
+		for (int i = 0; i <= sides; ++i)
+		{
+			float a = step * float(i) + start;
+			float x = cosf(a) * 0.5f;
+			float y = sinf(a) * 0.5f;
+
+			float u = x + 0.5f;
+			float v = 0.5f - y;
+
+			vb.EmplaceBack(
+				DirectX::XMFLOAT3{ x, y, 0.0f },
+				DirectX::XMFLOAT2{ u, v }
+			);
+		}
+
+		std::vector<unsigned short> indices;
+		indices.reserve(sides * 3);
+
+		for (int i = 1; i <= sides; ++i)
+		{
+			indices.push_back(0);
+			indices.push_back((unsigned short)i);
+			indices.push_back((unsigned short)(i + 1));
+		}
+
+		return { std::move(vb), std::move(indices) };
+	}
+};

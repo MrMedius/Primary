@@ -160,6 +160,9 @@
     <Filter Include="Shader\2D">
       <UniqueIdentifier>{e0683dd9-83ad-4428-8a0d-6f8f8ea450ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{9ca01b60-cd95-440a-9cac-39118079381e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -442,6 +445,12 @@
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="Transform2DCbuf.cpp">
+      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2DPolygon.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="RingParamsCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -845,6 +854,27 @@
     <ClInclude Include="Transform2DCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
     </ClInclude>
+    <ClInclude Include="UI_Game.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2DPolygon.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Provides.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="RingParamsCbuf.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_ResourceSlot.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_WeaponSlot.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Score.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HW3D_01.rc">
@@ -914,12 +944,6 @@
     <FxCompile Include="General_PS.hlsl">
       <Filter>Shader\3D</Filter>
     </FxCompile>
-    <FxCompile Include="GeneralSprite3D_VS.hlsl">
-      <Filter>Shader\3D</Filter>
-    </FxCompile>
-    <FxCompile Include="GeneralSprite3D_PS.hlsl">
-      <Filter>Shader\3D</Filter>
-    </FxCompile>
     <FxCompile Include="Shadow_VS.hlsl">
       <Filter>Shader\3D</Filter>
     </FxCompile>
@@ -941,10 +965,22 @@
     <FxCompile Include="Solid_VS.hlsl">
       <Filter>Shader\3D</Filter>
     </FxCompile>
-    <FxCompile Include="GeneralSprite2D_VS.hlsl">
+    <FxCompile Include="Sprite2D_VS.hlsl">
       <Filter>Shader\2D</Filter>
     </FxCompile>
-    <FxCompile Include="GeneralSprite2D_PS.hlsl">
+    <FxCompile Include="Sprite2D_PS.hlsl">
+      <Filter>Shader\2D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3D_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3D_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite2DPolygon_PS.hlsl">
+      <Filter>Shader\2D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite2DPolygon_VS.hlsl">
       <Filter>Shader\2D</Filter>
     </FxCompile>
   </ItemGroup>

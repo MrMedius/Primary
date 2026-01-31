@@ -2,12 +2,12 @@
 #include "ObjectCodex.h"
 #include <random>
 
-EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd)//, Score* score)
+EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Score* score)
 	:
 	gfx(gfx),
 	rg(rg),
-	pKbd(kbd)
-	//pScore(score)
+	pKbd(kbd),
+	pScore(score)
 {}
 
 void EnemyManager::Update(float dt, XMFLOAT3 position)
@@ -51,7 +51,7 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 		else
 		{
 			EnemyTests.erase(EnemyTests.begin() + i);
-			//pScore->CalculateScore(80);
+			pScore->CalculateScore(80);
 		}
 	}
 	for (int i = 0; i < EnemyTestsTwo.size(); i++)
@@ -62,7 +62,7 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 		else
 		{
 			EnemyTestsTwo.erase(EnemyTestsTwo.begin() + i);
-			//pScore->CalculateScore(100);
+			pScore->CalculateScore(100);
 		}
 	}
 	for (int i = 0; i < EnemyTestsThree.size(); i++)
@@ -73,7 +73,7 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 		else
 		{
 			EnemyTestsThree.erase(EnemyTestsThree.begin() + i);
-			//pScore->CalculateScore(50);
+			pScore->CalculateScore(50);
 		}
 	}
 

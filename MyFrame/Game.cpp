@@ -11,7 +11,6 @@
 #include "Channels.h"
 #include "ModelWindow.h"
 #include "ObjectBase.h"
-
 #include "ObjectCodex.h"
 
 namespace dx = DirectX;
@@ -21,25 +20,23 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,25.0f,0.0f }),
-	s2d(wnd.Gfx(), { "asset\\Images\\Player_HP_Bar.png" }, "TitleSprite")
+	light(wnd.Gfx(), { 0.0f,25.0f,0.0f })
 {
+#ifdef _DEBUG
 	cameras.AddCamera(light.ShareCamera());
+	rg.BindShadowCamera(*light.ShareCamera());
+#endif
 
 	light.LinkTechniques(rg);
 	cameras.LinkTechniques(rg);
 
-
-	s2d.LinkTechniques(rg);
-	s2d.SetPosition(500.0f, 500.0f);
-	s2d.SetScale(300.0f, 150.0f);
-
+	pScore = std::make_unique<Score>(wnd.Gfx(), rg);
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), rg);
-	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd);
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd, pScore.get());
 
-	rg.BindShadowCamera(*light.ShareCamera());
+	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), rg, pScore.get());
 
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,10.0f ,4.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
 }
 
 Game::~Game()
@@ -108,7 +105,7 @@ void Game::Update(float dt)
 		}
 	}
 
-	s2d.SetFrame(2, 2, 1, 1, 1, 0, false);
+	pUI_Game->Update(dt);
 }
 
 void Game::Draw()
@@ -116,16 +113,17 @@ void Game::Draw()
 	light.Bind(wnd.Gfx(), cameras->GetMatrix());
 	rg.BindMainCamera(cameras.GetActiveCamera());
 
+#ifdef _DEBUG
 	light.Submit(Chan::main);
+#endif
+
 	cameras.Submit(Chan::main);
 
 	pPlayer->Submit();
-
 	pEnvironmentManager->Submit();
 	pEnemyManager->Submit();
 
-
-	s2d.Submit(Chan::ui);
+	pUI_Game->Submit();
 
 
 	rg.Execute(wnd.Gfx());

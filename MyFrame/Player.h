@@ -70,7 +70,7 @@ public:
 		SetSize({ 5.0f, 5.0f, 0.0f });
 		SetCollisionSize({ 2.0f, 4.0f, 1.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(3.0f);
+		SetHpMax(10.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
@@ -86,7 +86,7 @@ public:
 			"asset\\Images\\Player\\Player_Red.png",
 			"asset\\Images\\Player\\Player_Green.png",
 			"asset\\Images\\Player\\Player_Blue.png",
-			"asset\\Images\\Player\\Player_Fever.png"}, std::to_string(tag));
+			"asset\\Images\\Player\\Player_Fever.png"});
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetScale(transInfo.scale);
 		visualPre->LinkTechniques(rg);

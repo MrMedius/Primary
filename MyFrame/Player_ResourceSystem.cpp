@@ -181,6 +181,7 @@ void ResourceBars::Update()
 			{
 				Slots->SetNewWeapon(static_cast<WEAPON_TYPE_ID>(TotalWeaponTypes + i - 1));
 				EnergyCumulated[i] = 0.0f;
+				EnergyFull[i] = true;
 			}
 	}
 

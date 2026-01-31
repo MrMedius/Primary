@@ -7,7 +7,7 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	rg(rg)
 {
 	blocks.push_back(ObjectCodex::Acquire<Block>(environment_Block, gfx, rg, environment_Block,
-		XMFLOAT3{ 5.0f, 5.0f, 5.0f }, XMFLOAT3{ 10.0f, 10.0f, 10.0f }, true));
+		XMFLOAT3{ 4.0f, 2.0f, 4.0f }, XMFLOAT3{ 4.0f, 4.0f, 4.0f }, true));
 
 	blockTiled = ObjectCodex::Acquire<BlockTiled>(environment_BlockTiled, gfx, rg, environment_BlockTiled,
 		XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(200.0f, 2.0f, 200.0f), XMFLOAT2(50.0f, 50.0f), true);

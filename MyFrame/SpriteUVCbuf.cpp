@@ -1,7 +1,6 @@
 #include "SpriteUVCbuf.h"
 #include <cassert>
-#include "Sprite3D.h"
-#include "Sprite2D.h"
+#include "Provides.h"
 
 namespace Bind
 {
@@ -39,20 +38,9 @@ namespace Bind
     {
         assert(pParent != nullptr);
 
-		DirectX::XMFLOAT2 offset{};
-		DirectX::XMFLOAT2 scale{};
-        if (auto* p3 = dynamic_cast<const Sprite3D*>(pParent))
-        {
-            offset = p3->GetUVOffset();
-            scale = p3->GetUVScale();
-        }
-        else if (auto* p2 = dynamic_cast<const Sprite2D*>(pParent))
-        {
-            offset = p2->GetUVOffset();
-            scale = p2->GetUVScale();
-        }
+        const auto uv = TryProvide<SpriteUVTag>(pParent);
 
-        return { offset, scale };
+        return { uv.offset, uv.scale };
     }
 
     std::unique_ptr<VertexConstantBuffer<SpriteUVCbuf::UVData>> SpriteUVCbuf::pVcbuf;

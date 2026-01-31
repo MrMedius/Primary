@@ -58,7 +58,6 @@ CubeWireframe::CubeWireframe(Graphics& gfx, DirectX::XMFLOAT3 color, std::string
 		only.AddBindable(std::move(pvs));
 
 		only.AddBindable(PixelShader::Resolve(gfx, "Solid_PS.cso"));
-
 		PSColorConstant colorConst{ color };
 		only.AddBindable(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u, tag));
 

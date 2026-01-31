@@ -11,6 +11,9 @@
 #include <random>
 #include "ConditionalNoexcept.h"
 
+#define SCREEN_WIDTH	(1280)	
+#define SCREEN_HEIGHT	(720)	
+
 namespace Bind
 {
 	class Bindable;

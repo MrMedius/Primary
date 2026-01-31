@@ -1,8 +1,7 @@
 #include "DynamicTexture.h"
 #include "Texture.h"
 #include <cassert>
-#include "Sprite3D.h"
-#include "Sprite2D.h"
+#include "Provides.h"
 
 namespace Bind
 {
@@ -30,11 +29,7 @@ namespace Bind
 	{
 		assert(pParent != nullptr);
 
-		int idx = 0;
-		if (auto* p3 = dynamic_cast<const Sprite3D*>(pParent))
-			idx = p3->GetTextureFrameIndex();
-		else if (auto* p2 = dynamic_cast<const Sprite2D*>(pParent))
-			idx = p2->GetTextureFrameIndex();
+		int idx = TryProvide<DynamicTextureTag>(pParent);
 
 		const int n = (int)frames.size();
 		if (n <= 0) return;

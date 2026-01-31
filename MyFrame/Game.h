@@ -4,7 +4,6 @@
 #include "ImguiManager.h"
 #include "CameraContainer.h"
 #include "PointLight.h"
-#include "Model.h"
 #include "ScriptCommander.h"
 #include "InGameRenderGraph.h"
 
@@ -12,7 +11,9 @@
 #include "EnvironmentManager.h"
 #include "EnemyManager.h"
 
-#include "Sprite2D.h"
+#include "Score.h"
+#include "UI_Game.h"
+
 
 class Game
 {
@@ -45,12 +46,12 @@ private:
 	/********************************/
 	PointLight light;
 	CameraContainer cameras{ wnd.Gfx() };
-
 	Rgph::InGameRenderGraph rg{ wnd.Gfx() };
-	
+	// Object
 	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
 	Player* pPlayer;
-
-	Sprite2D s2d;
+	// UI
+	std::unique_ptr<Score> pScore;
+	std::unique_ptr<UI_Game> pUI_Game;
 };

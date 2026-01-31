@@ -106,6 +106,7 @@ public:
 		{
 			EnergyCumulated.push_back(0.0f);
 			EnergyDraw.push_back(0.0f);
+			EnergyFull.push_back(false);
 			AttackCombos.push_back(0);
 			AttackComboCountdowns.push_back(0.0f);
 		}
@@ -120,6 +121,14 @@ public:
 		for (auto p : EnergyDraw) EnergyDrawParameters.push_back(p / EnergyLimit);
 		return EnergyDrawParameters;
 	}
+	std::vector<bool> GetEnergyFull(void) const
+	{
+		return EnergyFull;
+	}
+	void SetEnergyFullAt(size_t i, bool v) 
+	{ 
+		EnergyFull[i] = v; 
+	}
 	std::vector<unsigned int> GetAttackCombos(void) const
 	{
 		return AttackCombos;
@@ -130,15 +139,16 @@ public:
 	}
 	void ResetCombo(void)
 	{
-		for (auto& a : AttackCombos)			a = 0;
-		for (auto& a : AttackComboCountdowns)	a = 0.0f;
+		std::fill(AttackCombos.begin(),			 AttackCombos.end(),		  0u);
+		std::fill(AttackComboCountdowns.begin(), AttackComboCountdowns.end(), 0.0f);
 	}
 	void Reset(void)
 	{
-		for (auto& a : EnergyCumulated)			a = 0.0f;
-		for (auto& a : EnergyDraw)				a = 0.0f;
-		for (auto& a : AttackCombos)			a = 0;
-		for (auto& a : AttackComboCountdowns)	a = 0.0f;
+		std::fill(EnergyCumulated.begin(),		 EnergyCumulated.end(),		  0.0f);
+		std::fill(EnergyDraw.begin(),			 EnergyDraw.end(),			  0.0f);
+		std::fill(EnergyFull.begin(),			 EnergyFull.end(),			  false);
+		std::fill(AttackCombos.begin(),			 AttackCombos.end(),		  0u);
+		std::fill(AttackComboCountdowns.begin(), AttackComboCountdowns.end(), 0.0f);
 	}
 private:
 	WeaponSlots* Slots;
@@ -147,6 +157,7 @@ private:
 	static constexpr float ComboCountdown = 10.0f;
 	std::vector<float> EnergyCumulated;
 	std::vector<float> EnergyDraw;
+	std::vector<bool> EnergyFull;
 	std::vector<unsigned int> AttackCombos;
 	std::vector<float> AttackComboCountdowns;
 };

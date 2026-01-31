@@ -31,7 +31,7 @@ public:
 private:
 	bool tethered;
 	std::string name;
-	TransInfo transHome;
+	TransInfo transBase;
 	Transformation trans;
 	static constexpr float travelSpeed = 20.0f;
 	static constexpr float rotationSpeed = 0.004f;
