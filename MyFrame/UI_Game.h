@@ -42,8 +42,9 @@ public:
 			pWeaponSlot = std::make_unique<UI_WeaponSlot>(gfx, rg);
 		}
 		// Combo
-		pCombo.resize(slotNum);
 		comboNum.resize(slotNum);
+		comboActive.resize(slotNum);
+		pCombo.resize(slotNum);
 		for (size_t i = 0; i < slotNum; i++)
 		{
 			pCombo[i].reserve(maxDigit);
@@ -79,6 +80,7 @@ public:
 			auto countdowns = player->GetResourceBars()->GetAttackComboCountdowns();
 			for (size_t i = 0; i < slotNum; i++)
 			{
+				comboActive[i] = false;
 				std::fill(comboNum[i].begin(), comboNum[i].end(), 0);
 
 				int combo = combos[i];
@@ -87,6 +89,8 @@ public:
 				if (combo == 0) continue;
 				else
 				{
+					comboActive[i] = true;
+
 					int maxCombo = 1;
 					for (int t = 0; t < maxDigit; ++t) maxCombo *= 10;
 					if (combo >= maxCombo) combo = maxCombo - 1;
@@ -132,6 +136,8 @@ public:
 		// Combo
 		for (size_t i = 0; i < slotNum; i++)
 		{
+			if (!comboActive[i]) continue;
+
 			int highest = maxDigit - 1;
 			while (highest > 0 && comboNum[i][highest] == 0) --highest;
 
@@ -154,6 +160,7 @@ private:
 	// Combo
 	static constexpr int maxDigit = 3;
 	std::vector<std::vector<int>> comboNum;
+	std::vector<bool> comboActive;
 	std::vector<std::vector<std::unique_ptr<Sprite2D>>> pCombo;
 	// Score
 	Score* pScore;

@@ -61,9 +61,6 @@
     <Filter Include="Source Files\Bindable\Shadow">
       <UniqueIdentifier>{447e1a72-d090-49d5-9bbf-596dace17949}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\PostProcessing">
-      <UniqueIdentifier>{1523bd4e-3c8e-4368-b0ce-1e71b8b43f13}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Drawable\Geometry">
       <UniqueIdentifier>{94c54a46-3ae6-429f-83e8-48036e5da1ea}</UniqueIdentifier>
     </Filter>
@@ -162,6 +159,9 @@
     </Filter>
     <Filter Include="Header Files\UI">
       <UniqueIdentifier>{9ca01b60-cd95-440a-9cac-39118079381e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\3D\PostProcessing">
+      <UniqueIdentifier>{1523bd4e-3c8e-4368-b0ce-1e71b8b43f13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -452,6 +452,12 @@
     </ClCompile>
     <ClCompile Include="RingParamsCbuf.cpp">
       <Filter>Source Files\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="InUserInterfaceRenderGraph.cpp">
+      <Filter>Source Files\GraphPass\Graphlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -875,6 +881,21 @@
     <ClInclude Include="Score.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI_Title.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="InUserInterfaceRenderGraph.h">
+      <Filter>Header Files\GraphPass\GraphLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Result.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HW3D_01.rc">
@@ -930,13 +951,13 @@
       <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="Blur_PS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader\3D\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="BlurOutline_PS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader\3D\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="Fullscreen_VS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader\3D\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="General_VS.hlsl">
       <Filter>Shader\3D</Filter>

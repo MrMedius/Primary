@@ -13,7 +13,6 @@
 #include "SkyboxPass.h"
 #include "OutlineMaskGenerationPass.h"
 #include "BlurOutlineDrawingPass.h"
-//#include "OutlineDrawingPass.h"
 #include "HorizontalBlurPass.h"
 #include "VerticalBlurPass.h"
 #include "WireframePass.h"

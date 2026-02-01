@@ -5,7 +5,9 @@
 #include "CameraContainer.h"
 #include "PointLight.h"
 #include "ScriptCommander.h"
+
 #include "InGameRenderGraph.h"
+#include "InUserInterfaceRenderGraph.h"
 
 #include "Player.h"
 #include "EnvironmentManager.h"
@@ -13,10 +15,18 @@
 
 #include "Score.h"
 #include "UI_Game.h"
+#include "UI_Title.h"
+#include "UI_Result.h"
 
 
 class Game
 {
+private:
+	enum SCENE {
+		SCENE_TITLE,
+		SCENE_GAME,
+		SCENE_RESULT
+	}Scene{ SCENE_TITLE };
 public:
 	Game( const std::string& commandLine = "" );
 	int RunGame();
@@ -24,6 +34,7 @@ public:
 private:
 	void Update(float dt);
 	void Draw(void);
+	void SetScene(SCENE scene) { Scene = scene; }
 	/********************************/
 	/*         Game Related         */
 	/********************************/
@@ -46,12 +57,15 @@ private:
 	/********************************/
 	PointLight light;
 	CameraContainer cameras{ wnd.Gfx() };
-	Rgph::InGameRenderGraph rg{ wnd.Gfx() };
-	// Object
+	Rgph::InGameRenderGraph gameRG{ wnd.Gfx() };
+	Rgph::InUserInterfaceRenderGraph UIRG{ wnd.Gfx() };
+	// Objects
 	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
 	Player* pPlayer;
 	// UI
 	std::unique_ptr<Score> pScore;
+	std::unique_ptr<UI_Title> pUI_Title;
 	std::unique_ptr<UI_Game> pUI_Game;
+	std::unique_ptr<UI_Result> pUI_Result;
 };

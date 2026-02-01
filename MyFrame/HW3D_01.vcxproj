@@ -202,9 +202,11 @@
     <ClCompile Include="CameraContainer.cpp" />
     <ClCompile Include="CameraIndicator.cpp" />
     <ClCompile Include="ExceptionBase.cpp" />
+    <ClCompile Include="InUserInterfaceRenderGraph.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Player_ResourceSystem.cpp" />
     <ClCompile Include="RingParamsCbuf.cpp" />
+    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Sprite2DPolygon.cpp" />
     <ClCompile Include="Sprite3D.cpp" />
@@ -282,6 +284,7 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockTiled.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CubeTiled.h" />
@@ -309,6 +312,7 @@
     <ClInclude Include="Channels.h" />
     <ClInclude Include="ExceptionBase.h" />
     <ClInclude Include="HrUtils.h" />
+    <ClInclude Include="InUserInterfaceRenderGraph.h" />
     <ClInclude Include="Provides.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="ObjectBase.h" />
@@ -317,6 +321,7 @@
     <ClInclude Include="Player_ResourceSystem.h" />
     <ClInclude Include="RingParamsCbuf.h" />
     <ClInclude Include="Score.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Sprite2DPolygon.h" />
     <ClInclude Include="Sprite3D.h" />
@@ -327,6 +332,8 @@
     <ClInclude Include="UIPass.h" />
     <ClInclude Include="UI_Game.h" />
     <ClInclude Include="UI_ResourceSlot.h" />
+    <ClInclude Include="UI_Result.h" />
+    <ClInclude Include="UI_Title.h" />
     <ClInclude Include="UI_WeaponSlot.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Win.h" />

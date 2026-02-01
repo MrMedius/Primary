@@ -101,7 +101,7 @@ public:
 	}
 	void OnEnable(void) override
 	{
-		SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		SetPosition(XMFLOAT3(4.0f, 20.0f, 4.0f));
 		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
 		ResetHpCurrent();
 		SetIsDeath(false);

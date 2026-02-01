@@ -24,19 +24,22 @@ Game::Game(const std::string& commandLine)
 {
 #ifdef _DEBUG
 	cameras.AddCamera(light.ShareCamera());
-	rg.BindShadowCamera(*light.ShareCamera());
+	gameRG.BindShadowCamera(*light.ShareCamera());
 #endif
 
-	light.LinkTechniques(rg);
-	cameras.LinkTechniques(rg);
+	light.LinkTechniques(gameRG);
+	cameras.LinkTechniques(gameRG);
 
-	pScore = std::make_unique<Score>(wnd.Gfx(), rg);
-	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), rg);
-	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), rg, &wnd.kbd, pScore.get());
+	// UI
+	pScore = std::make_unique<Score>(wnd.Gfx(), gameRG);
+	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG, &wnd.kbd, &wnd.mouse);
+	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
+	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
+	// Objects
+	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
 
-	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), rg, pScore.get());
-
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), rg, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
 }
 
 Game::~Game()
@@ -77,7 +80,8 @@ int Game::RunGame()
 			/*　　	     　Draw             */
 			Draw();
 			wnd.Gfx().EndFrame(); // present
-			rg.Reset();
+			gameRG.Reset();
+			UIRG.Reset();
 			/********************************/
 		}
 	}
@@ -85,54 +89,100 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
-	if (!Pause)
+	switch (Scene)
 	{
-		//// ゲームオーバーの判断
-		//if (pPlayer->GetIsGameOver())	SetScene(SCENE_RESULT);
+	case SCENE_TITLE:
+		pUI_Title->Update();
 
-		cameras.Update(dt, pPlayer->GetPosition(), &wnd);
-		if (!cameras.GetScreenFroze())
+		if (pUI_Title->GetIsStart())
 		{
-			light.Update(dt, pPlayer->GetPosition());
+			pUI_Title->Reset();
+			SetScene(SCENE_GAME);
+		}
+		if (pUI_Title->GetIsEnd())
+			PostQuitMessage(0);
+		break;
+	case SCENE_GAME:
+		if (!Pause)
+		{
+			// Check If Game Over
+			if (pPlayer->GetIsGameOver())	SetScene(SCENE_RESULT);
 
-			pPlayer->Update(dt);
-
-			if (!pPlayer->GetIsChange())
+			cameras.Update(dt, pPlayer->GetPosition(), &wnd);
+			if (!cameras.GetScreenFroze())
 			{
-				pEnvironmentManager->Update(dt);
-				pEnemyManager->Update(dt, pPlayer->GetPosition());
+				light.Update(dt, pPlayer->GetPosition());
+
+				pPlayer->Update(dt);
+				pUI_Game->Update(dt);
+
+				if (!pPlayer->GetIsChange())
+				{
+					pEnvironmentManager->Update(dt);
+					pEnemyManager->Update(dt, pPlayer->GetPosition());
+				}
 			}
 		}
-	}
+		break;
+	case SCENE_RESULT:
+		pUI_Result->Update();
 
-	pUI_Game->Update(dt);
+		if (wnd.kbd.KeyIsTriggered(KK_SPACE))
+		{
+			SetScene(SCENE_TITLE);
+
+			pPlayer->OnEnable();
+			pEnemyManager->Reset();
+			pEnvironmentManager->Reset();
+		}
+		break;
+	}	
 }
 
 void Game::Draw()
 {
-	light.Bind(wnd.Gfx(), cameras->GetMatrix());
-	rg.BindMainCamera(cameras.GetActiveCamera());
+	switch (Scene)
+	{
+	case SCENE_TITLE:
+	{
+		// UI
+		pUI_Title->Submit();
+
+		UIRG.Execute(wnd.Gfx());
+		break;
+	}
+	case SCENE_GAME:
+	{
+		light.Bind(wnd.Gfx(), cameras->GetMatrix());
+		gameRG.BindMainCamera(cameras.GetActiveCamera());
+#ifdef _DEBUG
+		light.Submit(Chan::main);
+#endif
+		cameras.Submit(Chan::main);
+		// Objects
+		pEnvironmentManager->Submit();
+		pEnemyManager->Submit();
+		pPlayer->Submit();
+		// UI
+		pUI_Game->Submit();
+
+		gameRG.Execute(wnd.Gfx());
 
 #ifdef _DEBUG
-	light.Submit(Chan::main);
+		// imgui windows
+		cameras.SpawnWindow(wnd.Gfx());
+		light.SpawnControlWindow();
+
+		gameRG.RenderWindows(wnd.Gfx());
 #endif
+		break;
+	}
+	case SCENE_RESULT:
+	{
+		pUI_Result->Submit();
 
-	cameras.Submit(Chan::main);
-
-	pPlayer->Submit();
-	pEnvironmentManager->Submit();
-	pEnemyManager->Submit();
-
-	pUI_Game->Submit();
-
-
-	rg.Execute(wnd.Gfx());
-
-#ifdef _DEBUG
-	// imgui windows
-	cameras.SpawnWindow(wnd.Gfx());
-	light.SpawnControlWindow();
-
-	rg.RenderWindows(wnd.Gfx());
-#endif
+		UIRG.Execute(wnd.Gfx());
+		break;
+	}
+	}
 }

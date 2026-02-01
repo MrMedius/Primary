@@ -51,7 +51,7 @@ public:
 		Bar->Update(dt);
 		switch (barState)
 		{
-		case UI_ResourceSlot::IDLE:
+		case IDLE:
 			Bar->SetRingRatio(ratio);
 			if (full)
 			{
@@ -59,7 +59,7 @@ public:
 				Bar->SetFrameAuto(8, 3, 17 - count * 8, 7, 0, 20.0f, false, false);
 			}
 			break;
-		case UI_ResourceSlot::FULL:
+		case FULL:
 			if (Bar->ClipFinished())
 			{
 				barState = IDLE;

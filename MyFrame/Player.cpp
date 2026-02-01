@@ -742,7 +742,7 @@ void Player_SkillState::Update(Player* owner)
 		break;
 	case WEAPON_TYPE_3:
 		// 攻撃コリジョンを開けるフレーム
-		if (FrameNoOld != FrameNo && FrameNo == 22)
+		if (FrameNoOld != FrameNo && FrameNo == 17)
 		{
 			owner->SetAttackCollisionOnOff(true);
 			owner->SetCollisionOnOff(false);	// コリジュンを閉じる
