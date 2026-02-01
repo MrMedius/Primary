@@ -4,9 +4,10 @@
 #include "Keyboard.h"
 #include "Score.h"
 
-#include "EnemyTest.h"
-#include "EnemyTestTwo.h"
-#include "EnemyTestThree.h"
+#include "Enemy_Red_0.h"
+#include "Enemy_Red_1.h"
+#include "Enemy_Green_0.h"
+#include "Enemy_Blue_0.h"
 //#include "EnemyBoss.h"
 
 class EnemyManager
@@ -23,9 +24,10 @@ private:
 	Keyboard* pKbd;
 	Score* pScore;
 
-	std::vector<EnemyTest*> EnemyTests;
-	std::vector<EnemyTestTwo*> EnemyTestsTwo;
-	std::vector<EnemyTestThree*> EnemyTestsThree;
+	std::vector<Enemy_Red_0*> EnemyRed0;
+	std::vector<Enemy_Red_1*> EnemyRed1;
+	std::vector<Enemy_Green_0*> EnemyGreen0;
+	std::vector<Enemy_Blue_0*> EnemyBlue0;
 	//EnemyBoss* pEnemyBoss;
 
 	int Interval{ 100 };

@@ -85,6 +85,7 @@ private:
 	int CurrentSlot{ 0 };
 	std::vector<Weapon> Slots;
 	// Fever related
+	static constexpr int SlotNeeded = 3;
 	std::pair<bool, WEAPON_TYPE_ID> CanChange{ false,WEAPON_TYPE_NONE };
 	bool IsChange{ false };
 	static constexpr float FeverCountdown = 20.0f;

@@ -24,9 +24,8 @@ Game::Game(const std::string& commandLine)
 {
 #ifdef _DEBUG
 	cameras.AddCamera(light.ShareCamera());
-	gameRG.BindShadowCamera(*light.ShareCamera());
 #endif
-
+	gameRG.BindShadowCamera(*light.ShareCamera());
 	light.LinkTechniques(gameRG);
 	cameras.LinkTechniques(gameRG);
 

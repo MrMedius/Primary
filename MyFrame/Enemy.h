@@ -23,9 +23,9 @@ static const std::string ENEMY_STATE[] = {
 enum ENEMY_TYPE_ID {
 	ENEMY_TYPE_NONE,
 
-	ENEMY_TYPE_1,
-	ENEMY_TYPE_2,
-	ENEMY_TYPE_3,
+	ENEMY_TYPE_RED,
+	ENEMY_TYPE_GREEN,
+	ENEMY_TYPE_BLUE,
 };
 
 
@@ -79,6 +79,7 @@ public:
 		return false;
 	}
 	ENEMY_TYPE_ID GetEnemyType(void) const { return Type; }
+	ObjectBase* GetAttackTarget(void) { return AttackTarget; }
 	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
 protected:
 	void SetEnemyType(ENEMY_TYPE_ID type) { Type = type; }

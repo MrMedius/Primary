@@ -32,47 +32,60 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	//	NewEnemy = false;
 	//}
 
-	#ifdef _DEBUG
+	//#ifdef _DEBUG
 	assert(pKbd);
 	// 新しEnemyTestを生成する
 	if (pKbd->KeyIsTriggered(KK_NUMPAD1) || type == 1)
-		EnemyTests.push_back(ObjectCodex::Acquire<EnemyTest>(character_Enemy_Test, gfx, rg, character_Enemy_Test, pos));
+		EnemyRed0.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, character_Enemy_Red_0, pos));
+	if (pKbd->KeyIsTriggered(KK_NUMPAD4) || type == 4)
+		EnemyRed1.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD2) || type == 2)
-		EnemyTestsTwo.push_back(ObjectCodex::Acquire<EnemyTestTwo>(character_Enemy_Test_Two, gfx, rg, character_Enemy_Test_Two, pos));
+		EnemyGreen0.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3)
-		EnemyTestsThree.push_back(ObjectCodex::Acquire<EnemyTestThree>(character_Enemy_Test_Three, gfx, rg, character_Enemy_Test_Three, pos));
-	#endif
+		EnemyBlue0.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, pos));
+	//#endif
 
-	for (int i = 0; i < EnemyTests.size(); i++)
+	for (int i = 0; i < EnemyRed0.size(); i++)
 	{
 		// 対象かアクティブでいれば更新する、そうでない場合は容器から削除する
-		if (EnemyTests[i]->IsActive())
-			EnemyTests[i]->Update(dt);
+		if (EnemyRed0[i]->IsActive())
+			EnemyRed0[i]->Update(dt);
 		else
 		{
-			EnemyTests.erase(EnemyTests.begin() + i);
+			EnemyRed0.erase(EnemyRed0.begin() + i);
+			pScore->CalculateScore(40);
+		}
+	}
+	for (int i = 0; i < EnemyRed1.size(); i++)
+	{
+		// 対象かアクティブでいれば更新する、そうでない場合は容器から削除する
+		if (EnemyRed1[i]->IsActive())
+			EnemyRed1[i]->Update(dt);
+		else
+		{
+			EnemyRed1.erase(EnemyRed1.begin() + i);
 			pScore->CalculateScore(80);
 		}
 	}
-	for (int i = 0; i < EnemyTestsTwo.size(); i++)
+	for (int i = 0; i < EnemyGreen0.size(); i++)
 	{
 		// 対象かアクティブでいれば更新する、そうでない場合は容器から削除する
-		if (EnemyTestsTwo[i]->IsActive())
-			EnemyTestsTwo[i]->Update(dt);
+		if (EnemyGreen0[i]->IsActive())
+			EnemyGreen0[i]->Update(dt);
 		else
 		{
-			EnemyTestsTwo.erase(EnemyTestsTwo.begin() + i);
-			pScore->CalculateScore(100);
+			EnemyGreen0.erase(EnemyGreen0.begin() + i);
+			pScore->CalculateScore(20);
 		}
 	}
-	for (int i = 0; i < EnemyTestsThree.size(); i++)
+	for (int i = 0; i < EnemyBlue0.size(); i++)
 	{
 		// 対象かアクティブでいれば更新する、そうでない場合は容器から削除する
-		if (EnemyTestsThree[i]->IsActive())
-			EnemyTestsThree[i]->Update(dt);
+		if (EnemyBlue0[i]->IsActive())
+			EnemyBlue0[i]->Update(dt);
 		else
 		{
-			EnemyTestsThree.erase(EnemyTestsThree.begin() + i);
+			EnemyBlue0.erase(EnemyBlue0.begin() + i);
 			pScore->CalculateScore(50);
 		}
 	}
@@ -82,19 +95,22 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 
 void EnemyManager::Submit(void)
 {
-	for (int i = 0; i < EnemyTests.size(); i++)
-		if (EnemyTests[i]->IsActive())		EnemyTests[i]->Submit();
-	for (int i = 0; i < EnemyTestsTwo.size(); i++)
-		if (EnemyTestsTwo[i]->IsActive())	EnemyTestsTwo[i]->Submit();
-	for (int i = 0; i < EnemyTestsThree.size(); i++)
-		if (EnemyTestsThree[i]->IsActive())	EnemyTestsThree[i]->Submit();
+	for (int i = 0; i < EnemyRed0.size(); i++)
+		if (EnemyRed0[i]->IsActive())		EnemyRed0[i]->Submit();
+	for (int i = 0; i < EnemyRed1.size(); i++)
+		if (EnemyRed1[i]->IsActive())		EnemyRed1[i]->Submit();
+	for (int i = 0; i < EnemyGreen0.size(); i++)
+		if (EnemyGreen0[i]->IsActive())		EnemyGreen0[i]->Submit();
+	for (int i = 0; i < EnemyBlue0.size(); i++)
+		if (EnemyBlue0[i]->IsActive())	EnemyBlue0[i]->Submit();
 
 	//if (pEnemyBoss->IsActive()) pEnemyBoss->Draw();
 }
 
 void EnemyManager::Reset(void)
 {
-	EnemyTests.clear();
-	EnemyTestsTwo.clear();
-	EnemyTestsThree.clear();
+	EnemyRed0.clear();
+	EnemyRed1.clear();
+	EnemyGreen0.clear();
+	EnemyBlue0.clear();
 }

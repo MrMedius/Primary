@@ -15,10 +15,14 @@ enum Object_Type_Tag
 
 	character_Player = 0x999,
 
-	character_Enemy_Test = 0x001,
-	character_Enemy_Test_Two = 0x002,
-	character_Enemy_Test_Three = 0x003,
-	character_Enemy_Boss = 0x004,
+	character_Enemy_Red_0  = 0x010,
+	character_Enemy_Red_1  = 0x011,
+	character_Enemy_Green_0 = 0x020,
+	character_Enemy_Green_1 = 0x021,
+	character_Enemy_Blue_0 = 0x030,
+	character_Enemy_Blue_1 = 0x031,
+
+	character_Enemy_Boss = 0x041,
 
 	environment_Block = 0x101,
 	environment_BlockTiled = 0x102,
@@ -44,6 +48,7 @@ public:
 	BoxCollider	GetBoxCollider(void) const	{ return boxCollider; }
 	XMFLOAT3 GetCollisionSize(void) const	{ return boxCollider.half; }
 	void SetCollisionOnOff(bool OnOff)		{ OnCollision = OnOff; }
+	void SetCollisionSize(XMFLOAT3 size) { boxCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }
 	bool GetCollisionOnOff(void) const		{ return OnCollision; }
 protected:
 	void Transform(float X, float Y, float Z)	{ transInfo.position.x += X; transInfo.position.y += Y; transInfo.position.z += Z; }
@@ -52,7 +57,6 @@ protected:
 	void SetRotate(XMFLOAT3 rotate)				{ transInfo.rotation = rotate; }
 	void Scale(float X, float Y, float Z)		{ transInfo.scale.x += X; transInfo.scale.y += Y; transInfo.scale.z += Z; }
 	void SetSize(XMFLOAT3 size)					{ transInfo.scale = size; }
-	void SetCollisionSize(XMFLOAT3 size)		{ boxCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }
 protected:
 	bool IsUse{ true };
 	

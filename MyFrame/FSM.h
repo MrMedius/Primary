@@ -6,10 +6,7 @@
 #include <string>
 #include <functional>
 #include "Character.h"
-
-
 #include <chrono>
-
 
 class Character;
 
@@ -20,17 +17,10 @@ class State
 public:
     State() { static_assert(std::is_base_of<Character, T>::value, "StateType must inherit from State<T>"); }
     virtual ~State() = default;
-
     virtual void OnEnter(T* owner) = 0;
     virtual void OnExit(T* owner) = 0;
-    virtual void Update(T* owner) = 0;
-    virtual void Draw(T* owner) = 0;
+    virtual void Update(T* owner, float dt) = 0;
     virtual std::string GetName() const = 0;
-
-    unsigned int FrameNo{ 0 };
-    unsigned int FrameTotalCount{ 0 };
-    std::chrono::steady_clock::time_point startTime;
-    std::chrono::milliseconds frameDuration{ 25 };
 };
 
 // Infinite State Machine
@@ -69,18 +59,13 @@ public:
     bool HasState(const std::string& stateName) const { return m_states.find(stateName) != m_states.end(); }  // Determine if the specified state exists
 
 	// state update and draw
-    void Update(void)
+    void Update(float dt)
     {
         if (m_currentState)
         {
             CheckTransitions(); // check state transitions before updating
-            m_currentState->Update(m_owner);
+            m_currentState->Update(m_owner, dt);
         }
-    }
-    void Draw(void)
-    {
-        if (m_currentState)
-            m_currentState->Draw(m_owner);
     }
 
     // increase the state transition conditions
@@ -113,5 +98,53 @@ private:
         std::function<bool(T*)> condition;
     };
     std::unordered_map<std::string, std::vector<Transition>> m_transitions; // manages state transition conditions
+};
+
+
+
+// Animation Related
+struct SpriteAnimeInfo
+{
+    unsigned int numU{ 1 };
+    unsigned int numV{ 1 };
+    unsigned int FrameStart{ 0 };
+    unsigned int FrameTotalCount{ 0 };
+    float FPS{ 30.0f };
+};
+struct SpriteAnimeManualAssistant
+{
+    unsigned int FrameNo{ 1 };
+    float Accum{ 0.0f };
+    float FrameTime{ 0.0f };
+
+    float FPS{ 30.0f };
+    bool Loop{ true };
+    unsigned int FrameTotal{ 1 };
+
+    void Reset() noexcept
+    {
+        FrameNo = 1;
+        Accum = 0.0f;
+        FrameTime = 1.0f / FPS;
+    }
+    void Update(float dt) noexcept
+    {
+        Accum += dt;
+
+        while (Accum >= FrameTime)
+        {
+            Accum -= FrameTime;
+            FrameNo++;
+            if (FrameNo > FrameTotal && Loop) FrameNo = 1;
+        }
+    }
+    bool Finished() const noexcept
+    {
+        return (!Loop) && (FrameNo >= FrameTotal);
+    }
+    int GetCurrentFrame(void)
+    {
+        return FrameNo;
+    }
 };
 #endif

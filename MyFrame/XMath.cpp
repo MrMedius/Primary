@@ -1,10 +1,8 @@
 #include "XMath.h"
 
-namespace dx = DirectX;
-
-DirectX::XMFLOAT3 ExtractEulerAngles( const DirectX::XMFLOAT4X4& mat )
+DirectX::XMFLOAT3 ExtractEulerAngles( const XMFLOAT4X4& mat )
 {
-	dx::XMFLOAT3 euler;
+	XMFLOAT3 euler;
 	
 	euler.x = asinf( -mat._32 );                  // Pitch
 	if( cosf( euler.x ) > 0.0001 )                // Not at poles
@@ -21,15 +19,48 @@ DirectX::XMFLOAT3 ExtractEulerAngles( const DirectX::XMFLOAT4X4& mat )
 	return euler;
 }
 
-DirectX::XMFLOAT3 ExtractTranslation( const DirectX::XMFLOAT4X4& matrix )
+DirectX::XMFLOAT3 ExtractTranslation( const XMFLOAT4X4& matrix )
 {
 	return { matrix._41,matrix._42,matrix._43 };
 }
 
-DirectX::XMMATRIX ScaleTranslation( DirectX::XMMATRIX matrix,float scale )
+DirectX::XMMATRIX ScaleTranslation( XMMATRIX matrix,float scale )
 {
 	matrix.r[3].m128_f32[0] *= scale;
 	matrix.r[3].m128_f32[1] *= scale;
 	matrix.r[3].m128_f32[2] *= scale;
 	return matrix;
+}
+
+bool Normalize3(XMFLOAT3& v, float eps) noexcept
+{
+    XMVECTOR vec = XMLoadFloat3(&v);
+    XMVECTOR lenSq = XMVector3LengthSq(vec);
+
+    if (XMVectorGetX(lenSq) <= eps)
+    {
+        v = { 0.0f, 0.0f, 0.0f };
+        return false;
+    }
+
+    vec = XMVector3Normalize(vec);
+    XMStoreFloat3(&v, vec);
+    return true;
+}
+
+bool NormalizeXZ(XMFLOAT3& v, float eps) noexcept
+{
+    XMVECTOR vec = XMVectorSet(v.x, 0.0f, v.z, 0.0f);
+    XMVECTOR lenSq = XMVector3LengthSq(vec);
+
+    if (XMVectorGetX(lenSq) <= eps)
+    {
+        v = { 0.0f, 0.0f, 0.0f };
+        return false;
+    }
+
+    vec = XMVector3Normalize(vec);
+    XMStoreFloat3(&v, vec);
+    v.y = 0.0f;
+    return true;
 }

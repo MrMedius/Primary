@@ -40,7 +40,7 @@ void WeaponSlots::Update()
 			}
 			else
 			{
-				if (SameCount < 5)
+				if (SameCount < SlotNeeded)
 				{
 					if (SameType == Slots[i].GetType())
 						SameCount++;
@@ -54,7 +54,7 @@ void WeaponSlots::Update()
 			}
 		}
 
-		CanChange = { SameCount >= 5 ,SameType };
+		CanChange = { SameCount >= SlotNeeded ,SameType };
 	}
 	else if (IsFever && IsChange)
 	{
@@ -123,7 +123,7 @@ void WeaponSlots::UseWeapon(float offset)
 
 void WeaponSlots::DoChange(void)
 {
-	int MaxCount = 5;
+	int MaxCount = SlotNeeded;
 	int num = 1;
 
 	while (MaxCount > 0)

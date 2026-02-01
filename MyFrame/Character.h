@@ -7,19 +7,23 @@ enum Attack_Type_Tag
 {
 	Attack_Type_None = 0x000,
 
-	Player_Attack_1 = 0x001,
-	Player_Attack_2 = 0x002,
-	Player_Attack_3 = 0x003,
-	Player_Skill_1 = 0x004,
-	Player_Skill_2 = 0x005,
-	Player_Skill_3 = 0x006,
-	Player_Fever_1 = 0x011,
-	Player_Fever_2 = 0x021,
-	Player_Fever_3 = 0x031,
+	Player_Attack_1 = 0x901,
+	Player_Attack_2 = 0x902,
+	Player_Attack_3 = 0x903,
+	Player_Skill_1 = 0x911,
+	Player_Skill_2 = 0x912,
+	Player_Skill_3 = 0x913,
+	Player_Fever_1 = 0x921,
+	Player_Fever_2 = 0x922,
+	Player_Fever_3 = 0x923,
 
-	Enemy_Test_Attack = 0x101,
-	Enemy_Test_Two_Attack = 0x102,
-	Enemy_Test_Three_Attack = 0x103,
+	Enemy_Red_0_Attack	 =	0x010,
+	Enemy_Red_1_Attack	 =	0x011,
+	Enemy_Green_0_Attack =	0x020,
+	Enemy_Green_1_Attack =	0x021,
+	Enemy_Blue_0_Attack  =	0x030,
+	Enemy_Blue_1_Attack  =	0x031,
+
 	Enemy_Boss_Attack = 0x201,
 };
 

@@ -414,16 +414,7 @@
     <ClCompile Include="CubeWireframe.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyTest.cpp">
-      <Filter>Source Files\Object\Character\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>Source Files\Object\Character\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyTestTwo.cpp">
-      <Filter>Source Files\Object\Character\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyTestThree.cpp">
+    <ClCompile Include="Enemy_Red_0.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Projection.cpp">
@@ -458,6 +449,18 @@
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Red_1.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Blue_0.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Green_0.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -824,16 +827,7 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyTest.h">
-      <Filter>Header Files\Object\Character\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>Header Files\Object\Character\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyTestTwo.h">
-      <Filter>Header Files\Object\Character\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyTestThree.h">
+    <ClInclude Include="Enemy_Red_0.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Projection.h">
@@ -895,6 +889,18 @@
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Red_1.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Blue_0.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Green_0.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,9 +7,10 @@
 #include "BlockTiled.h"
 
 #include "Player.h"
-#include "EnemyTest.h"
-#include "EnemyTestTwo.h"
-#include "EnemyTestThree.h"
+#include "Enemy_Red_0.h"
+#include "Enemy_Red_1.h"
+#include "Enemy_Green_0.h"
+#include "Enemy_Blue_0.h"
 
 void Character::MapItemCollide(void)
 {
@@ -118,17 +119,19 @@ void Character::MapItemCollide(void)
 ------------------------------------------------------------------------------*/
 	// 全てのキャラクターを探す
 	std::vector<Player*> player = ObjectCodex::FindActiveObjectsByTag<Player>(character_Player);
-	std::vector<EnemyTest*> enemyTest = ObjectCodex::FindActiveObjectsByTag<EnemyTest>(character_Enemy_Test);
-	std::vector<EnemyTestTwo*> enemyTestTwo = ObjectCodex::FindActiveObjectsByTag<EnemyTestTwo>(character_Enemy_Test_Two);
-	std::vector<EnemyTestThree*> enemyTestThree = ObjectCodex::FindActiveObjectsByTag<EnemyTestThree>(character_Enemy_Test_Three);
+	std::vector<Enemy_Red_0*>	enemy_Red_0	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_0>(character_Enemy_Red_0);
+	std::vector<Enemy_Red_1*>	enemy_Red_1	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_1>(character_Enemy_Red_1);
+	std::vector<Enemy_Green_0*>	enemy_Green_0 =	ObjectCodex::FindActiveObjectsByTag<Enemy_Green_0>(character_Enemy_Green_0);
+	std::vector<Enemy_Blue_0*>	enemy_Blue_0  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Blue_0>(character_Enemy_Blue_0);
 
 	// 全てのキャラクターを整理する
 	std::vector<Character*> mapCharacters;
-	mapCharacters.reserve(player.size() + enemyTest.size() + enemyTestTwo.size() + enemyTestThree.size());
+	mapCharacters.reserve(player.size() + enemy_Red_0.size() + enemy_Red_1.size() + enemy_Green_0.size() + enemy_Blue_0.size());
 	mapCharacters.insert(mapCharacters.end(), player.begin(), player.end());
-	mapCharacters.insert(mapCharacters.end(), enemyTest.begin(), enemyTest.end());
-	mapCharacters.insert(mapCharacters.end(), enemyTestTwo.begin(), enemyTestTwo.end());
-	mapCharacters.insert(mapCharacters.end(), enemyTestThree.begin(), enemyTestThree.end());
+	mapCharacters.insert(mapCharacters.end(), enemy_Red_0.begin(),	 enemy_Red_0.end());
+	mapCharacters.insert(mapCharacters.end(), enemy_Red_1.begin(),   enemy_Red_1.end());
+	mapCharacters.insert(mapCharacters.end(), enemy_Green_0.begin(), enemy_Green_0.end());
+	mapCharacters.insert(mapCharacters.end(), enemy_Blue_0.begin(),  enemy_Blue_0.end());
 
 	// ループでコリジョン判断
 	for (auto c : mapCharacters)

@@ -1,7 +1,9 @@
-#include "EnemyTest.h"
+#include "Enemy_Red_1.h"
+#include "Math.h"
+#include "XMath.h"
 #include "Channels.h"
 
-void EnemyTest::Update(float dt)
+void Enemy_Red_1::Update(float dt)
 {
 	// 変更前の座標を格納
 	auto Position = transInfo.position;
@@ -10,7 +12,7 @@ void EnemyTest::Update(float dt)
 	CheckIsInArea();
 
 	// 攻撃範囲の更新
-	if(IsInArea)
+	if (IsInArea)
 	{
 		if (!IsFlip) attackCollider.center = { Position.x + boxCollider.half.x + attackCollider.half.x, Position.y, Position.z };
 		else attackCollider.center = { Position.x - boxCollider.half.x - attackCollider.half.x, Position.y, Position.z };
@@ -18,7 +20,7 @@ void EnemyTest::Update(float dt)
 	}
 
 	// 状態遷移
-	FSM->Update();
+	FSM->Update(dt);
 
 	// 重力
 	if (!OnFloor) MoveVelocity.y -= GRAVITY * dt;
@@ -36,11 +38,9 @@ void EnemyTest::Update(float dt)
 	MapItemCollide();
 }
 
-void EnemyTest::Submit(void)
+void Enemy_Red_1::Submit(void)
 {
 	// 描画
-	FSM->Draw();
-
 	visualPre->Submit(Chan::main);
 	visualPre->Submit(Chan::shadow);
 
@@ -54,199 +54,182 @@ void EnemyTest::Submit(void)
 #endif
 }
 
-void EnemyTest::SetupTransitions(void)
+void Enemy_Red_1::SetupTransitions(void)
 {
 	// 状態の遷移条件を増加する
 	// ENEMY_IDLE → ENEMY_CHASE
 	FSM->AddTransition(ENEMY_STATE[ENEMY_IDLE], ENEMY_STATE[ENEMY_CHASE], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsInArea && !enemyTest->IsInAttackArea; // 判断の条件
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsInArea && !enemyRed1->IsInAttackArea; // 判断の条件
 		});
 
 	// ENEMY_IDLE → ENEMY_ATTACK
 	FSM->AddTransition(ENEMY_STATE[ENEMY_IDLE], ENEMY_STATE[ENEMY_ATTACK], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsAttack;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsAttack;
 		});
 
 	// ENEMY_IDLE → ENEMY_HURT
 	FSM->AddTransition(ENEMY_STATE[ENEMY_IDLE], ENEMY_STATE[ENEMY_HURT], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsHurt;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsHurt;
 		});
 
 	// ENEMY_CHASE → ENEMY_IDLE
 	FSM->AddTransition(ENEMY_STATE[ENEMY_CHASE], ENEMY_STATE[ENEMY_IDLE], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return (!enemyTest->IsInArea) || (enemyTest->IsInAttackArea && enemyTest->AttackCountDown > 0);
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return (!enemyRed1->IsInArea) || (enemyRed1->IsInAttackArea && enemyRed1->AttackCountDown > 0);
 		});
 
 	// ENEMY_CHASE → ENEMY_ATTACK
 	FSM->AddTransition(ENEMY_STATE[ENEMY_CHASE], ENEMY_STATE[ENEMY_ATTACK], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsAttack;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsAttack;
 		});
 
 	// ENEMY_CHASE → ENEMY_HURT
 	FSM->AddTransition(ENEMY_STATE[ENEMY_CHASE], ENEMY_STATE[ENEMY_HURT], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsHurt;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsHurt;
 		});
 
 	// ENEMY_ATTACK → ENEMY_IDLE
 	FSM->AddTransition(ENEMY_STATE[ENEMY_ATTACK], ENEMY_STATE[ENEMY_IDLE], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return !enemyTest->IsAttack;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return !enemyRed1->IsAttack;
 		});
 
 	// ENEMY_ATTACK → ENEMY_HURT
 	FSM->AddTransition(ENEMY_STATE[ENEMY_ATTACK], ENEMY_STATE[ENEMY_HURT], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsHurt;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsHurt;
 		});
 
 	// ENEMY_HURT → ENEMY_IDLE
 	FSM->AddTransition(ENEMY_STATE[ENEMY_HURT], ENEMY_STATE[ENEMY_IDLE], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return !enemyTest->IsHurt && !enemyTest->IsDeath;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return !enemyRed1->IsHurt && !enemyRed1->IsDeath;
 		});
 
 	// ENEMY_HURT → ENEMY_DEATH
 	FSM->AddTransition(ENEMY_STATE[ENEMY_HURT], ENEMY_STATE[ENEMY_DEATH], [](Character* owner) {
-		auto enemyTest = static_cast<EnemyTest*>(owner);
-		return enemyTest->IsDeath;
+		auto enemyRed1 = static_cast<Enemy_Red_1*>(owner);
+		return enemyRed1->IsDeath;
 		});
 }
 
 
 /*------------------------------------------------------------------------------
-   EnemyTest_IdleState
+   Enemy_Red_1_IdleState
 ------------------------------------------------------------------------------*/
-void EnemyTest_IdleState::OnEnter(EnemyTest* owner)
+void Enemy_Red_1_IdleState::OnEnter(Enemy_Red_1* owner)
 {
-	// ポリゴンから開始時間を取って、アニメーションエラーを避ける
-	startTime = std::chrono::steady_clock::now();
-	FrameNo = 0;			// フレームを1から計算
-	FrameTotalCount = 8;	// アクションのフレームの総数
-	frameDuration = std::chrono::milliseconds(100);
+	// set anime
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), true);
 }
 
-void EnemyTest_IdleState::Update(EnemyTest* owner)
+void Enemy_Red_1_IdleState::Update(Enemy_Red_1* owner, float dt)
 {
-	// フレーム更新
-	auto totalFramesPassed = (std::chrono::steady_clock::now() - startTime) / frameDuration;
-	// 繰り返すのアクションはフレームを1からリセット
-	FrameNo = (totalFramesPassed % FrameTotalCount + 1);
-
+	// set anime
+	owner->GetVisualPre()->Update(dt);
+	// general jobs
 	owner->CheckIsFlip();		// 向いている方向の判断
 	owner->CheckIsAttack();		// 攻撃するかどうかを判断
 	owner->DoAttackCountDown();	// 攻撃をカウントダウン
-}
-
-void EnemyTest_IdleState::Draw(EnemyTest* owner)
-{
-	owner->GetVisualPre()->SetFrame(13, 5, 1, FrameTotalCount, FrameNo, 0, owner->GetIsFlip());
+	owner->GetVisualPre()->SetFlip(owner->GetIsFlip());
 }
 
 
 /*------------------------------------------------------------------------------
-   EnemyTest_ChaseState
+   Enemy_Red_1_ChaseState
 ------------------------------------------------------------------------------*/
-void EnemyTest_ChaseState::OnEnter(EnemyTest* owner)
+void Enemy_Red_1_ChaseState::OnEnter(Enemy_Red_1* owner)
 {
-	startTime = std::chrono::steady_clock::now();
-	FrameNo = 0;
-	FrameTotalCount = 10;
-	frameDuration = std::chrono::milliseconds(100);
+	// set anime
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), true);
 }
 
-void EnemyTest_ChaseState::Update(EnemyTest* owner)
+void Enemy_Red_1_ChaseState::Update(Enemy_Red_1* owner, float dt)
 {
-	// フレーム更新
-	auto totalFramesPassed = (std::chrono::steady_clock::now() - startTime) / frameDuration;
-	// 繰り返すのアクションはフレームを1からリセット
-	FrameNo = (totalFramesPassed % FrameTotalCount + 1);
-
+	// set anime
+	owner->GetVisualPre()->Update(dt);
+	// general jobs
 	owner->CheckIsFlip();		// 向いている方向の判断
 	owner->CheckIsAttack();		// 攻撃するかどうかを判断
 	owner->DoChase();			// ターゲットを追いかける
 	owner->DoAttackCountDown();	// 攻撃をカウントダウン
-}
-
-void EnemyTest_ChaseState::Draw(EnemyTest* owner)
-{
-	owner->GetVisualPre()->SetFrame(13, 5, 14, FrameTotalCount, FrameNo, 0, owner->GetIsFlip());
+	owner->GetVisualPre()->SetFlip(owner->GetIsFlip());
 }
 
 
 /*------------------------------------------------------------------------------
-   EnemyTest_AttackState
+   Enemy_Red_1_AttackState
 ------------------------------------------------------------------------------*/
-void EnemyTest_AttackState::OnEnter(EnemyTest* owner)
+void Enemy_Red_1_AttackState::OnEnter(Enemy_Red_1* owner)
 {
-	startTime = std::chrono::steady_clock::now();
-	FrameNo = 0;
-	FrameTotalCount = 9;
-	frameDuration = std::chrono::milliseconds(100);
-
+	// set anime
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
 	FrameNoOld = 0;
+	// make sure no repeated hits
 	HaveHit = false;
+	// set attack dash direction
+	XMFLOAT3 pVec = owner->GetPosition();
+	XMFLOAT3 tVec = owner->GetAttackTarget()->GetPosition();
+	AttackVec = { tVec.x - pVec.x,0.0f,tVec.z - pVec.z };
+	NormalizeXZ(AttackVec);
 }
 
-void EnemyTest_AttackState::OnExit(EnemyTest* owner)
+void Enemy_Red_1_AttackState::OnExit(Enemy_Red_1* owner)
 {
 	owner->ResetAttackCountDown();			// 攻撃終わったら攻撃のカウンターをリセットする
 	owner->SetAttackCollisionOnOff(false);	// もし攻撃の途中で攻撃されたら、こっちに攻撃フラグとコリジョンを閉じる
 	owner->SetIsAttack(false);
+
 }
 
-void EnemyTest_AttackState::Update(EnemyTest* owner)
+void Enemy_Red_1_AttackState::Update(Enemy_Red_1* owner, float dt)
 {
-	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
-	// 終わったら攻撃フラグを閉じる
-	if (FrameNo > FrameTotalCount) owner->SetIsAttack(false);
+	// set anime
+	owner->GetVisualPre()->Update(dt);
 
+	// 終わったら攻撃フラグを閉じる
+	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
+
+	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
-	if (FrameNoOld != FrameNo && FrameNo == 6) owner->SetAttackCollisionOnOff(true);
+	if (currentFrame == 17)  owner->SetAttackCollisionOnOff(true);
 	// 攻撃コリジョンを閉じるフレーム
-	if (FrameNoOld != FrameNo && FrameNo == 8) owner->SetAttackCollisionOnOff(false);
+	if (currentFrame == 19) owner->SetAttackCollisionOnOff(false);
+
 	// 攻撃当たる判定
 	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
-
-	// 変更前の座標を更新
-	FrameNoOld = FrameNo;
-}
-
-void EnemyTest_AttackState::Draw(EnemyTest* owner)
-{
-	owner->GetVisualPre()->SetFrame(13, 5, 27, FrameTotalCount, FrameNo, 0, owner->GetIsFlip());
 }
 
 
 /*------------------------------------------------------------------------------
-   EnemyTest_HurtState
+   Enemy_Red_1_HurtState
 ------------------------------------------------------------------------------*/
-void EnemyTest_HurtState::OnEnter(EnemyTest* owner)
+void Enemy_Red_1_HurtState::OnEnter(Enemy_Red_1* owner)
 {
-	startTime = std::chrono::steady_clock::now();
-	FrameNo = 0;
-	FrameTotalCount = 5;
-	frameDuration = std::chrono::milliseconds(100);
-
+	// set anime
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
+	// make sure not be hit repeatly
 	BeAttackedTypeOld = owner->GetBeAttackedType();
-
 }
 
-void EnemyTest_HurtState::OnExit(EnemyTest* owner)
+void Enemy_Red_1_HurtState::OnExit(Enemy_Red_1* owner)
 {
+	owner->SetIsHurt(false);
 	owner->SetBeAttackedType(Attack_Type_None);
 }
 
-void EnemyTest_HurtState::Update(EnemyTest* owner)
+void Enemy_Red_1_HurtState::Update(Enemy_Red_1* owner, float dt)
 {
-	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	// set anime
+	owner->GetVisualPre()->Update(dt);
+
 	// 攻撃された後は何するの判断
-	if (FrameNo > FrameTotalCount)
+	if (owner->GetVisualPre()->ClipFinished())
 	{
 		// もし体力がゼロたら、死ぬ状態で遷移
 		if (owner->GetHpCurrent() == 0)	owner->SetIsDeath(true);
@@ -254,41 +237,27 @@ void EnemyTest_HurtState::Update(EnemyTest* owner)
 		else owner->SetIsHurt(false);
 	}
 
-	if (owner->GetBeAttackedType() != BeAttackedTypeOld)
-	{
-		FrameNo = 1;
-		BeAttackedTypeOld = owner->GetBeAttackedType();
-	}
+	if (owner->GetBeAttackedType() != BeAttackedTypeOld) BeAttackedTypeOld = owner->GetBeAttackedType();
 
 	// 攻撃をカウントダウン
 	owner->DoAttackCountDown();
 }
 
-void EnemyTest_HurtState::Draw(EnemyTest* owner)
-{
-	owner->GetVisualPre()->SetFrame(13, 5, 40, FrameTotalCount, FrameNo, 0, owner->GetIsFlip());
-}
-
 
 /*------------------------------------------------------------------------------
-   EnemyTest_DeathState
+   Enemy_Red_1_DeathState
 ------------------------------------------------------------------------------*/
-void EnemyTest_DeathState::OnEnter(EnemyTest* owner)
+void Enemy_Red_1_DeathState::OnEnter(Enemy_Red_1* owner)
 {
-	startTime = std::chrono::steady_clock::now();
-	FrameNo = 0;
-	FrameTotalCount = 13;
-	frameDuration = std::chrono::milliseconds(100);
+	// set anime
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
 }
 
-void EnemyTest_DeathState::Update(EnemyTest* owner)
+void Enemy_Red_1_DeathState::Update(Enemy_Red_1* owner, float dt)
 {
-	FrameNo = (std::chrono::steady_clock::now() - startTime) / frameDuration + 1;
+	// set anime
+	owner->GetVisualPre()->Update(dt);
+
 	// 終わったら使用終わるをセットする
-	if (FrameNo > FrameTotalCount) owner->Deactivate();
-}
-
-void EnemyTest_DeathState::Draw(EnemyTest* owner)
-{
-	owner->GetVisualPre()->SetFrame(13, 5, 53, FrameTotalCount, FrameNo, 0, owner->GetIsFlip());
+	if (owner->GetVisualPre()->ClipFinished()) owner->Deactivate();
 }
