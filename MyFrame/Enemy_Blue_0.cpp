@@ -180,9 +180,6 @@ void Enemy_Blue_0_AttackState::Update(Enemy_Blue_0* owner, float dt)
 	// set anime
 	owner->GetVisualPre()->Update(dt);
 
-	// 終わったら攻撃フラグを閉じる
-	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
-
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
 	if (currentFrame == 12)  owner->SetAttackCollisionOnOff(true);
@@ -194,6 +191,9 @@ void Enemy_Blue_0_AttackState::Update(Enemy_Blue_0* owner, float dt)
 
 	// 攻撃当たる判定
 	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
+
+	// 終わったら攻撃フラグを閉じる
+	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
 }
 
 
@@ -223,6 +223,11 @@ void Enemy_Blue_0_HurtState::Update(Enemy_Blue_0* owner, float dt)
 	// set anime
 	owner->GetVisualPre()->Update(dt);
 
+	if (owner->GetBeAttackedType() != BeAttackedTypeOld) BeAttackedTypeOld = owner->GetBeAttackedType();
+
+	// 攻撃をカウントダウン
+	owner->DoAttackCountDown();
+
 	// 攻撃された後は何するの判断
 	if (owner->GetVisualPre()->ClipFinished())
 	{
@@ -231,11 +236,6 @@ void Enemy_Blue_0_HurtState::Update(Enemy_Blue_0* owner, float dt)
 		// 終わったら攻撃されたフラグを閉じる
 		else owner->SetIsHurt(false);
 	}
-
-	if (owner->GetBeAttackedType() != BeAttackedTypeOld) BeAttackedTypeOld = owner->GetBeAttackedType();
-
-	// 攻撃をカウントダウン
-	owner->DoAttackCountDown();
 }
 
 
@@ -256,7 +256,7 @@ void Enemy_Blue_0_DeathState::OnEnter(Enemy_Blue_0* owner)
 
 void Enemy_Blue_0_DeathState::OnExit(Enemy_Blue_0* owner)
 {
-	owner->SetCollisionSize({ 3.0f, 1.8f, 2.0f });
+	owner->SetCollisionSize({ 2.5f, 1.8f, 1.0f });
 }
 
 void Enemy_Blue_0_DeathState::Update(Enemy_Blue_0* owner, float dt)

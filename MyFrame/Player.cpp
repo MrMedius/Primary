@@ -426,9 +426,6 @@ void Player_DashState::Update(Player* owner, float dt)
 {
 	owner->GetVisualPre()->Update(dt);
 
-	// 終わったらデッシュフラグを閉じる
-	if (owner->GetVisualPre()->ClipFinished())	owner->SetIsDash(false);
-
 	// デッシュ中に攻撃とスキルを事前入力する
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 
@@ -457,6 +454,9 @@ void Player_DashState::Update(Player* owner, float dt)
 
 	// 攻撃をカウントダウン
 	owner->DoAttackCountDown();
+
+	// 終わったらデッシュフラグを閉じる
+	if (owner->GetVisualPre()->ClipFinished())	owner->SetIsDash(false);
 }
 
 
@@ -569,19 +569,6 @@ void Player_AttackState::Update(Player* owner, float dt)
 			break;
 		}
 		}
-
-		// 連撃の判断
-		if (currentFrame == packs[mode].FrameTotalCount && isCombo)
-		{
-			// もし連撃したら、スキルの事前入力を消ます
-			owner->SetIsSkill(false);
-			owner->SetDoAttackType(static_cast<Attack_Type_Tag>(owner->GetDoAttackType() + 1));
-
-			packs[mode].FrameTotalCount = (owner->GetDoAttackType() == Player_Attack_2) ? 32 : 48;
-			assist.FrameTotal = packs[mode].FrameTotalCount;
-
-			isCombo = false;
-		}
 	}
 	else
 	{
@@ -622,19 +609,22 @@ void Player_AttackState::Update(Player* owner, float dt)
 			break;
 		}
 		}
+	}
 
-		// 連撃の判断
-		if (currentFrame == packs[mode].FrameTotalCount && isCombo)
-		{
-			// もし連撃したら、スキルの事前入力を消ます
-			owner->SetIsSkill(false);
-			owner->SetDoAttackType(static_cast<Attack_Type_Tag>(owner->GetDoAttackType() + 1));
+	// 連撃の判断
+	if (currentFrame == packs[mode].FrameTotalCount && isCombo)
+	{
+		// もし連撃したら、スキルの事前入力を消ます
+		owner->SetIsSkill(false);
+		owner->SetDoAttackType(static_cast<Attack_Type_Tag>(owner->GetDoAttackType() + 1));
 
+		if (mode != 2)
+			packs[mode].FrameTotalCount = (owner->GetDoAttackType() == Player_Attack_2) ? 32 : 48;
+		else
 			packs[mode].FrameTotalCount = (owner->GetDoAttackType() == Player_Attack_2) ? 30 : 48;
-			assist.FrameTotal = packs[mode].FrameTotalCount;
+		assist.FrameTotal = packs[mode].FrameTotalCount;
 
-			isCombo = false;
-		}
+		isCombo = false;
 	}
 
 	// 移動
@@ -724,9 +714,6 @@ void Player_SkillState::Update(Player* owner, float dt)
 	// set anime
 	owner->GetVisualPre()->Update(dt);
 
-	// 終わったらスキルフラグを閉じる
-	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsSkill(false);
-
 	// ダッシュでスキルをキャンセル
 	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
 	// スキル中に攻撃とスキルを事前入力する
@@ -776,6 +763,9 @@ void Player_SkillState::Update(Player* owner, float dt)
 
 	// 移動
 	owner->DoMove(0.1f);
+
+	// 終わったらスキルフラグを閉じる
+	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsSkill(false);
 }
 
 
@@ -802,15 +792,6 @@ void Player_HurtState::Update(Player* owner, float dt)
 {
 	owner->GetVisualPre()->Update(dt);
 
-	// 攻撃された後は何するの判断
-	if (owner->GetVisualPre()->ClipFinished())
-	{
-		// もし体力がゼロたら、死ぬ状態で遷移
-		if (owner->GetHpCurrent() <= 0)	owner->SetIsDeath(true);
-		// 終わったら攻撃されたフラグを閉じる
-		else owner->SetIsHurt(false);
-	}
-
 	// 攻撃されたの中にデッシュと攻撃とスキルを事前入力する
 	if (pack.FrameTotalCount - owner->GetVisualPre()->GetCurrentFrame() < 2)
 	{
@@ -825,6 +806,15 @@ void Player_HurtState::Update(Player* owner, float dt)
 
 	// 攻撃をカウントダウン
 	owner->DoAttackCountDown();
+
+	// 攻撃された後は何するの判断
+	if (owner->GetVisualPre()->ClipFinished())
+	{
+		// もし体力がゼロたら、死ぬ状態で遷移
+		if (owner->GetHpCurrent() <= 0)	owner->SetIsDeath(true);
+		// 終わったら攻撃されたフラグを閉じる
+		else owner->SetIsHurt(false);
+	}
 }
 
 

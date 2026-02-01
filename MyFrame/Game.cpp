@@ -35,10 +35,9 @@ Game::Game(const std::string& commandLine)
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	// Objects
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
-
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
 }
 
 Game::~Game()

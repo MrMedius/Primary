@@ -18,7 +18,7 @@ public:
 		// parameters init
 		SetPosition(position);
 		SetSize({ 4.0f, 4.0f, 0.0f });
-		SetCollisionSize({ 3.0f, 1.8f, 1.0f });
+		SetCollisionSize({ 2.5f, 1.8f, 1.0f });
 		SetCollisionOnOff(true);
 		SetHpMax(3.0f);
 		ResetHpCurrent();

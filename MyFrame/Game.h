@@ -60,9 +60,9 @@ private:
 	Rgph::InGameRenderGraph gameRG{ wnd.Gfx() };
 	Rgph::InUserInterfaceRenderGraph UIRG{ wnd.Gfx() };
 	// Objects
+	Player* pPlayer;
 	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
-	Player* pPlayer;
 	// UI
 	std::unique_ptr<Score> pScore;
 	std::unique_ptr<UI_Title> pUI_Title;

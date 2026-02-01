@@ -52,12 +52,12 @@ public:
 		// parameters init
 		SetPosition(position);
 		SetSize({ 5.0f, 5.0f, 0.0f });
-		SetCollisionSize({ 2.0f, 4.0f, 1.0f });
+		SetCollisionSize({ 1.5f, 4.0f, 1.0f });
 		SetCollisionOnOff(true);
 		SetHpMax(10.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
-		SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
+		SetAttackCollisionSize({ 1.5f,2.0f,2.0f });
 		SetAttackInterval(1.5f);
 
 		// game resources init

@@ -8,7 +8,22 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 	rg(rg),
 	pKbd(kbd),
 	pScore(score)
-{}
+{
+	for (int i = 0;i < 10;i++)
+	{
+		ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, character_Enemy_Red_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
+	}
+	for (int i = 0;i < 10;i++)
+	{
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_0>(character_Enemy_Red_0)->Deactivate();
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_1>(character_Enemy_Red_1)->Deactivate();
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Green_0>(character_Enemy_Green_0)->Deactivate();
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Blue_0>(character_Enemy_Blue_0)->Deactivate();
+	}
+}
 
 void EnemyManager::Update(float dt, XMFLOAT3 position)
 {
