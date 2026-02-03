@@ -1,6 +1,5 @@
 #pragma once
 #include "Enemy.h"
-#include <random>
 
 class Enemy_Red_1_IdleState;
 class Enemy_Red_1_ChaseState;
@@ -59,14 +58,8 @@ public:
 	}
 	void OnEnable(void) override
 	{
-		std::mt19937 rng(std::random_device{}());
-		std::uniform_int_distribution<int> d(-20, 20);
-		XMFLOAT3 pos = { AttackTarget->GetPosition().x + d(rng),10.0f,AttackTarget->GetPosition().z + d(rng) };
-
+		Enemy::OnEnable();
 		FSM->ChangeState(ENEMY_STATE[ENEMY_IDLE]);
-		SetPosition(pos);
-		ResetHpCurrent();
-		SetIsDeath(false);
 	};
 	void Update(float dt) override;
 	void Submit(void) override;

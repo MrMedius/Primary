@@ -905,6 +905,9 @@
     <ClInclude Include="FieldTransitionCbuf.h">
       <Filter>Header Files\Bindable\ConstantBuffers</Filter>
     </ClInclude>
+    <ClInclude Include="BlockInvisible.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NeoRIXIS.rc">

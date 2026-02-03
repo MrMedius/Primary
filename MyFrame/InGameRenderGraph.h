@@ -24,7 +24,6 @@ namespace Rgph
 		void DumpShadowMap(Graphics& gfx, const std::string& path);
 		void BindMainCamera(Camera& cam);
 		void BindShadowCamera(Camera& cam);
-		void StoreDepth(Graphics& gfx, const std::string& path);
 	private:
 		void RenderKernelWindow(Graphics& gfx);
 		void RenderShadowWindow(Graphics& gfx);
@@ -38,9 +37,10 @@ namespace Rgph
 			Box,
 		} kernelType = KernelType::Gauss;
 		static constexpr int maxRadius = 100;
-		int radius = 4;
-		float sigma = 2.0f;
+		int radius = 15;
+		float sigma = 10.0f;
 		std::shared_ptr<Bind::CachingPixelConstantBufferEX> blurKernel;
 		std::shared_ptr<Bind::CachingPixelConstantBufferEX> blurDirection;
+		std::shared_ptr<Bind::CachingPixelConstantBufferEX> colorBlender;
 	};
 }

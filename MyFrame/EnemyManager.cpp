@@ -9,14 +9,17 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 	pKbd(kbd),
 	pScore(score)
 {
-	for (int i = 0;i < 10;i++)
+	auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
+	MapEdgeLeftAndRight = mapSize.x / 2.0f;
+	MapEdgeFrontAndBack = mapSize.z / 2.0f;
+	for (int i = 0;i < 30;i++)
 	{
 		ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, character_Enemy_Red_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
 	}
-	for (int i = 0;i < 10;i++)
+	for (int i = 0;i < 30;i++)
 	{
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_0>(character_Enemy_Red_0)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_1>(character_Enemy_Red_1)->Deactivate();
@@ -27,12 +30,6 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 
 void EnemyManager::Update(float dt, XMFLOAT3 position)
 {
-	std::mt19937 rng(std::random_device{}());
-	std::uniform_real_distribution<float> x(-15, 15);
-	std::uniform_real_distribution<float> z(-5, 5);
-	XMFLOAT3 pos = { position.x + x(rng),20.0f,position.z + z(rng) };
-
-
 	if (CountDown < Interval) CountDown++;
 	if (CountDown >= Interval)
 	{
@@ -42,8 +39,19 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	int type = 0;
 	//if (NewEnemy)
 	//{
+	// // get new enemy type randomly
 	//	std::uniform_int_distribution<int> enemyType(1, 3);
 	//	type = enemyType(rng);
+	// 
+	// // get position around the player randomly
+	 	std::mt19937 rng(std::random_device{}());
+		std::uniform_real_distribution<float> d(-30.0f, 30.0f);
+		XMFLOAT3 pos = { position.x + d(rng),10.0f,position.z + d(rng) };
+		if (pos.x > MapEdgeLeftAndRight) pos.x = MapEdgeLeftAndRight - 20.0f;
+		if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + 20.0f;
+		if (pos.z > MapEdgeFrontAndBack) pos.z = MapEdgeFrontAndBack - 20.0f;
+		if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + 20.0f;
+
 	//	NewEnemy = false;
 	//}
 

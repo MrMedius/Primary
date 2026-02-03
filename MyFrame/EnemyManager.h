@@ -33,4 +33,8 @@ private:
 	int Interval{ 100 };
 	int CountDown{ 0 };
 	bool NewEnemy{ false };
+
+private:
+	float MapEdgeLeftAndRight{ 0.0f };
+	float MapEdgeFrontAndBack{ 0.0f };
 };

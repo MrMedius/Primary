@@ -3,6 +3,7 @@
 #include "RenderGraph.h"
 #include "Block.h"
 #include "BlockTiled.h"
+#include "BlockInvisible.h"
 
 class EnvironmentManager
 {
@@ -18,4 +19,5 @@ private:
 
 	std::vector<Block*> blocks;
 	BlockTiled* blockTiled;
+	std::vector<BlockInvisible*> blocksInvisible;
 };

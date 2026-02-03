@@ -284,7 +284,7 @@ float4 main(
         outTex *= tint;
 
         // Glow border (base on threshold/R)
-        float edgeWidth = 300.0f; // adjust the size of the border
+        float edgeWidth = 100.0f; // adjust the size of the border
         if (insideHard > 0.01f && (R - threshold) < edgeWidth)
         {
             float hDist = HexDist(hexInfo.xy);

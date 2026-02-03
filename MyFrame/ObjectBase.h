@@ -26,6 +26,7 @@ enum Object_Type_Tag
 
 	environment_Block = 0x101,
 	environment_BlockTiled = 0x102,
+	environment_BlockInvisible = 0x103,
 };
 
 class ObjectBase

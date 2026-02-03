@@ -5,6 +5,7 @@
 
 #include "Block.h"
 #include "BlockTiled.h"
+#include "BlockInvisible.h"
 
 #include "Player.h"
 #include "Enemy_Red_0.h"
@@ -37,14 +38,17 @@ void Character::MapItemCollide(void)
 	OnFloor = false; //先ずは床にいないを想定する
 
 	// 全てのマップオブジェクトを探す
-	std::vector<Block*> block =				ObjectCodex::FindActiveObjectsByTag<Block>(environment_Block);
-	std::vector<BlockTiled*> blockTiled =	ObjectCodex::FindActiveObjectsByTag<BlockTiled>(environment_BlockTiled);
+	std::vector<Block*> block =						ObjectCodex::FindActiveObjectsByTag<Block>(environment_Block);
+	std::vector<BlockTiled*> blockTiled =			ObjectCodex::FindActiveObjectsByTag<BlockTiled>(environment_BlockTiled);
+	std::vector<BlockInvisible*> blockInvisible =	ObjectCodex::FindActiveObjectsByTag<BlockInvisible>(environment_BlockInvisible);
+
 
 	// 全てのマップオブジェクトをマップオブジェクトをして整理する
 	std::vector<ObjectBase*> mapItems;
-	mapItems.reserve(block.size() + blockTiled.size());
-	mapItems.insert(mapItems.end(),	block.begin(),		block.end());
-	mapItems.insert(mapItems.end(),	blockTiled.begin(),	blockTiled.end());
+	mapItems.reserve(block.size() + blockTiled.size() + blockInvisible.size());
+	mapItems.insert(mapItems.end(),	block.begin(),			block.end());
+	mapItems.insert(mapItems.end(),	blockTiled.begin(),		blockTiled.end());
+	mapItems.insert(mapItems.end(), blockInvisible.begin(), blockInvisible.end());
 
 	// ループでコリジョン判断
 	for (auto b : mapItems)

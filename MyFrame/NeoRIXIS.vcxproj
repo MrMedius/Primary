@@ -286,6 +286,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockInvisible.h" />
     <ClInclude Include="BlockTiled.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
