@@ -14,7 +14,7 @@ namespace Rgph
 		void Accept(Job job) noexcept;
 		void Execute(Graphics& gfx) const noxnd override;
 		void Reset() noxnd override;
-	private:
+	protected:
 		std::vector<Job> jobs;
 	};
 }

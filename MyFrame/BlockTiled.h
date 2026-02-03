@@ -4,6 +4,7 @@
 #include "CubeTiled.h"
 #include "Channels.h"
 #include "Surface.h"
+#include "Player.h"
 
 class BlockTiled : public ObjectBase
 {
@@ -13,6 +14,8 @@ public:
 		ObjectBase(tag),
 		visualPre(gfx, size, numTiled)
 	{
+		pPlayer = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
+
 		// parameters init
 		SetPosition(position);
 		SetSize(size);
@@ -32,7 +35,36 @@ public:
 #endif
 	}
 	void OnEnable(void) override {}
-	void Update(float dt) override {}
+	void Update(float dt) override
+	{
+		auto playerPos = pPlayer->GetPosition();
+
+		if (!fieldPlay)
+		{
+			if (pPlayer->GetIsSkill())
+			{
+				fieldPlay = true;
+
+				switch (pPlayer->GetWeaponSlots()->GetCurrentSlot().GetType())
+				{
+				case WEAPON_TYPE_1: fieldMode = 1; break;
+				case WEAPON_TYPE_2: fieldMode = 2; break;
+				case WEAPON_TYPE_3: fieldMode = 3; break;
+				}
+
+				if (visualPre.GetPlayMode() != fieldMode)
+					visualPre.StartExpand(playerPos, fieldMode);
+			}
+		}
+
+		if (!pPlayer->GetIsSkill() && fieldPlay)
+		{
+			fieldPlay = false;
+			fieldMode = 0;
+		}
+
+		visualPre.Update(dt, playerPos);
+	}
 	void Submit(void) override
 	{
 		visualPre.Submit(Chan::main);
@@ -43,5 +75,8 @@ public:
 	}
 private:
 	CubeTiled visualPre;
+	Player* pPlayer;
+	int fieldMode{ 0 };
+	bool fieldPlay{ false };
 };
 

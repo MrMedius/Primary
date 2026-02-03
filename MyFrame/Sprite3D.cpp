@@ -56,6 +56,27 @@ Sprite3D::Sprite3D(Graphics& gfx, std::vector<std::string> paths)
 		}
 		AddTechnique(std::move(shade));
 	}
+	{
+		Technique outline("Outline", Chan::main);
+		{
+			Step mask("outlineMask");
+
+			auto pvs = VertexShader::Resolve(gfx, "Sprite3D_Mask_VS.cso");
+			mask.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
+			mask.AddBindable(std::move(pvs));
+
+			mask.AddBindable(dynTex);
+			mask.AddBindable(Sampler::Resolve(gfx));
+
+			mask.AddBindable(PixelShader::Resolve(gfx, "Sprite3D_Mask_PS.cso"));
+
+			mask.AddBindable(tcb);
+			mask.AddBindable(uvcb);
+
+			outline.AddStep(std::move(mask));
+		}
+		AddTechnique(std::move(outline));
+	}
 	// shadow map technique
 	{
 		Technique map{ "ShadowMap", Chan::shadow, true };
@@ -66,11 +87,11 @@ Sprite3D::Sprite3D(Graphics& gfx, std::vector<std::string> paths)
 			draw.AddBindable(std::move(pvs));
 			draw.AddBindable(Bind::PixelShader::Resolve(gfx, "ShadowAlpha_PS.cso"));
 
-			draw.AddBindable(dynTex);
+			draw.AddBindable(std::move(dynTex));
 			draw.AddBindable(Bind::Sampler::Resolve(gfx));
 
-			draw.AddBindable(tcb);
-			draw.AddBindable(uvcb);
+			draw.AddBindable(std::move(tcb));
+			draw.AddBindable(std::move(uvcb));
 
 			draw.AddBindable(Bind::Rasterizer::Resolve(gfx, true));
 

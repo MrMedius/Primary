@@ -22,11 +22,20 @@ public:
 			Bg->SetFrameAuto(10, 10, 1, 100, 0, 20.0f, false, true);
 			Bg->LinkTechniques(rg);
 		}
+		// ResourceSlot_Icon_Bg
+		{
+			float scale = 0.9f;
+			IconBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Icon_Bg.png" });
+			IconBg->SetPosition(posX, posY);
+			IconBg->SetScale(size * scale, size * scale);
+			IconBg->SetFrame(3, 1, count + 1, 1, 1, 0, false);
+			IconBg->LinkTechniques(rg);
+		}
 		// ResourceSlot_Icon
 		{
 			Icon = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Icon.png" });
 			Icon->SetPosition(posX, posY);
-			Icon->SetScale(size - 10.0f, size - 10.0f);
+			Icon->SetScale(size / 2.2f, size / 2.2f);
 			Icon->SetFrame(3, 1, count + 1, 1, 1, 0, false);
 			Icon->LinkTechniques(rg);
 		}
@@ -73,6 +82,8 @@ public:
 	{
 		// ResourceSlot_Bg
 		Bg->Submit(Chan::ui);
+		// ResourceSlot_Icon_Bg
+		IconBg->Submit(Chan::ui);
 		// ResourceSlot_Icon
 		Icon->Submit(Chan::ui);
 		// ResourceSlot_Bar
@@ -81,6 +92,8 @@ public:
 private:
 	// ResourceSlot_Bg
 	std::unique_ptr<Sprite2D> Bg;
+	// ResourceSlot_Icon_Bg
+	std::unique_ptr<Sprite2D> IconBg;
 	// ResourceSlot_Icon
 	std::unique_ptr<Sprite2D> Icon;
 	// ResourceSlot_Bar

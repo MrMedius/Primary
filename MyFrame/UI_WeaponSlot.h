@@ -19,9 +19,7 @@ public:
 		}
 		// WeaponSlot_Chosen
 		{
-			float outlineScale = 1.5f;
 			Chosen = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Chosen.png" });
-			Chosen->SetScale(iconSize * outlineScale, iconSize * outlineScale);
 			Chosen->SetFrameAuto(29, 7, 30, 29 * 4, 1, 0, false, true);
 			Chosen->LinkTechniques(rg);
 		}
@@ -31,14 +29,17 @@ public:
 		float gap = 79.0f;
 		for (int i = 0; i < totalIcon; i++)
 		{
+			// WeaponSlot_Icon
 			Icon.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Icon.png" }));
 			Icon[i]->SetPosition(baseX + gap * i, baseY);
 			Icon[i]->SetScale(iconSize, iconSize);
 			Icon[i]->SetFrameAuto(29, 21, 1, 29 * 21, 1, 20.0f, false, true);
 			Icon[i]->LinkTechniques(rg);
+			// WeaponSlot_Icon_Bg
+			float scale = 1.2f;
 			IconBg.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Icon_Bg.png" }));
 			IconBg[i]->SetPosition(baseX + gap * i, baseY);
-			IconBg[i]->SetScale(iconSize, iconSize);
+			IconBg[i]->SetScale(iconSize * scale, iconSize * scale);
 			IconBg[i]->SetFrameAuto(29, 21, 1, 29 * 21, 1, 20.0f, false, true);
 			IconBg[i]->LinkTechniques(rg);
 		}
@@ -125,24 +126,28 @@ public:
 			Chosen->Update(dt);
 			if (chosenIndex >= 0 && chosenIndex < totalIcon)
 			{
-				float posX = SCREEN_WIDTH - 460.0f + 79.0f * chosenIndex;
-				float posY = SCREEN_HEIGHT - 80.0f;
-				Chosen->SetPosition(posX, posY);
+				float outlineScale = 1.25f;
+				auto pos = Icon[chosenIndex]->GetPosition();
+				auto size = Icon[chosenIndex]->GetScale();
+				Chosen->SetPosition(pos.x, pos.y);
+				Chosen->SetScale(size.x * outlineScale, size.y * outlineScale);
 			}
 		}
 	}
 	void Submit(void)
 	{
 		// WeaponSlot_Bg
-		Bg->Submit(Chan::ui);
-		// WeaponSlot_Chosen
-		if (chosenIndex >= 0 && chosenIndex < totalIcon) Chosen->Submit(Chan::ui);
+		Bg->Submit(Chan::ui);		
 		// WeaponSlot_Icon
 		for (size_t i = 0; i < totalIcon; i++)
 		{
 			if (infos[i].state != NONE)
-			{
+			{				
+				// WeaponSlot_Icon_Bg
 				IconBg[i]->Submit(Chan::ui);
+				// WeaponSlot_Chosen
+				if (i == chosenIndex) Chosen->Submit(Chan::ui);
+				// WeaponSlot_Icon
 				Icon[i]->Submit(Chan::ui);
 			}
 		}

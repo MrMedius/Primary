@@ -2,17 +2,14 @@
 #include "ConstantBuffers.h"
 #include "Drawable.h"
 #include <DirectXMath.h>
+#include "Provides.h"
 
 namespace Bind
 {
     class SpriteUVCbuf : public CloningBindable
     {
-    protected:
-        struct UVData
-        {
-            DirectX::XMFLOAT2 uvOffset;
-            DirectX::XMFLOAT2 uvScale;
-        };
+    private:
+        using UVData = SpriteUVTag::value_type;
     public:
         SpriteUVCbuf(Graphics& gfx, UINT slot = 2u);
         void Bind(Graphics& gfx) noxnd override;

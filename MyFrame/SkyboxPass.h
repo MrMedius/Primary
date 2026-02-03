@@ -25,7 +25,7 @@ namespace Rgph
 			using namespace Bind;
 			RegisterSink(DirectBufferSink<RenderTarget>::Make("renderTarget", renderTarget));
 			RegisterSink(DirectBufferSink<DepthStencil>::Make("depthStencil", depthStencil));
-			AddBind(std::make_shared<CubeTexture>(gfx, "asset\\Images\\SpaceBox"));
+			AddBind(std::make_shared<CubeTexture>(gfx, "asset\\Images\\Skybox\\Ablaze"));
 			AddBind(Stencil::Resolve(gfx, Stencil::Mode::DepthFirst));
 			AddBind(Sampler::Resolve(gfx, Sampler::Type::Bilinear));
 			AddBind(Rasterizer::Resolve(gfx, true));

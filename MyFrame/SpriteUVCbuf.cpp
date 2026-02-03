@@ -1,6 +1,5 @@
 #include "SpriteUVCbuf.h"
 #include <cassert>
-#include "Provides.h"
 
 namespace Bind
 {

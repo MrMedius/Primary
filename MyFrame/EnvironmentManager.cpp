@@ -14,7 +14,9 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 }
 
 void EnvironmentManager::Update(float dt)
-{}
+{
+	blockTiled->Update(dt);
+}
 
 void EnvironmentManager::Submit(void)
 {

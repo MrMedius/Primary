@@ -76,9 +76,6 @@
     <Filter Include="Source Files\Bindable\Dyanmics">
       <UniqueIdentifier>{0a7a08c6-4af4-4253-8dd9-3076ff4c4ce9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Bindable\ShaderDyanmics">
-      <UniqueIdentifier>{15fd18e1-4d96-4fec-86cb-f65363264f33}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Tool">
       <UniqueIdentifier>{cdc9966f-a965-4341-b93a-08314f78cea9}</UniqueIdentifier>
     </Filter>
@@ -160,7 +157,7 @@
     <Filter Include="Header Files\UI">
       <UniqueIdentifier>{9ca01b60-cd95-440a-9cac-39118079381e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\3D\PostProcessing">
+    <Filter Include="Shader\PostProcessing">
       <UniqueIdentifier>{1523bd4e-3c8e-4368-b0ce-1e71b8b43f13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -461,6 +458,9 @@
     </ClCompile>
     <ClCompile Include="Enemy_Green_0.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldTransitionCbuf.cpp">
+      <Filter>Source Files\Bindable\ConstantBuffers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -902,6 +902,9 @@
     <ClInclude Include="Enemy_Green_0.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="FieldTransitionCbuf.h">
+      <Filter>Header Files\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HW3D_01.rc">
@@ -957,13 +960,13 @@
       <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="Blur_PS.hlsl">
-      <Filter>Shader\3D\PostProcessing</Filter>
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="BlurOutline_PS.hlsl">
-      <Filter>Shader\3D\PostProcessing</Filter>
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="Fullscreen_VS.hlsl">
-      <Filter>Shader\3D\PostProcessing</Filter>
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="General_VS.hlsl">
       <Filter>Shader\3D</Filter>
@@ -1010,6 +1013,18 @@
     <FxCompile Include="Sprite2DPolygon_VS.hlsl">
       <Filter>Shader\2D</Filter>
     </FxCompile>
+    <FxCompile Include="CubeTiled_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3D_Mask_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3D_Mask_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="CubeTiled_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="LightVectorData.hlsli">
@@ -1034,6 +1049,9 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="Transform2D.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="MathHelpers.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>

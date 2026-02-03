@@ -7,6 +7,8 @@
 #include "Stencil.h"
 #include "Rasterizer.h"
 
+#include "Job.h"
+
 class Graphics;
 
 namespace Rgph
@@ -26,5 +28,30 @@ namespace Rgph
 			AddBind( Stencil::Resolve( gfx,Stencil::Mode::Write ) );
 			AddBind( Rasterizer::Resolve( gfx,false ) );
 		}
+		void Execute(Graphics& gfx) const noxnd override
+		{
+			EnsureDummyRT(gfx);
+			// bind all states/shaders (this may override OM)
+			BindAll(gfx);
+			// bind dummyRT + DS to ensure that RT is not empty during Draw
+			dummyRT->BindAsBuffer(gfx, depthStencil.get());
+			// do jobs
+			for (const auto& j : jobs)
+			{
+				j.Execute(gfx);
+			}
+		}
+	private:
+		void EnsureDummyRT(Graphics& gfx) const
+		{
+			if (!dummyRT)
+			{
+				const UINT w = depthStencil->GetWidth();
+				const UINT h = depthStencil->GetHeight();
+				dummyRT = std::make_unique<Bind::ShaderInputRenderTarget>(gfx, w, h, 0u);
+			}
+		}
+	private:
+		mutable std::unique_ptr<Bind::ShaderInputRenderTarget> dummyRT;
 	};
 }

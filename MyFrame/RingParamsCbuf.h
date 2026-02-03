@@ -1,19 +1,14 @@
 #pragma once
 #include "ConstantBuffers.h"
 #include "Drawable.h"
+#include "Provides.h" 
 
 namespace Bind
 {
     class RingParamsCbuf : public CloningBindable
     {
-    protected:
-        struct RingData
-        {
-            float startAngleDeg;
-            float endAngleDeg;
-            float ratio;
-            float padding;
-        };
+    private:
+        using RingData = RingParamsTag::value_type;
     public:
         RingParamsCbuf(Graphics& gfx, UINT slot = 0u);
         void Bind(Graphics& gfx) noxnd override;

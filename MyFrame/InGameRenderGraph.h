@@ -37,7 +37,7 @@ namespace Rgph
 			Gauss,
 			Box,
 		} kernelType = KernelType::Gauss;
-		static constexpr int maxRadius = 7;
+		static constexpr int maxRadius = 100;
 		int radius = 4;
 		float sigma = 2.0f;
 		std::shared_ptr<Bind::CachingPixelConstantBufferEX> blurKernel;

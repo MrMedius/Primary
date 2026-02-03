@@ -60,6 +60,7 @@ CubeBase::CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size)
 			Step mask("outlineMask");
 
 			mask.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
+			mask.AddBindable(NullPixelShader::Resolve(gfx));
 
 			mask.AddBindable(std::move(tcb));
 

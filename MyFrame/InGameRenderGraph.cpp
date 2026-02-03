@@ -189,7 +189,7 @@ namespace Rgph
 			}
 
 			bool radChange = ImGui::SliderInt("Radius", &radius, 0, maxRadius);
-			bool sigChange = ImGui::SliderFloat("Sigma", &sigma, 0.1f, 10.0f);
+			bool sigChange = ImGui::SliderFloat("Sigma", &sigma, 0.1f, 100.0f);
 			if (radChange || sigChange || filterChanged)
 			{
 				if (kernelType == KernelType::Gauss)
