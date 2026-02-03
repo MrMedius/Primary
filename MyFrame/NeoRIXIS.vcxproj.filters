@@ -907,7 +907,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="HW3D_01.rc">
+    <ResourceCompile Include="NeoRIXIS.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
