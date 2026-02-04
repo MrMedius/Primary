@@ -8,6 +8,7 @@
 #include "Enemy_Red_1.h"
 #include "Enemy_Green_0.h"
 #include "Enemy_Blue_0.h"
+#include "Enemy_Blue_1.h"
 //#include "EnemyBoss.h"
 
 class EnemyManager
@@ -24,10 +25,11 @@ private:
 	Keyboard* pKbd;
 	Score* pScore;
 
-	std::vector<Enemy_Red_0*> EnemyRed0;
-	std::vector<Enemy_Red_1*> EnemyRed1;
+	std::vector<Enemy_Red_0*>	EnemyRed0;
+	std::vector<Enemy_Red_1*>	EnemyRed1;
 	std::vector<Enemy_Green_0*> EnemyGreen0;
-	std::vector<Enemy_Blue_0*> EnemyBlue0;
+	std::vector<Enemy_Blue_0*>	EnemyBlue0;
+	std::vector<Enemy_Blue_1*>	EnemyBlue1;
 	//EnemyBoss* pEnemyBoss;
 
 	int Interval{ 100 };

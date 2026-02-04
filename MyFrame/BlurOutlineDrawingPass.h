@@ -24,10 +24,15 @@ namespace Rgph
 			using namespace Bind;
 			renderTarget = std::make_unique<ShaderInputRenderTarget>( gfx,fullWidth / 2,fullHeight / 2,0 );
 			AddBind( VertexShader::Resolve( gfx,"Solid_VS.cso" ) );
-			AddBind( PixelShader::Resolve( gfx,"Solid_PS.cso" ) );
+
+
+			AddBind( PixelShader::Resolve( gfx,"SolidOutline_PS.cso" ) );
+			AddBindSink<Bind::CachingPixelConstantBufferEX>("blending");
+
 			AddBind( Stencil::Resolve( gfx,Stencil::Mode::Mask ) );
 			AddBind( Blender::Resolve( gfx,false ) );
 			RegisterSource( DirectBindableSource<Bind::RenderTarget>::Make( "scratchOut",renderTarget ) );
+
 		}
 		void Execute(Graphics& gfx) const noxnd override
 		{

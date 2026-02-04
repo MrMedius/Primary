@@ -76,8 +76,19 @@ namespace Rgph
 				AddGlobalSource( DirectBindableSource<Bind::CachingPixelConstantBufferEX>::Make( "blurDirection",blurDirection ) );
 			}
 		}
+		// setup edge color blend constant buffers 
+		{ 
+			{ 
+				Dcb::RawLayout l; l.Add<Dcb::Float3>("colorBlending"); 
+				Dcb::Buffer buf{ std::move(l) }; 
+				buf["colorBlending"] = DirectX::XMFLOAT3{ 139.0f,0.0f,0.0f };
+				colorBlender = std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 0); 
+				AddGlobalSource(DirectBindableSource<Bind::CachingPixelConstantBufferEX>::Make("colorBlender", colorBlender)); 
+			} 
+		}
 		{
 			auto pass = std::make_unique<BlurOutlineDrawingPass>( gfx,"outlineDraw",gfx.GetWidth(),gfx.GetHeight() );
+			pass->SetSinkLinkage("blending", "$.colorBlender");
 			AppendPass( std::move( pass ) );
 		}
 		{
@@ -231,5 +242,28 @@ namespace Rgph
 	void Rgph::InGameRenderGraph::DumpShadowMap(Graphics& gfx, const std::string& path)
 	{
 		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMap")).DumpShadowMap(gfx, path);
+	}
+
+	void InGameRenderGraph::Update(float dt) noxnd
+	{
+		if (sigma > 10.0f)
+		{
+			sigma -= dt * 30.0f;
+			radius = static_cast<int>(sigma);
+
+			if (kernelType == KernelType::Gauss)
+				SetKernelGauss(radius, sigma);
+			else
+				SetKernelBox(radius);
+		}
+	}
+
+	void Rgph::InGameRenderGraph::Interaction()
+	{
+		if (sigma < 50.0f)
+		{
+			sigma += 10.0f;
+
+		}
 	}
 }

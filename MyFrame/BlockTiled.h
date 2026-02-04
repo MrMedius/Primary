@@ -1,17 +1,17 @@
 #pragma once
-#include "ObjectBase.h"
+#include "Environment.h"
 #include "RenderGraph.h"
 #include "CubeTiled.h"
 #include "Channels.h"
 #include "Surface.h"
 #include "Player.h"
 
-class BlockTiled : public ObjectBase
+class BlockTiled : public Environment
 {
 public:
 	BlockTiled(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT2 numTiled, bool onCollision)
 		:
-		ObjectBase(tag),
+		Environment(tag),
 		visualPre(gfx, size, numTiled)
 	{
 		pPlayer = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
@@ -25,6 +25,7 @@ public:
 		// graphics init
 		visualPre.LinkTechniques(rg);
 		visualPre.SetPosition(transInfo.position);
+		visualPre.GameStartExpend();
 
 		// collider init
 		DirectX::XMFLOAT3 localHalf{ 0.5f, 0.5f, 0.5f };
@@ -34,7 +35,10 @@ public:
 		boxColliderWire->LinkTechniques(rg);
 #endif
 	}
-	void OnEnable(void) override {}
+	void OnEnable(void) override 
+	{
+		visualPre.GameStartExpend();
+	}
 	void Update(float dt) override
 	{
 		auto playerPos = pPlayer->GetPosition();
@@ -73,10 +77,10 @@ public:
 		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
+	void OnCollide(Character* other) override {}
 private:
 	CubeTiled visualPre;
 	Player* pPlayer;
 	int fieldMode{ 0 };
 	bool fieldPlay{ false };
 };
-

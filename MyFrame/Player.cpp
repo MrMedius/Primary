@@ -6,6 +6,7 @@
 #include "Enemy_Red_1.h"
 #include "Enemy_Green_0.h"
 #include "Enemy_Blue_0.h"
+#include "Enemy_Blue_1.h"
 
 void Player::Update(float dt)
 {
@@ -78,19 +79,21 @@ void Player::DoMove(float ratio)
 
 bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 {
-	// ƒvƒŒƒCƒ„[‚ğUŒ‚‚Å‚«‚é‘S‚Ä‚Ì“G‚ğ’T‚·
-	std::vector<Enemy_Red_0*>	enemy_Red_0	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_0>(character_Enemy_Red_0);
-	std::vector<Enemy_Red_1*>	enemy_Red_1	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_1>(character_Enemy_Red_1);
-	std::vector<Enemy_Green_0*>	enemy_Green_0 =	ObjectCodex::FindActiveObjectsByTag<Enemy_Green_0>(character_Enemy_Green_0);
-	std::vector<Enemy_Blue_0*>	enemy_Blue_0  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Blue_0>(character_Enemy_Blue_0);
-
-	// ‘S‚Ä‚Ì“G‚ğ®—‚·‚é
 	std::vector<Enemy*> enemies;
-	enemies.reserve(enemy_Red_0.size() + enemy_Red_1.size() + enemy_Green_0.size() + enemy_Blue_0.size());
-	enemies.insert(enemies.end(), enemy_Red_0.begin(),  enemy_Red_0.end());
-	enemies.insert(enemies.end(), enemy_Red_1.begin(),  enemy_Red_1.end());
-	enemies.insert(enemies.end(), enemy_Green_0.begin(), enemy_Green_0.end());
-	enemies.insert(enemies.end(), enemy_Blue_0.begin(), enemy_Blue_0.end());
+	for (auto tag : {
+		character_Enemy_Red_0,
+		character_Enemy_Red_1,
+		character_Enemy_Green_0,
+		character_Enemy_Green_1,
+		character_Enemy_Blue_0,
+		character_Enemy_Blue_1
+		}) {
+		// ƒvƒŒƒCƒ„[‚ğUŒ‚‚Å‚«‚é‘S‚Ä‚Ì“G‚ğ’T‚·
+		auto found = ObjectCodex::FindActiveObjectsByTag<Enemy>(tag);
+		// ‘S‚Ä‚Ì“G‚ğ®—‚·‚é
+		enemies.reserve(enemies.size() + found.size());
+		enemies.insert(enemies.end(), found.begin(), found.end());
+	}
 
 	for (auto e : enemies)
 	{

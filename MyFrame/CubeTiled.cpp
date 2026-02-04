@@ -30,65 +30,30 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 		vertices[ 2].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[ 2].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		numTiled.y };
 		vertices[ 3].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[ 3].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x, numTiled.y };
 		// front face																		 
-		vertices[ 4].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[ 4].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[ 5].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[ 5].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.25f };
-		vertices[ 6].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 6].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[ 7].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 7].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.5f };
+		vertices[ 4].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[ 4].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
+		vertices[ 5].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[ 5].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.0f };
+		vertices[ 6].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 6].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		1.0f };
+		vertices[ 7].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 7].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	1.0f };
 		// down face																		 
-		vertices[ 8].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 8].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.75f };
-		vertices[ 9].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 9].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.75f };
+		vertices[ 8].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 8].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
+		vertices[ 9].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 9].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.0f };
 		vertices[10].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[10].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		1.0f };
 		vertices[11].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[11].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	1.0f };
 		// back face																							    
-		vertices[12].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[12].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[13].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[13].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.25f };
-		vertices[14].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[14].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[15].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[15].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.5f };
+		vertices[12].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[12].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
+		vertices[13].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[13].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.0f };
+		vertices[14].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[14].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		numTiled.y };
+		vertices[15].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[15].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	numTiled.y };
 		// left face																		 
-		vertices[16].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[16].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[17].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[17].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.25f };
-		vertices[18].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[18].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[19].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[19].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.5f };
+		vertices[16].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[16].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
+		vertices[17].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[17].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.0f };
+		vertices[18].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[18].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		1.0f };
+		vertices[19].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[19].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	1.0f };
 		// right face																		 
-		vertices[20].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[20].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[21].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[21].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.25f };
-		vertices[22].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[22].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[23].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[23].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.5f };
-	}
-	vertices.Resize(24u);
-	{
-		float side = 0.5f;
-
-		// upper face
-		vertices[ 0].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[ 0].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
-		vertices[ 1].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[ 1].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.0f };
-		vertices[ 2].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[ 2].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		numTiled.y };
-		vertices[ 3].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[ 3].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x, numTiled.y };
-		// front face																		 
-		vertices[ 4].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[ 4].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[ 5].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[ 5].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.25f };
-		vertices[ 6].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 6].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[ 7].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 7].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.5f };
-		// down face																		 
-		vertices[ 8].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[ 8].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.75f };
-		vertices[ 9].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[ 9].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.75f };
-		vertices[10].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[10].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		1.0f };
-		vertices[11].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[11].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	1.0f };
-		// back face																							    
-		vertices[12].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[12].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[13].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[13].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.25f };
-		vertices[14].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[14].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[15].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[15].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.x,	0.5f };
-		// left face																		 
-		vertices[16].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side,  side }; vertices[16].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[17].Attr<dvL::Position3D>() = XMFLOAT3{ -side,  side, -side }; vertices[17].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.25f };
-		vertices[18].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side,  side }; vertices[18].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[19].Attr<dvL::Position3D>() = XMFLOAT3{ -side, -side, -side }; vertices[19].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.5f };
-		// right face																		 
-		vertices[20].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[20].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.25f };
-		vertices[21].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[21].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.25f };
-		vertices[22].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[22].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.5f };
-		vertices[23].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[23].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.5f };
+		vertices[20].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side, -side }; vertices[20].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		0.0f };
+		vertices[21].Attr<dvL::Position3D>() = XMFLOAT3{  side,  side,  side }; vertices[21].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	0.0f };
+		vertices[22].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side, -side }; vertices[22].Attr<dvL::Texture2D>() = XMFLOAT2{	0.0f,		1.0f };
+		vertices[23].Attr<dvL::Position3D>() = XMFLOAT3{  side, -side,  side }; vertices[23].Attr<dvL::Texture2D>() = XMFLOAT2{ numTiled.y,	1.0f };
 	}
 
 	std::vector<unsigned short> indices;
@@ -139,20 +104,24 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 			top.AddBindable(Rasterizer::Resolve(gfx, false));
 			top.AddBindable(tcb);
 			top.AddBindable(ftcb);
-			top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_noise_cloud.png", 1u));
+			top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_noise_cloud.png", 1u));
 
-			// separate top and body to allow different textures
-			Step body = top;
-
-			// top face
-			top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_field_top.png"));
-			top.SetDrawIndexed(6u, 0u);
+			top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_field.png"));
 			shade.AddStep(std::move(top));
 
-			// body faces
-			body.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_field.png"));
-			body.SetDrawIndexed(30u, 6u);
-			shade.AddStep(std::move(body));
+
+			//// separate top and body to allow different textures
+			//Step body = top;
+
+			//// top face
+			//top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_field_top.png"));
+			//top.SetDrawIndexed(6u, 0u);
+			//shade.AddStep(std::move(top));
+
+			//// body faces
+			//body.AddBindable(Texture::Resolve(gfx, "asset\\Images\\block_field.png"));
+			//body.SetDrawIndexed(30u, 6u);
+			//shade.AddStep(std::move(body));
 		}
 		AddTechnique(std::move(shade));
 	}
@@ -240,7 +209,7 @@ void CubeTiled::Update(float dt, const XMFLOAT3& centerWorld)
 
 		FT.radius = FT.t * FT.maxRadius;
 
-		if (FT.t >= 1.0f)
+		if (FT.t >= 1.0f && FT.mode != 0)
 		{
 			// start Recover automaticly after Expend
 			StartRecover(FT.mode);
@@ -269,9 +238,10 @@ void CubeTiled::StartExpand(const XMFLOAT3& centerWorld, int mode)
 	FT.colorFrom = FT.colorTo;
 	switch (mode)
 	{
-	case 1: FT.colorTo = XMFLOAT3{ 1.0f,0.0f,0.0f }; break;
-	case 2: FT.colorTo = XMFLOAT3{ 0.0f,1.0f,0.0f }; break;
-	case 3: FT.colorTo = XMFLOAT3{ 0.0f,0.0f,3.0f }; break;
+	case 0: FT.colorTo = FT.colorBase; break;
+	case 1: FT.colorTo = XMFLOAT3{ 0.75f,0.0f,0.30f }; break;
+	case 2: FT.colorTo = XMFLOAT3{ 0.0f,0.75f,0.45f }; break;
+	case 3: FT.colorTo = XMFLOAT3{ 0.0f,0.30f,0.75f }; break;
 	}
 	// core
 	FT.state = FieldTransitionState::Expand;
@@ -302,4 +272,10 @@ void CubeTiled::FinishRecover()
 {
 	FT.state = FieldTransitionState::None;
 	FT.mode = 0;
+}
+
+void CubeTiled::GameStartExpend()
+{
+	FT.colorTo = { 0.0f,0.0f,0.0f };
+	StartExpand({ 0.0f,0.0f,0.0f }, 0);
 }

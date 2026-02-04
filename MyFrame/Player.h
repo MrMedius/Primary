@@ -54,7 +54,7 @@ public:
 		SetSize({ 5.0f, 5.0f, 0.0f });
 		SetCollisionSize({ 1.5f, 4.0f, 2.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(10.0f);
+		SetHpMax(1.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
@@ -102,7 +102,7 @@ public:
 	void OnEnable(void) override
 	{
 		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
-		SetPosition(XMFLOAT3(4.0f, 20.0f, 4.0f));
+		SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 		ResetHpCurrent();
 		SetIsDeath(false);
 		SetIsGameOver(false);

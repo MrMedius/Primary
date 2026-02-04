@@ -9,5 +9,6 @@ namespace Rgph
 	{
 	public:
 		InUserInterfaceRenderGraph(Graphics& gfx);
+		void Interaction() override {};
 	};
 }

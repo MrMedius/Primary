@@ -116,7 +116,7 @@ float4 main(
     float alpha = opacity;
 
     // =========================================================
-    // MODE 0: Normal (clean radial smoothstep) never use
+    // MODE 0: Normal (clean radial smoothstep)
     // =========================================================
     if (trMode == 0)
     {

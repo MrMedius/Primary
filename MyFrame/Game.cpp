@@ -35,7 +35,7 @@ Game::Game(const std::string& commandLine)
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	// Objects
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 4.0f,20.0f,4.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
 }
@@ -120,6 +120,7 @@ void Game::Update(float dt)
 					pEnemyManager->Update(dt, pPlayer->GetPosition());
 				}
 			}
+			gameRG.Update(dt);
 		}
 		break;
 	case SCENE_RESULT:

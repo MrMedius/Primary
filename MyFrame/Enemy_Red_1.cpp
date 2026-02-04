@@ -169,14 +169,8 @@ void Enemy_Red_1_AttackState::OnEnter(Enemy_Red_1* owner)
 {
 	// set anime
 	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
-	FrameNoOld = 0;
 	// make sure no repeated hits
 	HaveHit = false;
-	// set attack dash direction
-	XMFLOAT3 pVec = owner->GetPosition();
-	XMFLOAT3 tVec = owner->GetAttackTarget()->GetPosition();
-	AttackVec = { tVec.x - pVec.x,0.0f,tVec.z - pVec.z };
-	NormalizeXZ(AttackVec);
 }
 
 void Enemy_Red_1_AttackState::OnExit(Enemy_Red_1* owner)

@@ -1,16 +1,16 @@
 #pragma once
-#include "ObjectBase.h"
+#include "Environment.h"
 #include "RenderGraph.h"
 #include "CubeBlock.h"
 #include "Channels.h"
 #include "Surface.h"
 
-class Block : public ObjectBase
+class Block : public Environment
 {
 public:
 	Block(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, bool onCollision)
 		:
-		ObjectBase(tag),
+		Environment(tag),
 		visualPre(gfx, size)
 	{
 		// parameters init
@@ -41,6 +41,7 @@ public:
 		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
+	void OnCollide(Character* other) override {}
 private:
 	CubeBase visualPre;
 };

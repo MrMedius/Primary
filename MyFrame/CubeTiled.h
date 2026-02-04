@@ -20,6 +20,7 @@ public:
     void StartRecover(int mode);
     void FinishRecover();
     int GetPlayMode() { return FT.mode; }
+	void GameStartExpend();
     FieldTransitionTag::value_type Provide(FieldTransitionTag) const noexcept override 
     {
         return {
@@ -45,11 +46,11 @@ private:
         int mode = 0;
         // animation control
         XMFLOAT3 center = { 0,0,0 };
-        float duration = 5.00f;           // total transition time (second)
+        float duration = 2.00f;           // total transition time (second)
         float interval = 1.0f / duration; // every step of transition progress
         float t = 0.0f;                   // transition progress
         float maxRadius = 20.0f;          // each increase in radius
-        float effectRange = 300.0f;
+        float effectRange = 200.0f;
         // shader params
         float radius = 0.0f;
         float softness = 5.0f;

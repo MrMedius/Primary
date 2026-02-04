@@ -9,5 +9,6 @@ namespace Rgph
 	{
 	public:
 		ScaleOutlineRenderGraph(Graphics& gfx);
+		void Interaction() override {};
 	};
 }

@@ -18,6 +18,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, character_Enemy_Blue_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
 	}
 	for (int i = 0;i < 30;i++)
 	{
@@ -25,6 +26,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_1>(character_Enemy_Red_1)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Green_0>(character_Enemy_Green_0)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Blue_0>(character_Enemy_Blue_0)->Deactivate();
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Blue_1>(character_Enemy_Blue_1)->Deactivate();
 	}
 }
 
@@ -47,9 +49,9 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	 	std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> d(-30.0f, 30.0f);
 		XMFLOAT3 pos = { position.x + d(rng),10.0f,position.z + d(rng) };
-		if (pos.x > MapEdgeLeftAndRight) pos.x = MapEdgeLeftAndRight - 20.0f;
+		if (pos.x >  MapEdgeLeftAndRight) pos.x =  MapEdgeLeftAndRight - 20.0f;
 		if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + 20.0f;
-		if (pos.z > MapEdgeFrontAndBack) pos.z = MapEdgeFrontAndBack - 20.0f;
+		if (pos.z >  MapEdgeFrontAndBack) pos.z =  MapEdgeFrontAndBack - 20.0f;
 		if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + 20.0f;
 
 	//	NewEnemy = false;
@@ -66,6 +68,8 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 		EnemyGreen0.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3)
 		EnemyBlue0.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, pos));
+	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6)
+		EnemyBlue1.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, character_Enemy_Blue_1, pos));
 	//#endif
 
 	for (int i = 0; i < EnemyRed0.size(); i++)
@@ -112,7 +116,17 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 			pScore->CalculateScore(50);
 		}
 	}
-
+	for (int i = 0; i < EnemyBlue1.size(); i++)
+	{
+		// 対象かアクティブでいれば更新する、そうでない場合は容器から削除する
+		if (EnemyBlue1[i]->IsActive())
+			EnemyBlue1[i]->Update(dt);
+		else
+		{
+			EnemyBlue1.erase(EnemyBlue1.begin() + i);
+			pScore->CalculateScore(50);
+		}
+	}
 	//if (pEnemyBoss->IsActive()) pEnemyBoss->Update();
 }
 
@@ -125,8 +139,9 @@ void EnemyManager::Submit(void)
 	for (int i = 0; i < EnemyGreen0.size(); i++)
 		if (EnemyGreen0[i]->IsActive())		EnemyGreen0[i]->Submit();
 	for (int i = 0; i < EnemyBlue0.size(); i++)
-		if (EnemyBlue0[i]->IsActive())	EnemyBlue0[i]->Submit();
-
+		if (EnemyBlue0[i]->IsActive())		EnemyBlue0[i]->Submit();
+	for (int i = 0; i < EnemyBlue1.size(); i++)
+		if (EnemyBlue1[i]->IsActive())		EnemyBlue1[i]->Submit();
 	//if (pEnemyBoss->IsActive()) pEnemyBoss->Draw();
 }
 
@@ -136,4 +151,5 @@ void EnemyManager::Reset(void)
 	EnemyRed1.clear();
 	EnemyGreen0.clear();
 	EnemyBlue0.clear();
+	EnemyBlue1.clear();
 }

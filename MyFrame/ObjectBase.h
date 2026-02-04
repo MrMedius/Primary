@@ -14,14 +14,12 @@ enum Object_Type_Tag
 	Item_Type_None = 0x000,
 
 	character_Player = 0x999,
-
 	character_Enemy_Red_0  = 0x010,
 	character_Enemy_Red_1  = 0x011,
 	character_Enemy_Green_0 = 0x020,
 	character_Enemy_Green_1 = 0x021,
 	character_Enemy_Blue_0 = 0x030,
 	character_Enemy_Blue_1 = 0x031,
-
 	character_Enemy_Boss = 0x041,
 
 	environment_Block = 0x101,

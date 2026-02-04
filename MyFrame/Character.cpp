@@ -1,17 +1,8 @@
 #include <math.h>
 #include "Character.h"
+#include "Environment.h"
 #include "ObjectCodex.h"
 #include "Collision.h"
-
-#include "Block.h"
-#include "BlockTiled.h"
-#include "BlockInvisible.h"
-
-#include "Player.h"
-#include "Enemy_Red_0.h"
-#include "Enemy_Red_1.h"
-#include "Enemy_Green_0.h"
-#include "Enemy_Blue_0.h"
 
 void Character::MapItemCollide(void)
 {
@@ -37,36 +28,37 @@ void Character::MapItemCollide(void)
 ------------------------------------------------------------------------------*/
 	OnFloor = false; //先ずは床にいないを想定する
 
-	// 全てのマップオブジェクトを探す
-	std::vector<Block*> block =						ObjectCodex::FindActiveObjectsByTag<Block>(environment_Block);
-	std::vector<BlockTiled*> blockTiled =			ObjectCodex::FindActiveObjectsByTag<BlockTiled>(environment_BlockTiled);
-	std::vector<BlockInvisible*> blockInvisible =	ObjectCodex::FindActiveObjectsByTag<BlockInvisible>(environment_BlockInvisible);
-
-
-	// 全てのマップオブジェクトをマップオブジェクトをして整理する
-	std::vector<ObjectBase*> mapItems;
-	mapItems.reserve(block.size() + blockTiled.size() + blockInvisible.size());
-	mapItems.insert(mapItems.end(),	block.begin(),			block.end());
-	mapItems.insert(mapItems.end(),	blockTiled.begin(),		blockTiled.end());
-	mapItems.insert(mapItems.end(), blockInvisible.begin(), blockInvisible.end());
+	std::vector<Environment*> mapEnvironment;
+	for (auto tag : {
+		environment_Block,
+		environment_BlockTiled,
+		environment_BlockInvisible
+		}) {
+		// 全てのマップオブジェクトを探す
+		auto found = ObjectCodex::FindActiveObjectsByTag<Environment>(tag);
+		// 全てのマップオブジェクトをマップオブジェクトをして整理する
+		mapEnvironment.reserve(mapEnvironment.size() + found.size());
+		mapEnvironment.insert(mapEnvironment.end(), found.begin(), found.end());
+	}
 
 	// ループでコリジョン判断
-	for (auto b : mapItems)
+	for (auto e : mapEnvironment)
 	{
-		if (this == b) continue;
-
-		 bool isCollide = CollisionSystem::IsOverlap(this->boxCollider, b->GetBoxCollider());
+		 bool isCollide = CollisionSystem::IsOverlap(this->boxCollider, e->GetBoxCollider());
 		
 		if (isCollide)
 		{
-			auto ItemPosition = b->GetPosition();
-			auto ItemCollHalf = b->GetCollisionSize();
+			auto ItemPosition = e->GetPosition();
+			auto ItemCollHalf = e->GetCollisionSize();
 			ItemTop =	 ItemPosition.y + ItemCollHalf.y;	// ブロックの上端
 			ItemBottom = ItemPosition.y - ItemCollHalf.y;	// ブロックの下端
 			ItemRight =	 ItemPosition.x + ItemCollHalf.x;	// ブロックの右端
 			ItemLeft =	 ItemPosition.x - ItemCollHalf.x;	// ブロックの左端
 			ItemBack =	 ItemPosition.z + ItemCollHalf.z;	// ブロックの後端
 			ItemFront =	 ItemPosition.z - ItemCollHalf.z;	// ブロックの前端
+
+			// 環境要素の当たり処理を呼び出す
+			e->OnCollide(this);
 
 			// 上から下に当たった(乗った)
 			if (OwnerOldBottom >= ItemTop && OwnerBottom <= ItemTop)
@@ -121,21 +113,22 @@ void Character::MapItemCollide(void)
 /*------------------------------------------------------------------------------
    MapCharacter
 ------------------------------------------------------------------------------*/
-	// 全てのキャラクターを探す
-	std::vector<Player*> player = ObjectCodex::FindActiveObjectsByTag<Player>(character_Player);
-	std::vector<Enemy_Red_0*>	enemy_Red_0	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_0>(character_Enemy_Red_0);
-	std::vector<Enemy_Red_1*>	enemy_Red_1	  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Red_1>(character_Enemy_Red_1);
-	std::vector<Enemy_Green_0*>	enemy_Green_0 =	ObjectCodex::FindActiveObjectsByTag<Enemy_Green_0>(character_Enemy_Green_0);
-	std::vector<Enemy_Blue_0*>	enemy_Blue_0  =	ObjectCodex::FindActiveObjectsByTag<Enemy_Blue_0>(character_Enemy_Blue_0);
-
-	// 全てのキャラクターを整理する
 	std::vector<Character*> mapCharacters;
-	mapCharacters.reserve(player.size() + enemy_Red_0.size() + enemy_Red_1.size() + enemy_Green_0.size() + enemy_Blue_0.size());
-	mapCharacters.insert(mapCharacters.end(), player.begin(), player.end());
-	mapCharacters.insert(mapCharacters.end(), enemy_Red_0.begin(),	 enemy_Red_0.end());
-	mapCharacters.insert(mapCharacters.end(), enemy_Red_1.begin(),   enemy_Red_1.end());
-	mapCharacters.insert(mapCharacters.end(), enemy_Green_0.begin(), enemy_Green_0.end());
-	mapCharacters.insert(mapCharacters.end(), enemy_Blue_0.begin(),  enemy_Blue_0.end());
+	for (auto tag : {
+		character_Player,
+		character_Enemy_Red_0,
+		character_Enemy_Red_1,
+		character_Enemy_Green_0,
+		character_Enemy_Green_1,
+		character_Enemy_Blue_0,
+		character_Enemy_Blue_1
+		}) {
+		// 全てのキャラクターを探す
+		auto found = ObjectCodex::FindActiveObjectsByTag<Character>(tag);
+		// 全てのキャラクターを整理する
+		mapCharacters.reserve(mapCharacters.size() + found.size());
+		mapCharacters.insert(mapCharacters.end(), found.begin(), found.end());
+	}
 
 	// ループでコリジョン判断
 	for (auto c : mapCharacters)
@@ -155,6 +148,10 @@ void Character::MapItemCollide(void)
 			ItemBack =	 ItemPosition.z + ItemCollHalf.z;	// キャラクターの後端
 			ItemFront =	 ItemPosition.z - ItemCollHalf.z;	// キャラクターの前端
 
+			// 押し返す割合
+			float push_rate = 0.2f; 
+			float push_rate_half = push_rate / 2.0f;
+
 			// 上から下に当たった(乗った)
 			if (OwnerOldBottom >= ItemTop && OwnerBottom <= ItemTop)
 			{
@@ -167,7 +164,7 @@ void Character::MapItemCollide(void)
 
 				float UpOrDown = (c->GetPosition().z - PositionOld.z > 0.0f) ? 1.0f : -1.0f;
 				float RightOrLeft = (c->GetPosition().x - PositionOld.x > 0.0f) ? 1.0f : -1.0f;
-				c->CalculateMoveVelocity(MoveAccel * 0.1f * RightOrLeft, 0.0f, MoveAccel * 0.1f * UpOrDown);
+				c->CalculateMoveVelocity(MoveAccel* push_rate* RightOrLeft, 0.0f, MoveAccel* push_rate* UpOrDown);
 
 				// 地面に乗っている
 				OnFloor = true;
@@ -189,7 +186,7 @@ void Character::MapItemCollide(void)
 				transInfo.position.x = ItemLeft - CollHalf.x - 0.1f; // 場所を固定
 
 				float UpOrDown = (c->GetPosition().z - PositionOld.z > 0.0f) ? 1.0f : -1.0f;
-				c->CalculateMoveVelocity(MoveAccel * 0.2f, 0.0f, MoveAccel * 0.1f * UpOrDown);
+				c->CalculateMoveVelocity(MoveAccel* push_rate, 0.0f, MoveAccel* push_rate_half * UpOrDown);
 
 				continue;
 			}
@@ -199,7 +196,7 @@ void Character::MapItemCollide(void)
 				transInfo.position.x = ItemRight + CollHalf.x + 0.1f; // 場所を固定
 
 				float UpOrDown = (c->GetPosition().z - PositionOld.z > 0.0f) ? 1.0f : -1.0f;
-				c->CalculateMoveVelocity(-MoveAccel * 0.2f, 0.0f, MoveAccel * 0.1f * UpOrDown);
+				c->CalculateMoveVelocity(-MoveAccel * push_rate, 0.0f, MoveAccel* push_rate_half * UpOrDown);
 
 				continue;
 			}
@@ -209,7 +206,7 @@ void Character::MapItemCollide(void)
 				transInfo.position.z = ItemFront - CollHalf.z - 0.1f; // 場所を固定
 
 				float RightOrLeft = (c->GetPosition().x - PositionOld.x > 0.0f) ? 1.0f : -1.0f;
-				c->CalculateMoveVelocity(MoveAccel * 0.1f * RightOrLeft, 0.0f, MoveAccel * 0.2f);
+				c->CalculateMoveVelocity(MoveAccel * push_rate_half * RightOrLeft, 0.0f, MoveAccel * push_rate);
 
 				continue;
 			}
@@ -219,7 +216,7 @@ void Character::MapItemCollide(void)
 				transInfo.position.z = ItemBack + CollHalf.z + 0.1f; // 場所を固定
 
 				float RightOrLeft = (c->GetPosition().x - PositionOld.x > 0.0f) ? 1.0f : -1.0f;
-				c->CalculateMoveVelocity(MoveAccel * 0.1f * RightOrLeft, 0.0f, -MoveAccel * 0.2f);
+				c->CalculateMoveVelocity(MoveAccel * push_rate_half * RightOrLeft, 0.0f, -MoveAccel * push_rate);
 
 				continue;
 			}
