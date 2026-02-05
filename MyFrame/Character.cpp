@@ -1,6 +1,7 @@
 #include <math.h>
 #include "Character.h"
 #include "Environment.h"
+#include "Effect.h"
 #include "ObjectCodex.h"
 #include "Collision.h"
 
@@ -24,7 +25,7 @@ void Character::MapItemCollide(void)
 	float ItemTop, ItemBottom, ItemRight, ItemLeft, ItemBack, ItemFront;
 
 /*------------------------------------------------------------------------------
-   MapItem
+   MapEnvironment
 ------------------------------------------------------------------------------*/
 	OnFloor = false; //先ずは床にいないを想定する
 
@@ -44,6 +45,8 @@ void Character::MapItemCollide(void)
 	// ループでコリジョン判断
 	for (auto e : mapEnvironment)
 	{
+		if (!e->GetCollisionOnOff()) continue;
+
 		 bool isCollide = CollisionSystem::IsOverlap(this->boxCollider, e->GetBoxCollider());
 		
 		if (isCollide)
@@ -219,6 +222,38 @@ void Character::MapItemCollide(void)
 				c->CalculateMoveVelocity(MoveAccel * push_rate_half * RightOrLeft, 0.0f, -MoveAccel * push_rate);
 
 				continue;
+			}
+		}
+	}
+
+/*------------------------------------------------------------------------------
+   MapEffect_Player
+------------------------------------------------------------------------------*/
+	if(this->Tag != character_Player)
+	{
+		std::vector<Effect*> mapEffect_P;
+		for (auto tag : {
+			effect_Player_Remote_Attack_1,
+			effect_Player_Remote_Attack_2,
+			effect_Player_Remote_Attack_3
+			}) {
+			// 全てのキャラクターを探す
+			auto found = ObjectCodex::FindActiveObjectsByTag<Effect>(tag);
+			// 全てのキャラクターを整理する
+			mapEffect_P.reserve(mapEffect_P.size() + found.size());
+			mapEffect_P.insert(mapEffect_P.end(), found.begin(), found.end());
+		}
+
+		// ループでコリジョン判断
+		for (auto e : mapEffect_P)
+		{
+			if (!e->GetCollisionOnOff()) continue;
+
+			bool isCollide = CollisionSystem::IsOverlap(this->boxCollider, e->GetBoxCollider());
+			
+			if (isCollide)
+			{
+				e->OnCollide(this);
 			}
 		}
 	}

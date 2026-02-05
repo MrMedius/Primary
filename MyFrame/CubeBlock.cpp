@@ -7,7 +7,7 @@
 #include "DynamicConstant.h"
 #include "Channels.h"
 
-CubeBase::CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size)
+CubeLock::CubeLock(Graphics& gfx, DirectX::XMFLOAT3 size)
 {
 	using namespace Bind;
 	namespace dx = DirectX;
@@ -103,32 +103,32 @@ CubeBase::CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size)
 	}
 }
 
-void CubeBase::Update(float dt)
+void CubeLock::Update(float dt)
 {
 	trans.RotateDegreeToRad(1.0f, 1.0f, 1.0f);
 }
 
-void CubeBase::SetPosition(DirectX::XMFLOAT3 pos) noexcept
+void CubeLock::SetPosition(DirectX::XMFLOAT3 pos) noexcept
 {
 	trans.SetPosition(pos.x, pos.y, pos.z);
 }
 
-void CubeBase::SetRotation(float roll, float pitch, float yaw) noexcept
+void CubeLock::SetRotation(float roll, float pitch, float yaw) noexcept
 {
 	trans.SetRotationDegreeToRad(roll, pitch, yaw);
 }
 
-void CubeBase::SetScale(DirectX::XMFLOAT3 size) noexcept
+void CubeLock::SetScale(DirectX::XMFLOAT3 size) noexcept
 {
 	trans.SetScale(size.x, size.y, size.z);
 }
 
-DirectX::XMMATRIX CubeBase::GetTransformXM() const noexcept
+DirectX::XMMATRIX CubeLock::GetTransformXM() const noexcept
 {
 	return trans.GetTransformXM();
 }
 
-void CubeBase::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
+void CubeLock::SpawnControlWindow(Graphics& gfx, const char* name) noexcept
 {
 	if (ImGui::Begin(name))
 	{

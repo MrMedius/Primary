@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "EnvironmentManager.h"
 #include "EnemyManager.h"
+#include "EffectManager.h"
 
 #include "Score.h"
 #include "UI_Game.h"
@@ -63,6 +64,7 @@ private:
 	Player* pPlayer;
 	std::unique_ptr<EnvironmentManager> pEnvironmentManager;
 	std::unique_ptr<EnemyManager> pEnemyManager;
+	std::unique_ptr<EffectManager> pEffectManager;
 	// UI
 	std::unique_ptr<Score> pScore;
 	std::unique_ptr<UI_Title> pUI_Title;

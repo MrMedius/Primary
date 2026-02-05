@@ -12,7 +12,11 @@ using namespace Collider3D;
 enum Object_Type_Tag
 {
 	Item_Type_None = 0x000,
-
+	// Environment
+	environment_Block = 0x101,
+	environment_BlockTiled = 0x102,
+	environment_BlockInvisible = 0x103,
+	// Character
 	character_Player = 0x999,
 	character_Enemy_Red_0  = 0x010,
 	character_Enemy_Red_1  = 0x011,
@@ -21,10 +25,11 @@ enum Object_Type_Tag
 	character_Enemy_Blue_0 = 0x030,
 	character_Enemy_Blue_1 = 0x031,
 	character_Enemy_Boss = 0x041,
-
-	environment_Block = 0x101,
-	environment_BlockTiled = 0x102,
-	environment_BlockInvisible = 0x103,
+	// Effect
+	effect_Player_Remote_Attack_1 = 0x201,
+	effect_Player_Remote_Attack_2 = 0x202,
+	effect_Player_Remote_Attack_3 = 0x203,
+	effect_Player_Remote_Attack_Hit = 0x203,
 };
 
 class ObjectBase
@@ -52,8 +57,8 @@ public:
 protected:
 	void Transform(float X, float Y, float Z)	{ transInfo.position.x += X; transInfo.position.y += Y; transInfo.position.z += Z; }
 	void SetPosition(XMFLOAT3 position)			{ transInfo.position = position; }
-	void Rotation(float X, float Y, float Z)	{ transInfo.rotation.x += X; transInfo.rotation.y += Y; transInfo.rotation.z += Z; }
-	void SetRotate(XMFLOAT3 rotate)				{ transInfo.rotation = rotate; }
+	void Rotate(float X, float Y, float Z)	{ transInfo.rotation.x += X; transInfo.rotation.y += Y; transInfo.rotation.z += Z; }
+	void SetRotation(XMFLOAT3 rotate)				{ transInfo.rotation = rotate; }
 	void Scale(float X, float Y, float Z)		{ transInfo.scale.x += X; transInfo.scale.y += Y; transInfo.scale.z += Z; }
 	void SetSize(XMFLOAT3 size)					{ transInfo.scale = size; }
 protected:

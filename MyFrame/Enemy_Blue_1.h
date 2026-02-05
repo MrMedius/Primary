@@ -10,7 +10,7 @@ class Enemy_Blue_1_DeathState;
 class Enemy_Blue_1 : public Enemy
 {
 public:
-	Enemy_Blue_1(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position)
+	Enemy_Blue_1(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT3 position, Object_Type_Tag tag = character_Enemy_Blue_0)
 		:
 		Enemy(tag)
 	{

@@ -6,6 +6,7 @@
 #include "Mouse.h"
 #include "CameraContainer.h"
 #include "Sprite3D.h"
+#include "Sprite3DNoLit.h"
 #include "Player_ResourceSystem.h"
 
 // ÉvÉåÉCÉÑÅ[èÛë‘ÇÃID
@@ -42,9 +43,11 @@ class Player_ChangeState;
 class Player : public Character
 {
 public:
-	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, Object_Type_Tag tag, CameraContainer* camera, XMFLOAT3 position)
+	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, CameraContainer* camera, XMFLOAT3 position, Object_Type_Tag tag = character_Player)
 		:
 		Character(tag),
+		Gfx(gfx),
+		Rg(rg),
 		pKbd(kbd),
 		pMouse(mouse),
 		pCamera(camera)
@@ -54,7 +57,7 @@ public:
 		SetSize({ 5.0f, 5.0f, 0.0f });
 		SetCollisionSize({ 1.5f, 4.0f, 2.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(1.0f);
+		SetHpMax(5.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
@@ -65,15 +68,42 @@ public:
 		pResource = std::make_unique<ResourceBars>(pWeapon.get());
 
 		// graphics init
-		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{
-				"asset\\Images\\Player\\Player_Usual.png",
-				"asset\\Images\\Player\\Player_Red.png",
-				"asset\\Images\\Player\\Player_Green.png",
-				"asset\\Images\\Player\\Player_Blue.png",
-				"asset\\Images\\Player\\Player_Fever.png"});
-		visualPre->SetPosition(transInfo.position);
-		visualPre->SetScale(transInfo.scale);
-		visualPre->LinkTechniques(rg);
+		// visualPre
+		{
+			visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{
+					"asset\\Images\\Player\\Player_Usual.png",
+					"asset\\Images\\Player\\Player_Red.png",
+					"asset\\Images\\Player\\Player_Green.png",
+					"asset\\Images\\Player\\Player_Blue.png",
+					"asset\\Images\\Player\\Player_Fever.png"});
+			visualPre->SetPosition(transInfo.position);
+			visualPre->SetScale(transInfo.scale);
+			visualPre->LinkTechniques(rg);
+		}
+		// visualPre_Effect_Bg
+		{
+			float effectScale_rate = 1.5f;
+			visualPre_Effect_Bg = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
+					"asset\\Images\\Player\\Player_Usual_Effect_Bg.png",
+					"asset\\Images\\Player\\Player_Red_Effect_Bg.png",
+					"asset\\Images\\Player\\Player_Green_Effect_Bg.png",
+					"asset\\Images\\Player\\Player_Blue_Effect_Bg.png"});
+			visualPre_Effect_Bg->SetPosition(transInfo.position);
+			visualPre_Effect_Bg->SetScale(transInfo.scale.x * effectScale_rate, transInfo.scale.y * effectScale_rate);
+			visualPre_Effect_Bg->SetFrameAuto(12, 10, 1, 120, 0, 20.0f, false, true);
+			visualPre_Effect_Bg->LinkTechniques(rg);
+		}
+		// visualPre_Effect_Attack
+		{
+			float effectScale_rate = 1.5f;
+			visualPre_Effect_Attack = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
+					"asset\\Images\\Player\\Player_Usual_Effect_Attack.png",
+					"asset\\Images\\Player\\Player_Red_Effect_Attack.png",
+					"asset\\Images\\Player\\Player_Green_Effect_Attack.png",
+					"asset\\Images\\Player\\Player_Blue_Effect_Attack.png"});
+			visualPre_Effect_Attack->SetScale(transInfo.scale.x * effectScale_rate, transInfo.scale.y * effectScale_rate);
+			visualPre_Effect_Attack->LinkTechniques(rg);
+		}
 
 		// FSM state init
 		FSM = std::make_unique<StateMachine<Player>>(this);
@@ -121,31 +151,38 @@ public:
 	}
 	ResourceBars* GetResourceBars(void) const	{ return pResource.get(); }
 	WeaponSlots* GetWeaponSlots(void) const		{ return pWeapon.get(); }
-	void SetIsDash(bool state)	{ IsDash = state; }
-	bool GetIsDash(void) const	{ return IsDash; }
-	void SetIsSkill(bool state)	{ IsSkill = state; }
-	bool GetIsSkill(void) const { return IsSkill; }
+	void SetIsDash(bool state)	 { IsDash = state; }
+	bool GetIsDash(void) const	 { return IsDash; }
+	void SetIsSkill(bool state)	 { IsSkill = state; }
+	bool GetIsSkill(void) const	 { return IsSkill; }
 	void SetIsChange(bool state) { IsChange = state; }
 	bool GetIsChange(void) const { return IsChange; }
-	void SetIsFever(bool state) { IsFever = state; }
-	bool GetIsFever(void) const { return IsFever; }
+	void SetIsFever(bool state)  { IsFever = state; }
+	bool GetIsFever(void) const  { return IsFever; }
 	void SetFeverType(WEAPON_TYPE_ID type)	{ FeverType = type; }
 	WEAPON_TYPE_ID GetFeverType(void) const { return FeverType; }
 	void SetIsGameOver(bool state) { IsGameOver = state; }
 	bool GetIsGameOver(void) const { return IsGameOver; }
 	void DoMove(float ratio);
 	bool AttackCollide(float damage, XMFLOAT3 repel) override;
+	void AttackCameraShake(int frames, float minRange, float maxRange);
 	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
+	Sprite3DNoLit* GetVisualPreEffectAttack(void) { return visualPre_Effect_Attack.get(); }
 private:
 	void SetupTransitions(void) override;
 private:
 	std::unique_ptr<Sprite3D> visualPre;
+	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Bg;
+	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Attack;
+	Graphics& Gfx;
+	Rgph::RenderGraph& Rg;
 	Keyboard* pKbd;
 	Mouse* pMouse;
 	CameraContainer* pCamera;
 	std::unique_ptr<StateMachine<Player>> FSM;
 	std::unique_ptr<ResourceBars> pResource;
 	std::unique_ptr<WeaponSlots> pWeapon;
+	WEAPON_TYPE_ID currentWeaponType{ WEAPON_TYPE_NONE };
 	float HpDraw{ 0.0f };
 	bool IsDash{ false };
 	bool IsSkill{ false };
@@ -216,9 +253,11 @@ public:
 	std::string GetName() const override { return PLAYER_STATE[PLAYER_ATTACK]; }
 private:
 	std::vector<SpriteAnimeInfo> packs;
+	std::vector<SpriteAnimeInfo> ePacks;
 	SpriteAnimeManualAssistant assist;
 	unsigned int mode{ 0 };
 	bool isCombo{ false };
+	int oldFrame{ 0 };
 };
 
 /*------------------------------------------------------------------------------

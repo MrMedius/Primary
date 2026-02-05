@@ -8,10 +8,9 @@
 class Block : public Environment
 {
 public:
-	Block(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, bool onCollision)
+	Block(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT3 position, XMFLOAT3 size, bool onCollision, Object_Type_Tag tag = environment_Block)
 		:
-		Environment(tag),
-		visualPre(gfx, size)
+		Environment(tag)
 	{
 		// parameters init
 		SetPosition(position);
@@ -20,8 +19,9 @@ public:
 		SetCollisionOnOff(onCollision);
 
 		// graphics init
-		visualPre.LinkTechniques(rg);
-		visualPre.SetPosition(transInfo.position);
+		visualPre = std::make_unique<CubeLock>(gfx, size);
+		visualPre->SetPosition(transInfo.position);
+		visualPre->LinkTechniques(rg);
 
 		// collider init
 		DirectX::XMFLOAT3 localHalf{ 0.5f, 0.5f, 0.5f };
@@ -35,14 +35,14 @@ public:
 	void Update(float dt) override {}
 	void Submit(void) override
 	{
-		visualPre.Submit(Chan::main);
-		visualPre.Submit(Chan::shadow);
+		visualPre->Submit(Chan::main);
+		visualPre->Submit(Chan::shadow);
 #ifdef _DEBUG
 		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
 	void OnCollide(Character* other) override {}
 private:
-	CubeBase visualPre;
+	std::unique_ptr<CubeLock> visualPre;
 };
 

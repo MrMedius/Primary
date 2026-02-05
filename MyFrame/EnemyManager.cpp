@@ -12,15 +12,15 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 	auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
 	MapEdgeLeftAndRight = mapSize.x / 2.0f;
 	MapEdgeFrontAndBack = mapSize.z / 2.0f;
-	for (int i = 0;i < 30;i++)
+	for (int i = 0;i < 10;i++)
 	{
-		ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, character_Enemy_Red_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
-		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
-		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
-		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, XMFLOAT3{ 0.0f,0.0f,0.0f });
-		ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, character_Enemy_Blue_1, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 	}
-	for (int i = 0;i < 30;i++)
+	for (int i = 0;i < 10;i++)
 	{
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_0>(character_Enemy_Red_0)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_1>(character_Enemy_Red_1)->Deactivate();
@@ -61,15 +61,15 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	assert(pKbd);
 	// V‚µEnemyTest‚ð¶¬‚·‚é
 	if (pKbd->KeyIsTriggered(KK_NUMPAD1) || type == 1)
-		EnemyRed0.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, character_Enemy_Red_0, pos));
+		EnemyRed0.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD4) || type == 4)
-		EnemyRed1.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, character_Enemy_Red_1, pos));
+		EnemyRed1.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD2) || type == 2)
-		EnemyGreen0.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, character_Enemy_Green_0, pos));
+		EnemyGreen0.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3)
-		EnemyBlue0.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, character_Enemy_Blue_0, pos));
+		EnemyBlue0.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));
 	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6)
-		EnemyBlue1.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, character_Enemy_Blue_1, pos));
+		EnemyBlue1.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));
 	//#endif
 
 	for (int i = 0; i < EnemyRed0.size(); i++)
@@ -147,6 +147,16 @@ void EnemyManager::Submit(void)
 
 void EnemyManager::Reset(void)
 {
+	for (int i = 0; i < EnemyRed0.size(); i++)
+		if (EnemyRed0[i]->IsActive())		EnemyRed0[i]->Deactivate();
+	for (int i = 0; i < EnemyRed1.size(); i++)
+		if (EnemyRed1[i]->IsActive())		EnemyRed1[i]->Deactivate();
+	for (int i = 0; i < EnemyGreen0.size(); i++)
+		if (EnemyGreen0[i]->IsActive())		EnemyGreen0[i]->Deactivate();
+	for (int i = 0; i < EnemyBlue0.size(); i++)
+		if (EnemyBlue0[i]->IsActive())		EnemyBlue0[i]->Deactivate();
+	for (int i = 0; i < EnemyBlue1.size(); i++)
+		if (EnemyBlue1[i]->IsActive())		EnemyBlue1[i]->Deactivate();
 	EnemyRed0.clear();
 	EnemyRed1.clear();
 	EnemyGreen0.clear();

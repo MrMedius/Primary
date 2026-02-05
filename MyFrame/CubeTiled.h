@@ -54,7 +54,7 @@ private:
         // shader params
         float radius = 0.0f;
         float softness = 5.0f;
-        float opacity = 1.0f;
+        float opacity = 0.5f;
         XMFLOAT3 colorBase = { 1.0f,1.0f,1.0f };
         XMFLOAT3 colorFrom = colorBase;
         XMFLOAT3 colorTo = colorBase;

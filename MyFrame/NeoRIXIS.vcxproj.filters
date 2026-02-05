@@ -112,9 +112,6 @@
     <Filter Include="Header Files\Object\Environment">
       <UniqueIdentifier>{7c88b073-9b81-4808-9912-54097c5f2ac9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Object\Environment">
-      <UniqueIdentifier>{cb14d018-0aae-4e9c-9f76-c6b5f4d8a407}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Object\Character">
       <UniqueIdentifier>{3c47f553-0bb6-44d9-a601-fea9a2eba4b5}</UniqueIdentifier>
     </Filter>
@@ -159,6 +156,18 @@
     </Filter>
     <Filter Include="Shader\PostProcessing">
       <UniqueIdentifier>{1523bd4e-3c8e-4368-b0ce-1e71b8b43f13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object\Character\Player">
+      <UniqueIdentifier>{3b12f0ae-0730-4483-b27f-3fdea4bfebf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object\Effects">
+      <UniqueIdentifier>{27af5168-0697-4898-9ffd-68f1f14efb32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object\Managers">
+      <UniqueIdentifier>{23a5047b-d01b-4eb1-b7ca-3ff05f5b0ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Managers">
+      <UniqueIdentifier>{cb14d018-0aae-4e9c-9f76-c6b5f4d8a407}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -421,7 +430,7 @@
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="EnvironmentManager.cpp">
-      <Filter>Source Files\Object\Environment</Filter>
+      <Filter>Source Files\Object\Managers</Filter>
     </ClCompile>
     <ClCompile Include="CubeTiled.cpp">
       <Filter>Source Files\Drawable</Filter>
@@ -447,9 +456,6 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>Source Files\Object\Character\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy_Red_1.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
@@ -464,6 +470,15 @@
     </ClCompile>
     <ClCompile Include="Enemy_Blue_1.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite3DNoLit.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>Source Files\Object\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Source Files\Object\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -809,12 +824,6 @@
     <ClInclude Include="Character.h">
       <Filter>Header Files\Object\Character</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\Object\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="Player_ResourceSystem.h">
-      <Filter>Header Files\Object\Character</Filter>
-    </ClInclude>
     <ClInclude Include="Sprite3D.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
@@ -838,9 +847,6 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManager.h">
-      <Filter>Header Files\Object\Environment</Filter>
     </ClInclude>
     <ClInclude Include="BlockTiled.h">
       <Filter>Header Files\Object\Environment</Filter>
@@ -893,9 +899,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>Header Files\Object\Character\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy_Red_1.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
@@ -916,6 +919,42 @@
     </ClInclude>
     <ClInclude Include="Environment.h">
       <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite3DNoLit.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Object\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player_ResourceSystem.h">
+      <Filter>Header Files\Object\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Player_Remote_1.h">
+      <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentManager.h">
+      <Filter>Header Files\Object\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>Header Files\Object\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>Header Files\Object\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationInfo.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Player_Remote_2.h">
+      <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Player_Remote_3.h">
+      <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Player_Remote_Hit.h">
+      <Filter>Header Files\Object\Effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1039,6 +1078,12 @@
     </FxCompile>
     <FxCompile Include="SolidOutline_PS.hlsl">
       <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3DNoLit_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="Sprite3DNoLit_PS.hlsl">
+      <Filter>Shader\3D</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

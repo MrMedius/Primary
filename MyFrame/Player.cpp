@@ -13,24 +13,45 @@ void Player::Update(float dt)
 	// 変更前の座標を格納
 	auto Position = transInfo.position;
 	PositionOld = Position;
-
 	// 攻撃範囲の更新
 	if (!IsFlip) attackCollider.center = { Position.x + boxCollider.half.x + attackCollider.half.x, Position.y, Position.z };
 	else attackCollider.center = { Position.x - boxCollider.half.x - attackCollider.half.x, Position.y, Position.z };
 
 	// 状態遷移
+	// Fever related
 	if (GetWeaponSlots()->GetCanChange().first && !IsDeath)
-		if (((GetMouse()->LeftIsPressed() && GetMouse()->RightIsPressed()) || (GetKbd()->KeyIsPressed(KK_J) && GetKbd()->KeyIsPressed(KK_K))) || (IsFever && !GetWeaponSlots()->GetIsFever()))
+	{
+		if (((GetMouse()->LeftIsPressed() && GetMouse()->RightIsPressed()) || (GetKbd()->KeyIsPressed(KK_J) && GetKbd()->KeyIsPressed(KK_K))) || // Get into Fever
+			(IsFever && !GetWeaponSlots()->GetIsFever())) // Exit Fever
+		{
 			SetIsChange(true);	// Feverに入る
+		}
+	}
+	// FSM update
 	FSM->Update(dt);
-	if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
-	if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
-	pResource->Update();
-	pWeapon->Update();
+	visualPre_Effect_Bg->Update(dt);
+
+	// Weapon ralated update
+	{
+		if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
+		if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
+		if (currentWeaponType != pWeapon->GetCurrentSlot().GetType())
+		{
+			currentWeaponType = pWeapon->GetCurrentSlot().GetType();
+			switch (currentWeaponType)
+			{
+			case WEAPON_TYPE_0: visualPre_Effect_Bg->SetFrameAuto(12, 10, 1, 120, 0, 20.0f, false, true); break;
+			case WEAPON_TYPE_1: visualPre_Effect_Bg->SetFrameAuto(10, 10, 1, 100, 1, 20.0f, false, true); break;
+			case WEAPON_TYPE_2: visualPre_Effect_Bg->SetFrameAuto(12, 12, 1, 144, 2, 20.0f, false, true); break;
+			case WEAPON_TYPE_3: visualPre_Effect_Bg->SetFrameAuto(12, 12, 1, 144, 3, 20.0f, false, true); break;
+			}
+		}
+		pResource->Update();
+		pWeapon->Update();
+	}
 
 	// 重力
-	if (!OnFloor) 
-		MoveVelocity.y -= GRAVITY * dt;
+	if (!OnFloor) MoveVelocity.y -= GRAVITY * dt;
 
 	// 抵抗力
 	MoveVelocity.x -= MoveVelocity.x * FORCE_RATE;
@@ -39,6 +60,8 @@ void Player::Update(float dt)
 	// 移動
 	Transform(MoveVelocity.x, MoveVelocity.y, MoveVelocity.z);
 	visualPre->SetPosition(transInfo.position);
+	visualPre_Effect_Bg->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
+	visualPre_Effect_Attack->SetPosition(attackCollider.center.x - (IsFlip ? -0.5f : 0.5f), attackCollider.center.y + 0.5f, attackCollider.center.z - 0.1f);
 
 	// マップ要素との当たり判定
 	boxCollider.center = transInfo.position;
@@ -48,8 +71,13 @@ void Player::Update(float dt)
 void Player::Submit(void)
 {
 	// 描画
+	// visualPre
 	visualPre->Submit(Chan::main);
 	visualPre->Submit(Chan::shadow);
+	// visualPre_Effect_Bg
+	visualPre_Effect_Bg->Submit(Chan::main);
+	// visualPre_Effect
+	if (FSM->IsInState("PLAYER_ATTACK") && pWeapon->GetCurrentSlot().GetType() != WEAPON_TYPE_2) visualPre_Effect_Attack->Submit(Chan::main);
 
 #ifdef _DEBUG
 	if (!IsDeath)
@@ -119,19 +147,24 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				// カメラ効果
 				switch (DoAttackType)
 				{
-				case Player_Attack_1: pCamera->SetScreenShake(2, 0.05f, 0.25f); break;
-				case Player_Attack_2: pCamera->SetScreenShake(2, 0.25f,  0.5f); break;
-				case Player_Attack_3: pCamera->SetScreenShake(4,  0.5f,  1.0f); break;
-				case Player_Skill_1:  pCamera->SetScreenShake(4,  1.0f,  1.5f); pCamera->SetScreenFroze(16); break;
-				case Player_Skill_3:  pCamera->SetScreenShake(2, 0.25f,  0.5f); pCamera->SetScreenFroze(8); break;
-				case Player_Fever_1:  pCamera->SetScreenShake(4,  1.5f,  2.0f); pCamera->SetScreenFroze(16); break;
-				case Player_Fever_2:  pCamera->SetScreenShake(2,  0.5f,  1.0f); pCamera->SetScreenFroze(8); break;
-				case Player_Fever_3:  pCamera->SetScreenShake(1,  0.5f,  1.0f); pCamera->SetScreenFroze(4); break;
+				case Player_Attack_1: AttackCameraShake(4, 0.3f, 0.5f); break;
+				case Player_Attack_2: AttackCameraShake(4, 0.5f, 1.0f); break;
+				case Player_Attack_3: AttackCameraShake(6, 1.0f, 1.5f); break;
+				case Player_Skill_1:  AttackCameraShake(8, 2.0f, 3.0f); pCamera->SetScreenFroze(16); break;
+				case Player_Skill_3:  AttackCameraShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8); break;
+				case Player_Fever_1:  AttackCameraShake(8, 3.0f, 4.0f); pCamera->SetScreenFroze(16); break;
+				case Player_Fever_2:  AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(8); break;
+				case Player_Fever_3:  AttackCameraShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(4); break;
 				}
 			}
 		}
 	}
 	return false;
+}
+
+void Player::AttackCameraShake(int frames, float minRange, float maxRange)
+{
+	pCamera->SetScreenShake(frames, minRange, maxRange);
 }
 
 void Player::SetupTransitions(void)
@@ -416,7 +449,7 @@ void Player_MoveState::Update(Player* owner, float dt)
 void Player_DashState::OnEnter(Player* owner)
 {
 	// anime set
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetMoveVelocity().x > 0 ? true : false, false);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetMoveVelocity().x >= 0 ? true : false, false);
 
 	// dash direction preparation
 	if (owner->GetKbd()->KeyIsPressed(KK_A) || owner->GetKbd()->KeyIsPressed(KK_D) || owner->GetKbd()->KeyIsPressed(KK_W) || owner->GetKbd()->KeyIsPressed(KK_S))
@@ -471,10 +504,15 @@ Player_AttackState::Player_AttackState()
 	packs.emplace_back(12, 16, 49, 15);
 	packs.emplace_back(12, 12,  1, 15);
 	packs.emplace_back(12, 10,  1, 12);
+	ePacks.emplace_back( 7,  7, 1, 15);
+	ePacks.emplace_back(12, 12, 1, 15);
+	ePacks.emplace_back(12, 14, 1, 15);
+	ePacks.emplace_back(12, 13, 1, 15);
 
 	assist.Loop = false;
 	assist.FPS = packs[0].FPS;
 	assist.FrameTotal = packs[0].FrameTotalCount;
+	oldFrame = 0;
 }
 
 void Player_AttackState::OnEnter(Player* owner)
@@ -484,7 +522,9 @@ void Player_AttackState::OnEnter(Player* owner)
 	switch (owner->GetFeverType())
 	{
 	case WEAPON_TYPE_0:	
-		if(owner->GetWeaponSlots()->GetCurrentSlot().GetType() == WEAPON_TYPE_0)
+	{
+		auto type = owner->GetWeaponSlots()->GetCurrentSlot().GetType();
+		if (type == WEAPON_TYPE_0)
 		{
 			mode = 0;
 		}
@@ -494,7 +534,8 @@ void Player_AttackState::OnEnter(Player* owner)
 		}
 		packs[mode].FrameTotalCount = 15;
 		owner->SetDoAttackType(Player_Attack_1);
-		owner->GetWeaponSlots()->UseWeapon(-20.0f);
+		owner->GetWeaponSlots()->UseWeapon(-10.0f);
+	}
 		break;
 	case WEAPON_TYPE_1:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_1);	break;
 	case WEAPON_TYPE_2:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_2);	break;
@@ -517,6 +558,8 @@ void Player_AttackState::Update(Player* owner, float dt)
 {
 	assist.Update(dt);
 
+	auto type = owner->GetWeaponSlots()->GetCurrentSlot().GetType();
+
 	// ダッシュで攻撃をキャンセル
 	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
 	// 攻撃中にスキルを事前入力する
@@ -526,10 +569,34 @@ void Player_AttackState::Update(Player* owner, float dt)
 		if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
 			if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)
 				owner->SetIsSkill(true);
-		if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))
+		if (!isCombo)
 		{
-			if (!owner->GetIsFever()) owner->GetWeaponSlots()->UseWeapon(-25.0f);
+			if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))
+			{
 				isCombo = true;
+
+				if (!owner->GetIsFever()) 
+				{
+					if (owner->GetDoAttackType() == Player_Attack_1)
+					{
+						switch (type)
+						{
+						case WEAPON_TYPE_1:	owner->GetWeaponSlots()->UseWeapon(-30.0f); break;
+						case WEAPON_TYPE_2:	owner->GetWeaponSlots()->UseWeapon(-20.0f); break;
+						case WEAPON_TYPE_3: owner->GetWeaponSlots()->UseWeapon(-10.0f); break;
+						}
+					}
+					if (owner->GetDoAttackType() == Player_Attack_2)
+					{
+						switch (type)
+						{
+						case WEAPON_TYPE_1:	owner->GetWeaponSlots()->UseWeapon(-40.0f); break;
+						case WEAPON_TYPE_2:	owner->GetWeaponSlots()->UseWeapon(-50.0f); break;
+						case WEAPON_TYPE_3: owner->GetWeaponSlots()->UseWeapon(-10.0f); break;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -540,35 +607,59 @@ void Player_AttackState::Update(Player* owner, float dt)
 		case Player_Attack_1:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 9)
+			if (currentFrame == 9 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 14)
+			if (currentFrame == 14 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.2f,0.1f,0.2f });
+			if (owner->GetAttackCollisionOnOff())
+			{
+				switch (type)
+				{
+				case WEAPON_TYPE_0:	owner->AttackCollide(-1.0f, { 0.2f,0.1f,0.2f }); break;
+				case WEAPON_TYPE_1:	owner->AttackCollide(-2.0f, { 0.3f,0.2f,0.3f }); break;
+				case WEAPON_TYPE_3: owner->AttackCollide(-1.0f, { 0.1f,0.1f,0.1f }); break;
+				}
+			}
 			break;
 		}
 		case Player_Attack_2:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 25)	owner->SetAttackCollisionOnOff(true);
+			if (currentFrame == 25 && oldFrame != currentFrame)	owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 30)	owner->SetAttackCollisionOnOff(false);
+			if (currentFrame == 30 && oldFrame != currentFrame)	owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.2f,0.2f,0.2f });
+			if (owner->GetAttackCollisionOnOff()) 
+			{
+				switch (type)
+				{
+				case WEAPON_TYPE_0:	owner->AttackCollide(-1.0f, { 0.1f,0.2f,0.1f }); break;
+				case WEAPON_TYPE_1:	owner->AttackCollide(-2.0f, { 0.2f,0.3f,0.2f }); break;
+				case WEAPON_TYPE_3: owner->AttackCollide(-1.0f, { 0.1f,0.1f,0.1f }); break;
+				}
+			}
 			break;
 		}
 		case Player_Attack_3:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 36)
+			if (currentFrame == 36 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 41)
+			if (currentFrame == 41 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
-			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-2.0f, { 0.5f,0.1f,0.5f });
+			if (owner->GetAttackCollisionOnOff())
+			{
+				switch (type)
+				{
+				case WEAPON_TYPE_0:	owner->AttackCollide(-2.0f, { 0.3f,0.1f,0.3f }); break;
+				case WEAPON_TYPE_1:	owner->AttackCollide(-2.0f, { 0.4f,0.2f,0.4f }); break;
+				case WEAPON_TYPE_3: owner->AttackCollide(-1.0f, { 0.1f,0.1f,0.1f }); break;
+				}
+			}
 			break;
 		}
 		}
@@ -580,10 +671,10 @@ void Player_AttackState::Update(Player* owner, float dt)
 		case Player_Attack_1:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 5)
+			if (currentFrame == 5 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 9)
+			if (currentFrame == 9 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
 			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.5f,0.5f });
@@ -592,9 +683,9 @@ void Player_AttackState::Update(Player* owner, float dt)
 		case Player_Attack_2:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 16)	owner->SetAttackCollisionOnOff(true);
+			if (currentFrame == 16 && oldFrame != currentFrame)	owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 21)	owner->SetAttackCollisionOnOff(false);
+			if (currentFrame == 21 && oldFrame != currentFrame)	owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
 			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 1.0f,1.0f,1.0f });
 			break;
@@ -602,10 +693,10 @@ void Player_AttackState::Update(Player* owner, float dt)
 		case Player_Attack_3:
 		{
 			// 攻撃コリジョンを開けるフレーム
-			if (currentFrame == 45)
+			if (currentFrame == 45 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(true);
 			// 攻撃コリジョンを閉じるフレーム
-			if (currentFrame == 46)
+			if (currentFrame == 46 && oldFrame != currentFrame)
 				owner->SetAttackCollisionOnOff(false);
 			// 攻撃当たる判定
 			if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 1.5f ,0.5f,1.5f });
@@ -638,17 +729,31 @@ void Player_AttackState::Update(Player* owner, float dt)
 	{
 		switch (owner->GetWeaponSlots()->GetCurrentSlot().GetType())
 		{
-		case WEAPON_TYPE_0:	owner->GetVisualPre()->SetFrame(packs[0].numU, packs[0].numV, packs[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 2, !owner->GetIsFlip()); break;
-		case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip()); break;
-		default: break;
+		case WEAPON_TYPE_0:	
+				owner->GetVisualPre()->SetFrame(packs[0].numU, packs[0].numV, packs[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip()); 
+				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[0].numU, ePacks[0].numV, ePacks[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip());
+				break;
+		case WEAPON_TYPE_1: 
+				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip()); 
+				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[1].numU, ePacks[1].numV, ePacks[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip());
+				break;
+		case WEAPON_TYPE_2: 
+				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 2, !owner->GetIsFlip()); 
+				//owner->GetVisualPreEffectAttack()->SetFrame(ePacks[2].numU, ePacks[2].numV, ePacks[2].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 2, !owner->GetIsFlip());
+				break;
+		case WEAPON_TYPE_3: 
+				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip()); 
+				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[3].numU, ePacks[3].numV, ePacks[3].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip());
+				break;
 		}
 	}
 	else
 	{
 		owner->GetVisualPre()->SetFrame(packs[2].numU, packs[2].numV, packs[2].FrameStart, packs[2].FrameTotalCount, assist.FrameNo, 4, !owner->GetIsFlip());
 	}
+
+	// save old frame
+	oldFrame = currentFrame;
 
 	// close the attack flag when the attack is done
 	if (assist.Finished())	owner->SetIsAttack(false);

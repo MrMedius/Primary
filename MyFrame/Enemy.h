@@ -46,7 +46,7 @@ public:
 	{
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> x(-30.0f, 30.0f);
-		std::uniform_real_distribution<float> z(-15, 15);
+		std::uniform_real_distribution<float> z(-15.0f, 15.0f);
 		auto targetPos = AttackTarget->GetPosition();
 		XMFLOAT3 pos = { targetPos.x + x(rng),10.0f,targetPos.z + z(rng) };
 

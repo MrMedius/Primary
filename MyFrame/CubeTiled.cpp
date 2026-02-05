@@ -102,6 +102,8 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 			top.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 1u));
 
 			top.AddBindable(Rasterizer::Resolve(gfx, false));
+			top.AddBindable(Bind::Blender::Resolve(gfx, true));
+
 			top.AddBindable(tcb);
 			top.AddBindable(ftcb);
 			top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_noise_cloud.png", 1u));
@@ -209,7 +211,7 @@ void CubeTiled::Update(float dt, const XMFLOAT3& centerWorld)
 
 		FT.radius = FT.t * FT.maxRadius;
 
-		if (FT.t >= 1.0f && FT.mode != 0)
+		if (FT.t >= 1.0f)
 		{
 			// start Recover automaticly after Expend
 			StartRecover(FT.mode);

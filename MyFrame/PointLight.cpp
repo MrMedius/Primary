@@ -10,11 +10,11 @@ PointLight::PointLight(Graphics& gfx, DirectX::XMFLOAT3 pos, float radius)
 {
 	home = {
 		pos,
-		{ 0.8f,0.8f,0.8f },
 		{ 1.0f,1.0f,1.0f },
-		1.0f,
-		0.1f,
-		0.1f,
+		{ 1.0f,1.0f,1.0f },
+		0.5f,
+		0.3f,
+		0.03f,
 		0.00001f,
 	};
 	Reset();

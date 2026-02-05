@@ -103,7 +103,7 @@ float4 main(
     if (trState == 0)
     {
         float3 lit0 = saturate((diffuse + ambient) * baseRaw + specular);
-        return float4(lit0, 1.0f);
+        return float4(lit0, opacity);
     }
 
     // common distance (world XZ)

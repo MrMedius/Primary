@@ -4,10 +4,10 @@
 #include "IndexBuffer.h"
 #include "Transformation.h"
 
-class CubeBase : public Drawable
+class CubeLock : public Drawable
 {
 public:
-	CubeBase(Graphics& gfx, DirectX::XMFLOAT3 size);
+	CubeLock(Graphics& gfx, DirectX::XMFLOAT3 size);
 	void Update(float dt);
 	void SetPosition(DirectX::XMFLOAT3 pos) noexcept;
 	void SetRotation(float roll, float pitch, float yaw) noexcept;

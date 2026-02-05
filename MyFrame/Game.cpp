@@ -35,9 +35,10 @@ Game::Game(const std::string& commandLine)
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	// Objects
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, character_Player, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
+	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 }
 
 Game::~Game()
@@ -118,6 +119,7 @@ void Game::Update(float dt)
 				{
 					pEnvironmentManager->Update(dt);
 					pEnemyManager->Update(dt, pPlayer->GetPosition());
+					pEffectManager->Update(dt);
 				}
 			}
 			gameRG.Update(dt);
@@ -133,6 +135,7 @@ void Game::Update(float dt)
 			pPlayer->OnEnable();
 			pEnemyManager->Reset();
 			pEnvironmentManager->Reset();
+			pEffectManager->Reset();
 		}
 		break;
 	}	
@@ -161,6 +164,7 @@ void Game::Draw()
 		// Objects
 		pEnvironmentManager->Submit();
 		pEnemyManager->Submit();
+		pEffectManager->Submit();
 		pPlayer->Submit();
 		// UI
 		pUI_Game->Submit();

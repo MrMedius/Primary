@@ -3,16 +3,14 @@
 #include "RenderGraph.h"
 #include "CubeTiled.h"
 #include "Channels.h"
-#include "Surface.h"
 #include "Player.h"
 
 class BlockTiled : public Environment
 {
 public:
-	BlockTiled(Graphics& gfx, Rgph::RenderGraph& rg, Object_Type_Tag tag, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT2 numTiled, bool onCollision)
+	BlockTiled(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT3 position, XMFLOAT3 size, XMFLOAT2 numTiled, bool onCollision, Object_Type_Tag tag = environment_BlockTiled)
 		:
-		Environment(tag),
-		visualPre(gfx, size, numTiled)
+		Environment(tag)
 	{
 		pPlayer = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
 
@@ -23,9 +21,10 @@ public:
 		SetCollisionOnOff(onCollision);
 
 		// graphics init
-		visualPre.LinkTechniques(rg);
-		visualPre.SetPosition(transInfo.position);
-		visualPre.GameStartExpend();
+		visualPre = std::make_unique<CubeTiled>(gfx, size, numTiled);
+		visualPre->LinkTechniques(rg);
+		visualPre->SetPosition(transInfo.position);
+		visualPre->GameStartExpend();
 
 		// collider init
 		DirectX::XMFLOAT3 localHalf{ 0.5f, 0.5f, 0.5f };
@@ -37,7 +36,7 @@ public:
 	}
 	void OnEnable(void) override 
 	{
-		visualPre.GameStartExpend();
+		visualPre->GameStartExpend();
 	}
 	void Update(float dt) override
 	{
@@ -56,8 +55,8 @@ public:
 				case WEAPON_TYPE_3: fieldMode = 3; break;
 				}
 
-				if (visualPre.GetPlayMode() != fieldMode)
-					visualPre.StartExpand(playerPos, fieldMode);
+				if (visualPre->GetPlayMode() != fieldMode)
+					visualPre->StartExpand(playerPos, fieldMode);
 			}
 		}
 
@@ -67,19 +66,19 @@ public:
 			fieldMode = 0;
 		}
 
-		visualPre.Update(dt, playerPos);
+		visualPre->Update(dt, playerPos);
 	}
 	void Submit(void) override
 	{
-		visualPre.Submit(Chan::main);
-		visualPre.Submit(Chan::shadow);
+		visualPre->Submit(Chan::main);
+		visualPre->Submit(Chan::shadow);
 #ifdef _DEBUG
 		//boxColliderWire->DoSubmit(transInfo.position, boxCollider.GetSize());
 #endif
 	}
 	void OnCollide(Character* other) override {}
 private:
-	CubeTiled visualPre;
+	std::unique_ptr<CubeTiled> visualPre;
 	Player* pPlayer;
 	int fieldMode{ 0 };
 	bool fieldPlay{ false };
