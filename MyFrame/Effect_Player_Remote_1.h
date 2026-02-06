@@ -30,7 +30,7 @@ public:
 		pack.push_back(SpriteAnimeInfo{ 12,14, 40, 3 });
 		pack.push_back(SpriteAnimeInfo{ 12,14, 43, 6 });
 		pack.push_back(SpriteAnimeInfo{ 12,14,145,16 });
-		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\\Player\\Player_Green_Effect_Attack.png"});
+		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\\Player\\Player_Green_Effect.png"});
 		visualPre->SetFrameAuto(pack[0].numU, pack[0].numV, pack[0].FrameStart, pack[0].FrameTotalCount, 0, pack[0].FPS, false, false);
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetRotation(90.0f, 0.0f, 0.0f);
@@ -43,11 +43,8 @@ public:
 		boxColliderWire->LinkTechniques(rg);
 #endif
 	}
-	void ActiveAt(XMFLOAT3 pos, bool flip) override
+	void SpawnAt(XMFLOAT3 pos, bool flip) override
 	{
-		// activate
-		Activate();
-
 		// reset parameters
 		SetPosition(pos);
 		SetCollisionOnOff(true);
@@ -115,6 +112,10 @@ public:
 		SetEffectState(Disappear);
 		SetMoveAccel(0.0);
 		MoveVelocity = { 0.0f,0.0f,0.0f };
+		SetCollisionOnOff(false);
+		transInfo.position = other->GetPosition();
+		transInfo.position.z -= 0.1f;
+
 		visualPre->SetFrameAuto(pack[3].numU, pack[3].numV, pack[3].FrameStart, pack[3].FrameTotalCount, 0, pack[3].FPS, false, true);
 
 		if (auto* e = dynamic_cast<Enemy*>(other))

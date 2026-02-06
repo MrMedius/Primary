@@ -82,27 +82,28 @@ public:
 		}
 		// visualPre_Effect_Bg
 		{
-			float effectScale_rate = 1.5f;
 			visualPre_Effect_Bg = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
 					"asset\\Images\\Player\\Player_Usual_Effect_Bg.png",
 					"asset\\Images\\Player\\Player_Red_Effect_Bg.png",
 					"asset\\Images\\Player\\Player_Green_Effect_Bg.png",
-					"asset\\Images\\Player\\Player_Blue_Effect_Bg.png"});
+					"asset\\Images\\Player\\Player_Blue_Effect_Bg.png",
+					"asset\\Images\\Player\\Player_Red_Effect.png",
+					"asset\\Images\\Player\\Player_Green_Effect.png",
+					"asset\\Images\\Player\\Player_Blue_Effect.png"});
 			visualPre_Effect_Bg->SetPosition(transInfo.position);
-			visualPre_Effect_Bg->SetScale(transInfo.scale.x * effectScale_rate, transInfo.scale.y * effectScale_rate);
+			visualPre_Effect_Bg->SetScale(GetEffectSize());
 			visualPre_Effect_Bg->SetFrameAuto(12, 10, 1, 120, 0, 20.0f, false, true);
 			visualPre_Effect_Bg->LinkTechniques(rg);
 		}
-		// visualPre_Effect_Attack
+		// visualPre_Effect
 		{
-			float effectScale_rate = 1.5f;
-			visualPre_Effect_Attack = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
-					"asset\\Images\\Player\\Player_Usual_Effect_Attack.png",
-					"asset\\Images\\Player\\Player_Red_Effect_Attack.png",
-					"asset\\Images\\Player\\Player_Green_Effect_Attack.png",
-					"asset\\Images\\Player\\Player_Blue_Effect_Attack.png"});
-			visualPre_Effect_Attack->SetScale(transInfo.scale.x * effectScale_rate, transInfo.scale.y * effectScale_rate);
-			visualPre_Effect_Attack->LinkTechniques(rg);
+			visualPre_Effect = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
+					"asset\\Images\\Player\\Player_Usual_Effect.png",
+					"asset\\Images\\Player\\Player_Red_Effect.png",
+					"asset\\Images\\Player\\Player_Green_Effect.png",
+					"asset\\Images\\Player\\Player_Blue_Effect.png"});
+			visualPre_Effect->SetScale(GetEffectSize());
+			visualPre_Effect->LinkTechniques(rg);
 		}
 
 		// FSM state init
@@ -155,6 +156,18 @@ public:
 	bool GetIsDash(void) const	 { return IsDash; }
 	void SetIsSkill(bool state)	 { IsSkill = state; }
 	bool GetIsSkill(void) const	 { return IsSkill; }
+	void SetWasSkill(bool state) { WasSkill = state; }
+	bool GetWasSkill(void)
+	{
+		if (WasSkill)
+		{
+			WasSkill = false;
+			return true;
+		}
+		else
+			return false;
+	}
+	XMFLOAT2 GetEffectSize(void) const { float effectScale_rate = 1.5f; return {transInfo.scale.x * effectScale_rate, transInfo.scale.y * effectScale_rate}; }
 	void SetIsChange(bool state) { IsChange = state; }
 	bool GetIsChange(void) const { return IsChange; }
 	void SetIsFever(bool state)  { IsFever = state; }
@@ -167,13 +180,14 @@ public:
 	bool AttackCollide(float damage, XMFLOAT3 repel) override;
 	void AttackCameraShake(int frames, float minRange, float maxRange);
 	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
-	Sprite3DNoLit* GetVisualPreEffectAttack(void) { return visualPre_Effect_Attack.get(); }
+	Sprite3DNoLit* GetVisualPreEffectBg(void) { return visualPre_Effect_Bg.get(); }
+	Sprite3DNoLit* GetVisualPreEffect(void) { return visualPre_Effect.get(); }
 private:
 	void SetupTransitions(void) override;
 private:
 	std::unique_ptr<Sprite3D> visualPre;
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Bg;
-	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Attack;
+	std::unique_ptr<Sprite3DNoLit> visualPre_Effect;
 	Graphics& Gfx;
 	Rgph::RenderGraph& Rg;
 	Keyboard* pKbd;
@@ -186,6 +200,7 @@ private:
 	float HpDraw{ 0.0f };
 	bool IsDash{ false };
 	bool IsSkill{ false };
+	bool WasSkill{ false };
 	bool IsChange{ false };
 	bool IsFever{ false };
 	WEAPON_TYPE_ID FeverType{ WEAPON_TYPE_0 };
@@ -266,12 +281,16 @@ private:
 class Player_SkillState : public State<Player>
 {
 public:
+	Player_SkillState();
 	void OnEnter(Player* owner) override;
 	void OnExit(Player* owner) override;
 	void Update(Player* owner, float dt) override;
 	std::string GetName() const override { return PLAYER_STATE[PLAYER_SKILL]; }
 private:
 	SpriteAnimeInfo pack{ 12, 12, 97, 48 };
+	std::vector<SpriteAnimeInfo> ePacks;
+	std::vector<SpriteAnimeInfo> bgPacks;
+	XMFLOAT3 baseAttackCollisionSize{ 0.0f,0.0f, 0.0f };
 	WEAPON_TYPE_ID WeaponType{ WEAPON_TYPE_NONE };
 };
 

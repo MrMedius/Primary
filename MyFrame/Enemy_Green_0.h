@@ -17,19 +17,19 @@ public:
 	{
 		// parameters init
 		SetPosition(position);
-		SetSize({ 9.0f, 6.0f, 0.0f });
-		SetCollisionSize({ 2.0f, 6.0f, 2.0f });
+		SetSize({ 5.0f, 5.0f, 0.0f });
+		SetCollisionSize({ 2.0f, 5.0f, 3.0f });
 		SetCollisionOnOff(true);
 		SetHpMax(5.0f);
 		ResetHpCurrent();
-		SetMoveAccel(0.025f);
+		SetMoveAccel(0.005f);
 		SetAttackCollisionSize({ 2.0f,3.0f,1.5f });
 		SetAttackInterval(3.0f);
 		SetEnemyType(ENEMY_TYPE_GREEN);
-		SetSearchArea({ 15.0f,4.0f,15.0f });
+		SetSearchArea({ 500.0f,4.0f,500.0f });
 
 		// graphics init
-		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{"asset\\Images\\EnemyTestTwo.png"});
+		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{"asset\\Images\\Enemy\\Enemy_Green_0.png"});
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetScale(transInfo.scale);
 		visualPre->LinkTechniques(rg);
@@ -82,7 +82,7 @@ public:
 	void Update(Enemy_Green_0* owner, float dt) override;
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_IDLE]; }
 private:
-	SpriteAnimeInfo pack{ 13, 5, 1, 8 };
+	SpriteAnimeInfo pack{ 12, 8, 73, 24 };
 };
 
 /*------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ public:
 	void Update(Enemy_Green_0* owner, float dt) override;
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_CHASE]; }
 private:
-	SpriteAnimeInfo pack{ 13, 5, 14, 10 };
+	SpriteAnimeInfo pack{ 12, 8, 73, 24 };
 };
 
 /*------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ public:
 	void Update(Enemy_Green_0* owner, float dt) override;
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_ATTACK]; }
 private:
-	SpriteAnimeInfo pack{ 13, 5, 27, 10 };
+	SpriteAnimeInfo pack{ 12, 8, 1, 24 };
 	bool HaveHit{ false };
 };
 
@@ -125,7 +125,7 @@ public:
 	void Update(Enemy_Green_0* owner, float dt) override;
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_HURT]; }
 private:
-	SpriteAnimeInfo pack{ 13, 5, 40, 5 };
+	SpriteAnimeInfo pack{ 12, 8, 25, 24 };
 	Attack_Type_Tag BeAttackedTypeOld{ Attack_Type_None };
 };
 
@@ -140,5 +140,5 @@ public:
 	void Update(Enemy_Green_0* owner, float dt) override;
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_DEATH]; }
 private:
-	SpriteAnimeInfo pack{ 13, 5, 53, 13 };
+	SpriteAnimeInfo pack{ 12, 8, 49, 24 };
 };

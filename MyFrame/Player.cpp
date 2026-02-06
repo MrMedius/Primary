@@ -27,6 +27,7 @@ void Player::Update(float dt)
 			SetIsChange(true);	// Feverに入る
 		}
 	}
+
 	// FSM update
 	FSM->Update(dt);
 	visualPre_Effect_Bg->Update(dt);
@@ -38,7 +39,8 @@ void Player::Update(float dt)
 			if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
 			if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
 		}
-		if (currentWeaponType != pWeapon->GetCurrentSlot().GetType())
+		if ((currentWeaponType != pWeapon->GetCurrentSlot().GetType() && !FSM->IsInState("PLAYER_SKILL")) || // Not in Skill
+			GetWasSkill()) // after Skill
 		{
 			currentWeaponType = pWeapon->GetCurrentSlot().GetType();
 			switch (currentWeaponType)
@@ -61,10 +63,15 @@ void Player::Update(float dt)
 	MoveVelocity.z -= MoveVelocity.z * FORCE_RATE;
 
 	// 移動
-	Transform(MoveVelocity.x, MoveVelocity.y, MoveVelocity.z);
-	visualPre->SetPosition(transInfo.position);
-	visualPre_Effect_Bg->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
-	visualPre_Effect_Attack->SetPosition(attackCollider.center.x - (IsFlip ? -0.5f : 0.5f), attackCollider.center.y + 0.5f, attackCollider.center.z - 0.1f);
+	{
+		Transform(MoveVelocity.x, MoveVelocity.y, MoveVelocity.z);
+		visualPre->SetPosition(transInfo.position);
+		if(!FSM->IsInState("PLAYER_SKILL"))
+		{
+			visualPre_Effect_Bg->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
+			visualPre_Effect->SetPosition(attackCollider.center.x - (IsFlip ? -0.5f : 0.5f), attackCollider.center.y + 0.5f, attackCollider.center.z - 0.1f);
+		}
+	}
 
 	// マップ要素との当たり判定
 	boxCollider.center = transInfo.position;
@@ -80,7 +87,9 @@ void Player::Submit(void)
 	// visualPre_Effect_Bg
 	visualPre_Effect_Bg->Submit(Chan::main);
 	// visualPre_Effect
-	if (FSM->IsInState("PLAYER_ATTACK") && pWeapon->GetCurrentSlot().GetType() != WEAPON_TYPE_2) visualPre_Effect_Attack->Submit(Chan::main);
+	if ((FSM->IsInState("PLAYER_ATTACK") && pWeapon->GetCurrentSlot().GetType() != WEAPON_TYPE_2) // attack state
+		|| FSM->IsInState("PLAYER_SKILL")) // skill state
+		visualPre_Effect->Submit(Chan::main);
 
 #ifdef _DEBUG
 	if (!IsDeath)
@@ -735,11 +744,11 @@ void Player_AttackState::Update(Player* owner, float dt)
 		{
 		case WEAPON_TYPE_0:	
 				owner->GetVisualPre()->SetFrame(packs[0].numU, packs[0].numV, packs[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip()); 
-				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[0].numU, ePacks[0].numV, ePacks[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip());
+				owner->GetVisualPreEffect()->SetFrame(ePacks[0].numU, ePacks[0].numV, ePacks[0].FrameStart, packs[0].FrameTotalCount, assist.FrameNo, 0, !owner->GetIsFlip());
 				break;
 		case WEAPON_TYPE_1: 
 				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip()); 
-				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[1].numU, ePacks[1].numV, ePacks[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip());
+				owner->GetVisualPreEffect()->SetFrame(ePacks[1].numU, ePacks[1].numV, ePacks[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 1, !owner->GetIsFlip());
 				break;
 		case WEAPON_TYPE_2: 
 				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 2, !owner->GetIsFlip()); 
@@ -747,7 +756,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 				break;
 		case WEAPON_TYPE_3: 
 				owner->GetVisualPre()->SetFrame(packs[1].numU, packs[1].numV, packs[1].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip()); 
-				owner->GetVisualPreEffectAttack()->SetFrame(ePacks[3].numU, ePacks[3].numV, ePacks[3].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip());
+				owner->GetVisualPreEffect()->SetFrame(ePacks[3].numU, ePacks[3].numV, ePacks[3].FrameStart, packs[1].FrameTotalCount, assist.FrameNo, 3, !owner->GetIsFlip());
 				break;
 		}
 	}
@@ -767,15 +776,39 @@ void Player_AttackState::Update(Player* owner, float dt)
 /*------------------------------------------------------------------------------
    Player_SkillState
 ------------------------------------------------------------------------------*/
+Player_SkillState::Player_SkillState()
+{
+	ePacks.emplace_back(12, 12, 49, 48);
+	ePacks.emplace_back(12, 14, 49, 48);
+	ePacks.emplace_back(12, 13, 49, 48);
+	bgPacks.emplace_back(12, 12, 97, 48);
+	bgPacks.emplace_back(12, 14, 97, 48);
+	bgPacks.emplace_back(12, 13, 97, 48);
+}
+
 void Player_SkillState::OnEnter(Player* owner)
 {
+	baseAttackCollisionSize = owner->GetAttackCollisionSize();
+
 	// anime set
 	WeaponType = owner->GetWeaponSlots()->GetCurrentSlot().GetType();
 	switch (WeaponType)
 	{
-	case WEAPON_TYPE_1: owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 1, pack.FPS, !owner->GetIsFlip(), false); break;
-	case WEAPON_TYPE_2: owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 2, pack.FPS, !owner->GetIsFlip(), false); break;
-	case WEAPON_TYPE_3: owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 3, pack.FPS, !owner->GetIsFlip(), false); break;
+	case WEAPON_TYPE_1: 
+		owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 1, pack.FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffectBg()->SetFrameAuto(bgPacks[0].numU, bgPacks[0].numV, bgPacks[0].FrameStart, bgPacks[0].FrameTotalCount, 4, bgPacks[0].FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffect()->SetFrameAuto(ePacks[0].numU, ePacks[0].numV, ePacks[0].FrameStart, ePacks[0].FrameTotalCount, 1, ePacks[0].FPS, !owner->GetIsFlip(), false);
+		break;
+	case WEAPON_TYPE_2: 
+		owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 2, pack.FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffectBg()->SetFrameAuto(bgPacks[1].numU, bgPacks[1].numV, bgPacks[1].FrameStart, bgPacks[1].FrameTotalCount, 5, bgPacks[1].FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffect()->SetFrameAuto(ePacks[1].numU, ePacks[1].numV, ePacks[1].FrameStart, ePacks[1].FrameTotalCount, 2, ePacks[1].FPS, !owner->GetIsFlip(), false);
+		break;
+	case WEAPON_TYPE_3: 
+		owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 3, pack.FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffectBg()->SetFrameAuto(bgPacks[2].numU, bgPacks[2].numV, bgPacks[2].FrameStart, bgPacks[2].FrameTotalCount, 6, bgPacks[2].FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPreEffect()->SetFrameAuto(ePacks[2].numU, ePacks[2].numV, ePacks[2].FrameStart, ePacks[2].FrameTotalCount, 3, ePacks[2].FPS, !owner->GetIsFlip(), false);
+		break;
 	}
 
 	// skill set
@@ -783,13 +816,19 @@ void Player_SkillState::OnEnter(Player* owner)
 	{
 	case WEAPON_TYPE_1:
 		owner->SetAttackCollisionSize({ 20.0f,5.0f,20.0f });
+		owner->GetVisualPreEffectBg()->SetScale(20.0f, 20.0f, 0.0f);
+		owner->GetVisualPreEffect()->SetScale(20.0f, 20.0f, 0.0f);
 		owner->SetDoAttackType(Player_Skill_1);
 		break;
 	case WEAPON_TYPE_2:
+		owner->GetVisualPreEffectBg()->SetScale(10.0f, 10.0f, 0.0f);
+		owner->GetVisualPreEffect()->SetScale(10.0f, 10.0f, 0.0f);
 		owner->SetDoAttackType(Player_Skill_2);
 		break;
 	case WEAPON_TYPE_3:
 		owner->SetAttackCollisionSize({ 5.0f,5.0f,5.0f });
+		owner->GetVisualPreEffectBg()->SetScale(10.0f, 10.0f, 0.0f);
+		owner->GetVisualPreEffect()->SetScale(10.0f, 10.0f, 0.0f);
 		owner->SetDoAttackType(Player_Skill_3);
 		break;
 	}
@@ -802,17 +841,26 @@ void Player_SkillState::OnExit(Player* owner)
 	{
 	case WEAPON_TYPE_1:
 	{
-		owner->SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
+		owner->SetAttackCollisionSize(baseAttackCollisionSize);
+		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
+		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
+		owner->SetWasSkill(true);
 		break;
 	}
 	case WEAPON_TYPE_2:
 	{
+		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
+		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
+		owner->SetWasSkill(true);
 		break;
 	}
 	case WEAPON_TYPE_3:
 	{
-		owner->SetAttackCollisionSize({ 2.0f,2.0f,2.0f });
+		owner->SetAttackCollisionSize(baseAttackCollisionSize);
+		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
+		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
 		owner->SetCollisionOnOff(true); // コリジュンを開ける
+		owner->SetWasSkill(true);
 		break;
 	}
 	}
@@ -825,6 +873,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 {
 	// set anime
 	owner->GetVisualPre()->Update(dt);
+	owner->GetVisualPreEffect()->Update(dt);
 
 	// ダッシュでスキルをキャンセル
 	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
@@ -841,6 +890,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 		}
 	}
 
+	auto pos = owner->GetPosition();
 	switch (WeaponType)
 	{
 	case WEAPON_TYPE_1:
@@ -853,10 +903,16 @@ void Player_SkillState::Update(Player* owner, float dt)
 		// 攻撃当たる判定
 		if (owner->GetAttackCollisionOnOff()) 
 			owner->AttackCollide(-3.0f, { 1.0f,0.5f,1.0f });
+		// VisualPrePos
+		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 5.0f, pos.z + 0.1f);
+		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y + 5.0f, pos.z - 0.1f);
 		break;
 	}
 	case WEAPON_TYPE_2:
 		if (currentFrame == 45) owner->CalculateHpCurrent(3.0f);
+		// VisualPrePos
+		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 2.5f, pos.z + 0.1f);
+		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y + 2.5f, pos.z - 0.1f);
 		break;
 	case WEAPON_TYPE_3:
 		// 攻撃コリジョンを開けるフレーム
@@ -864,12 +920,15 @@ void Player_SkillState::Update(Player* owner, float dt)
 		{
 			owner->SetAttackCollisionOnOff(true);
 			owner->SetCollisionOnOff(false);	// コリジュンを閉じる
-			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.0f, 0.0f);
+			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.1f, 0.0f);
 		}
 		// 攻撃コリジョンを閉じるフレーム
 		if (currentFrame == 43) owner->SetAttackCollisionOnOff(false);
 		// 攻撃当たる判定
 		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.0f,1.0f });
+		// VisualPrePos
+		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y, pos.z + 0.1f);
+		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y, pos.z - 0.1f);
 		break;
 	}
 

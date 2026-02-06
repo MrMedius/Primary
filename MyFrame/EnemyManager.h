@@ -27,6 +27,7 @@ private:
 	int Interval{ 100 };
 	int CountDown{ 0 };
 	bool NewEnemy{ false };
+	bool Created{ false };
 
 private:
 	float MapEdgeLeftAndRight{ 0.0f };

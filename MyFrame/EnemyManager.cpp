@@ -5,6 +5,7 @@
 #include "Enemy_Red_0.h"
 #include "Enemy_Red_1.h"
 #include "Enemy_Green_0.h"
+#include "Enemy_Green_1.h"
 #include "Enemy_Blue_0.h"
 #include "Enemy_Blue_1.h"
 //#include "EnemyBoss.h"
@@ -24,6 +25,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 		ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
+		ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 		ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f });
 	}
@@ -32,6 +34,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, 
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_0>(character_Enemy_Red_0)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Red_1>(character_Enemy_Red_1)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Green_0>(character_Enemy_Green_0)->Deactivate();
+		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Green_1>(character_Enemy_Green_1)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Blue_0>(character_Enemy_Blue_0)->Deactivate();
 		ObjectCodex::FindFirstActiveObjectByTag<Enemy_Blue_1>(character_Enemy_Blue_1)->Deactivate();
 	}
@@ -49,7 +52,7 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	//if (NewEnemy)
 	//{
 	// // get new enemy type randomly
-	//	std::uniform_int_distribution<int> enemyType(1, 3);
+	//	std::uniform_int_distribution<int> enemyType(1, 6);
 	//	type = enemyType(rng);
 	// 
 	// // get position around the player randomly
@@ -64,20 +67,16 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	//	NewEnemy = false;
 	//}
 
-	//#ifdef _DEBUG
 	assert(pKbd);
 	// V‚µEnemyTest‚ð¶¬‚·‚é
-	if (pKbd->KeyIsTriggered(KK_NUMPAD1) || type == 1)
-		enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));
-	if (pKbd->KeyIsTriggered(KK_NUMPAD4) || type == 4)
-		enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));
-	if (pKbd->KeyIsTriggered(KK_NUMPAD2) || type == 2)
-		enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos));
-	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3)
-		enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));
-	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6)
-		enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));
-	//#endif
+	if (pKbd->KeyIsTriggered(KK_NUMPAD1) || type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));		Created = true; }
+	if (pKbd->KeyIsTriggered(KK_NUMPAD4) || type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));		Created = true; }
+	if (pKbd->KeyIsTriggered(KK_NUMPAD2) || type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
+	if (pKbd->KeyIsTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
+	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	Created = true; }
+	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	Created = true; }
+	if (Created) { Created = false;	enemies.back()->SpawnAt(pos); }
+
 
 	for (int i = 0; i < enemies.size(); i++)
 	{

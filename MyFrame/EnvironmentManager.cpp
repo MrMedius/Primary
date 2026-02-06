@@ -10,7 +10,7 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	gfx(gfx),
 	rg(rg)
 {
-	environments.push_back(ObjectCodex::Acquire<Block>(environment_Block, gfx, rg, XMFLOAT3{ 4.0f, 3.0f, 4.0f }, XMFLOAT3{ 4.0f, 4.0f, 4.0f }, true));
+	//environments.push_back(ObjectCodex::Acquire<Block>(environment_Block, gfx, rg, XMFLOAT3{ 4.0f, 3.0f, 4.0f }, XMFLOAT3{ 4.0f, 4.0f, 4.0f }, true));
 
 	XMFLOAT3 fieldSize = XMFLOAT3(300.0f, 2.0f, 100.0f);
 	environments.push_back(ObjectCodex::Acquire<BlockTiled>(environment_BlockTiled, gfx, rg, XMFLOAT3(0.0f, 0.0f, 0.0f), fieldSize, XMFLOAT2(30.0f, 10.0f), true));

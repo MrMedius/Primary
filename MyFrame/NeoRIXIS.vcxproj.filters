@@ -169,6 +169,9 @@
     <Filter Include="Source Files\Object\Managers">
       <UniqueIdentifier>{cb14d018-0aae-4e9c-9f76-c6b5f4d8a407}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Object\Character\Enemy\Player">
+      <UniqueIdentifier>{dfa29992-e1f5-4453-82dc-d84dd1514dea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -408,12 +411,6 @@
     <ClCompile Include="Character.cpp">
       <Filter>Source Files\Object\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\Object\Character</Filter>
-    </ClCompile>
-    <ClCompile Include="Player_ResourceSystem.cpp">
-      <Filter>Source Files\Object\Character</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files\Tool</Filter>
     </ClCompile>
@@ -479,6 +476,15 @@
     </ClCompile>
     <ClCompile Include="EffectManager.cpp">
       <Filter>Source Files\Object\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Object\Character\Enemy\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player_ResourceSystem.cpp">
+      <Filter>Source Files\Object\Character\Enemy\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Green_1.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -955,6 +961,9 @@
     </ClInclude>
     <ClInclude Include="Effect_Player_Hit.h">
       <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Green_1.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

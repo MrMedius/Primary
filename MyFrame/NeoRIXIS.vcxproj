@@ -192,6 +192,7 @@
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Enemy_Blue_1.cpp" />
+    <ClCompile Include="Enemy_Green_1.cpp" />
     <ClCompile Include="Enemy_Red_0.cpp" />
     <ClCompile Include="Enemy_Blue_0.cpp" />
     <ClCompile Include="Enemy_Green_0.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Enemy_Blue_1.h" />
+    <ClInclude Include="Enemy_Green_1.h" />
     <ClInclude Include="Enemy_Red_0.h" />
     <ClInclude Include="Enemy_Blue_0.h" />
     <ClInclude Include="Enemy_Green_0.h" />

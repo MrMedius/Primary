@@ -18,17 +18,14 @@ public:
 		SetCollisionOnOff(false);
 
 		// graphics init
-		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\\Player\\Player_Blue_Effect_Attack.png"});
+		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\\Player\\Player_Blue_Effect.png"});
 		visualPre->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, flip, false);
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetScale(transInfo.scale);
 		visualPre->LinkTechniques(rg);
 	}
-	void ActiveAt(XMFLOAT3 pos, bool flip) override 
+	void SpawnAt(XMFLOAT3 pos, bool flip) override
 	{	
-		// activate
-		Activate();
-
 		// reset parameters
 		SetPosition(pos);
 

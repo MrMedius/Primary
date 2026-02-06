@@ -48,11 +48,11 @@ void EffectManager::Update(float dt)
 
 				switch (playerAttackType)
 				{
-				case Player_Attack_1: effects.push_back(ObjectCodex::AcquireDeactive<Effect_Player_Remote_1>(effect_Player_Remote_Attack_1, gfx, rg, pos, flip)); break;
-				case Player_Attack_2: effects.push_back(ObjectCodex::AcquireDeactive<Effect_Player_Remote_2>(effect_Player_Remote_Attack_2, gfx, rg, pos, flip)); break;
-				case Player_Attack_3: effects.push_back(ObjectCodex::AcquireDeactive<Effect_Player_Remote_3>(effect_Player_Remote_Attack_3, gfx, rg, pos, flip)); break;
+				case Player_Attack_1: effects.push_back(ObjectCodex::Acquire<Effect_Player_Remote_1>(effect_Player_Remote_Attack_1, gfx, rg, pos, flip)); break;
+				case Player_Attack_2: effects.push_back(ObjectCodex::Acquire<Effect_Player_Remote_2>(effect_Player_Remote_Attack_2, gfx, rg, pos, flip)); break;
+				case Player_Attack_3: effects.push_back(ObjectCodex::Acquire<Effect_Player_Remote_3>(effect_Player_Remote_Attack_3, gfx, rg, pos, flip)); break;
 				}
-				if (!effects.back()->IsActive()) effects.back()->ActiveAt(pos, flip);
+				effects.back()->SpawnAt(pos, flip);
 			}
 		}
 
@@ -84,9 +84,8 @@ void EffectManager::Update(float dt)
 						auto pos = e->GetPosition();
 						pos = { pos.x,pos.y, pos.z - 0.1f };
 						auto flip = e->GetIsFlip();
-						effects.push_back(ObjectCodex::AcquireDeactive<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, pos, flip));
-						if (!effects.back()->IsActive())
-							effects.back()->ActiveAt(pos, flip);
+						effects.push_back(ObjectCodex::Acquire<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, pos, flip));
+						effects.back()->SpawnAt(pos, flip);
 					}
 				}
 			}

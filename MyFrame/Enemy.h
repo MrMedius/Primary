@@ -2,7 +2,6 @@
 #include "Character.h"
 #include "Sprite3D.h"
 #include "Player.h"
-#include <random>
 
 // ìGèÛë‘ÇÃID
 enum ENEMY_STATE_ID {
@@ -39,23 +38,13 @@ public:
 	{
 		AttackTarget = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
 		auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
-		MapEdgeLeftAndRight = mapSize.x / 2.0f;
-		MapEdgeFrontAndBack = mapSize.z / 2.0f;
+	}
+	void SpawnAt(XMFLOAT3 pos)
+	{
+		SetPosition(pos);
 	}
 	void OnEnable(void) override
 	{
-		std::mt19937 rng(std::random_device{}());
-		std::uniform_real_distribution<float> x(-30.0f, 30.0f);
-		std::uniform_real_distribution<float> z(-15.0f, 15.0f);
-		auto targetPos = AttackTarget->GetPosition();
-		XMFLOAT3 pos = { targetPos.x + x(rng),10.0f,targetPos.z + z(rng) };
-
-		if (pos.x >  MapEdgeLeftAndRight) pos.x =  MapEdgeLeftAndRight - transInfo.scale.x / 2 - 2.0f;
-		if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + transInfo.scale.x / 2 + 2.0f;
-		if (pos.z >  MapEdgeFrontAndBack) pos.z =  MapEdgeFrontAndBack - transInfo.scale.z / 2 - 2.0f;
-		if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + transInfo.scale.z / 2 + 2.0f;
-
-		SetPosition(pos);
 		ResetHpCurrent();
 		SetIsDeath(false);
 	}
@@ -138,7 +127,4 @@ protected:
 #ifdef _DEBUG
 	std::unique_ptr<CubeWireframe> searchColliderWire;
 #endif
-private:
-	float MapEdgeLeftAndRight{ 0.0f };
-	float MapEdgeFrontAndBack{ 0.0f };
 };

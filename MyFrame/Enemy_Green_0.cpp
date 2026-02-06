@@ -122,9 +122,8 @@ void Enemy_Green_0::SetupTransitions(void)
 ------------------------------------------------------------------------------*/
 void Enemy_Green_0_IdleState::OnEnter(Enemy_Green_0* owner)
 {
-	pack.FPS = 10.0f;
 	// set anime
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), true);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), true);
 }
 
 void Enemy_Green_0_IdleState::Update(Enemy_Green_0* owner, float dt)
@@ -135,7 +134,7 @@ void Enemy_Green_0_IdleState::Update(Enemy_Green_0* owner, float dt)
 	owner->CheckIsFlip();		// Œü‚¢‚Ä‚¢‚é•ûŒü‚Ì”»’f
 	owner->CheckIsAttack();		// UŒ‚‚·‚é‚©‚Ç‚¤‚©‚ð”»’f
 	owner->DoAttackCountDown();	// UŒ‚‚ðƒJƒEƒ“ƒgƒ_ƒEƒ“
-	owner->GetVisualPre()->SetFlip(owner->GetIsFlip());
+	owner->GetVisualPre()->SetFlip(!owner->GetIsFlip());
 }
 
 
@@ -144,9 +143,8 @@ void Enemy_Green_0_IdleState::Update(Enemy_Green_0* owner, float dt)
 ------------------------------------------------------------------------------*/
 void Enemy_Green_0_ChaseState::OnEnter(Enemy_Green_0* owner)
 {
-	pack.FPS = 10.0f;
 	// set anime
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), true);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), true);
 }
 
 void Enemy_Green_0_ChaseState::Update(Enemy_Green_0* owner, float dt)
@@ -158,7 +156,7 @@ void Enemy_Green_0_ChaseState::Update(Enemy_Green_0* owner, float dt)
 	owner->CheckIsAttack();		// UŒ‚‚·‚é‚©‚Ç‚¤‚©‚ð”»’f
 	owner->DoChase();			// ƒ^[ƒQƒbƒg‚ð’Ç‚¢‚©‚¯‚é
 	owner->DoAttackCountDown();	// UŒ‚‚ðƒJƒEƒ“ƒgƒ_ƒEƒ“
-	owner->GetVisualPre()->SetFlip(owner->GetIsFlip());
+	owner->GetVisualPre()->SetFlip(!owner->GetIsFlip());
 }
 
 
@@ -167,9 +165,8 @@ void Enemy_Green_0_ChaseState::Update(Enemy_Green_0* owner, float dt)
 ------------------------------------------------------------------------------*/
 void Enemy_Green_0_AttackState::OnEnter(Enemy_Green_0* owner)
 {
-	pack.FPS = 10.0f;
 	// set anime
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), false);
 	// make sure no repeated hits
 	HaveHit = false;
 }
@@ -204,9 +201,8 @@ void Enemy_Green_0_AttackState::Update(Enemy_Green_0* owner, float dt)
 ------------------------------------------------------------------------------*/
 void Enemy_Green_0_HurtState::OnEnter(Enemy_Green_0* owner)
 {
-	pack.FPS = 10.0f;
 	// set anime
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), false);
 	// make sure not be hit repeatly
 	BeAttackedTypeOld = owner->GetBeAttackedType();
 }
@@ -242,9 +238,8 @@ void Enemy_Green_0_HurtState::Update(Enemy_Green_0* owner, float dt)
 ------------------------------------------------------------------------------*/
 void Enemy_Green_0_DeathState::OnEnter(Enemy_Green_0* owner)
 {
-	pack.FPS = 10.0f;
 	// set anime
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
+	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), false);
 }
 
 void Enemy_Green_0_DeathState::Update(Enemy_Green_0* owner, float dt)

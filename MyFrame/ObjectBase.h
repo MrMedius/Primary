@@ -52,13 +52,13 @@ public:
 	BoxCollider	GetBoxCollider(void) const	{ return boxCollider; }
 	XMFLOAT3 GetCollisionSize(void) const	{ return boxCollider.half; }
 	void SetCollisionOnOff(bool OnOff)		{ OnCollision = OnOff; }
-	void SetCollisionSize(XMFLOAT3 size) { boxCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }
+	void SetCollisionSize(XMFLOAT3 size)	{ boxCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }
 	bool GetCollisionOnOff(void) const		{ return OnCollision; }
 protected:
 	void Transform(float X, float Y, float Z)	{ transInfo.position.x += X; transInfo.position.y += Y; transInfo.position.z += Z; }
 	void SetPosition(XMFLOAT3 position)			{ transInfo.position = position; }
-	void Rotate(float X, float Y, float Z)	{ transInfo.rotation.x += X; transInfo.rotation.y += Y; transInfo.rotation.z += Z; }
-	void SetRotation(XMFLOAT3 rotate)				{ transInfo.rotation = rotate; }
+	void Rotate(float X, float Y, float Z)		{ transInfo.rotation.x += X; transInfo.rotation.y += Y; transInfo.rotation.z += Z; }
+	void SetRotation(XMFLOAT3 rotate)			{ transInfo.rotation = rotate; }
 	void Scale(float X, float Y, float Z)		{ transInfo.scale.x += X; transInfo.scale.y += Y; transInfo.scale.z += Z; }
 	void SetSize(XMFLOAT3 size)					{ transInfo.scale = size; }
 protected:

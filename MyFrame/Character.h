@@ -46,17 +46,17 @@ public:
 	virtual void OnEnable(void) override = 0;
 	virtual void Update(float dt) override = 0;
 	virtual void Submit(void) override = 0;
-	void CalculateHpCurrent(float offset)	{ HpCurrent += offset; HpCurrent = std::clamp(HpCurrent, 0.0f, HpMax); }	// 今の体力の計算
-	float GetHpCurrent(void) const			{ return HpCurrent; }														// 今の体力をゲット
-	void CalculateMoveVelocity(float X, float Y, float Z)	{ MoveVelocity.x += X; MoveVelocity.y += Y; MoveVelocity.z += Z; }			// 移動値をセット
-	void CalculateMoveVelocity(XMFLOAT3 offset)				{ CalculateMoveVelocity(offset.x, offset.y, offset.z); }					// 移動値をセット
-	XMFLOAT3 GetMoveVelocity(void) const					{ return MoveVelocity; }													// 移動値をゲット
-	void SetMoveAccel(float accel)							{ MoveAccel = accel; }			// 移動加速値をセット
-	float GetMoveAccel(void) const							{ return MoveAccel; }			// 移動加速値をゲット
+	void CalculateHpCurrent(float offset)	{ HpCurrent += offset; HpCurrent = std::clamp(HpCurrent, 0.0f, HpMax); } // 今の体力の計算
+	float GetHpCurrent(void) const			{ return HpCurrent; }													 // 今の体力をゲット
+	void CalculateMoveVelocity(float X, float Y, float Z)	{ MoveVelocity.x += X; MoveVelocity.y += Y; MoveVelocity.z += Z; }	// 移動値をセット
+	void CalculateMoveVelocity(XMFLOAT3 offset)				{ CalculateMoveVelocity(offset.x, offset.y, offset.z); }			// 移動値をセット
+	XMFLOAT3 GetMoveVelocity(void) const					{ return MoveVelocity; }											// 移動値をゲット
+	void SetMoveAccel(float accel)							{ MoveAccel = accel; }	// 移動加速値をセット
+	float GetMoveAccel(void) const							{ return MoveAccel; }	// 移動加速値をゲット
 	void SetAttackPosition(XMFLOAT3 position)				{ attackCollider.center = position; }	// 攻撃の位置をセット
 	XMFLOAT3 GetAttackPosition(void) const					{ return  attackCollider.center; }		// 攻撃の位置をゲット
-	void SetAttackCollisionSize(XMFLOAT3 size)				{ attackCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }	// 攻撃のコリジョンをセット
-	XMFLOAT3 GetAttackCollisionSize(void) const				{ return attackCollider.half; }	// 攻撃のコリジョンをゲット
+	void SetAttackCollisionSize(XMFLOAT3 size)				{ attackCollider.half = { size.x / 2,size.y / 2 ,size.z / 2 }; }				// 攻撃のコリジョンをセット
+	XMFLOAT3 GetAttackCollisionSize(void) const				{ auto s = attackCollider.half; return { s.x * 2.0f,s.y * 2.0f, s.z * 2.0f }; }	// 攻撃のコリジョンをゲット
 	void SetAttackCollisionOnOff(bool OnOff)				{ OnAttackCollision = OnOff; }	// 攻撃間隔カウントダウンをセット
 	bool GetAttackCollisionOnOff(void) const				{ return OnAttackCollision; }	// 攻撃間隔カウントダウンをゲット
 	void ResetAttackCountDown(void)							{ AttackCountDown = AttackInterval; }			// 攻撃のコリジョンをリセット
