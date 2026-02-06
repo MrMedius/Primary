@@ -26,10 +26,10 @@ enum Object_Type_Tag
 	character_Enemy_Blue_1 = 0x031,
 	character_Enemy_Boss = 0x041,
 	// Effect
-	effect_Player_Remote_Attack_1 = 0x201,
-	effect_Player_Remote_Attack_2 = 0x202,
-	effect_Player_Remote_Attack_3 = 0x203,
-	effect_Player_Remote_Attack_Hit = 0x203,
+	effect_Player_Remote_Attack_1 = 0x200,
+	effect_Player_Remote_Attack_2 = 0x201,
+	effect_Player_Remote_Attack_3 = 0x202,
+	effect_Player_Hit = 0x212,
 };
 
 class ObjectBase

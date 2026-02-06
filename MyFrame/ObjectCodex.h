@@ -24,7 +24,13 @@ public:
     static T* Acquire(Object_Type_Tag tag, Args&&... args)
     {
         static_assert(std::is_base_of<ObjectBase, T>::value, "T must inherit from Object");
-        return Get_().Acquire_<T>(tag, std::forward<Args>(args)...);
+        return Get_().Acquire_<T>(tag, true, std::forward<Args>(args)...);
+    }
+    template <typename T, typename... Args>
+    static T* AcquireDeactive(Object_Type_Tag tag, Args&&... args)
+    {
+        static_assert(std::is_base_of<ObjectBase, T>::value, "T must inherit from Object");
+        return Get_().Acquire_<T>(tag, false, std::forward<Args>(args)...);
     }
 
     template <typename T>
@@ -60,7 +66,7 @@ public:
 
 private:
     template <typename T, typename... Args>
-    T* Acquire_(Object_Type_Tag tag, Args&&... args)
+    T* Acquire_(Object_Type_Tag tag, bool activate, Args&&... args)
     {
         auto& pool = objectPools[tag]; // create the vector, if it doesn't exist.
 
@@ -69,11 +75,11 @@ private:
         {
             if (!obj->IsActive())
             {
-                obj->Activate();
-
                 // Type matching is required for use
                 if (auto* typed = dynamic_cast<T*>(obj.get()))
                 {
+                    if (activate) obj->Activate();
+
                     return typed;
                 }
             }

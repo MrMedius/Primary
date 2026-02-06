@@ -299,9 +299,9 @@
     <ClInclude Include="CubeWireframe.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />
+    <ClInclude Include="Effect_Player_Hit.h" />
     <ClInclude Include="Effect_Player_Remote_2.h" />
     <ClInclude Include="Effect_Player_Remote_3.h" />
-    <ClInclude Include="Effect_Player_Remote_Hit.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Enemy_Blue_1.h" />

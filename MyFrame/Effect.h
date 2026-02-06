@@ -16,6 +16,7 @@ public:
 		:
 		ObjectBase(tag)
 	{}
+	void virtual ActiveAt(XMFLOAT3 pos, bool flip) = 0;
 	void OnEnable(void) override = 0;
 	void Update(float dt) override = 0;
 	void Submit(void) override = 0;

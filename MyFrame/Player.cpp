@@ -33,8 +33,11 @@ void Player::Update(float dt)
 
 	// Weapon ralated update
 	{
-		if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
-		if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
+		if (!FSM->IsInState("PLAYER_ATTACK") && !FSM->IsInState("PLAYER_SKILL"))
+		{
+			if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
+			if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
+		}
 		if (currentWeaponType != pWeapon->GetCurrentSlot().GetType())
 		{
 			currentWeaponType = pWeapon->GetCurrentSlot().GetType();
@@ -132,6 +135,7 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 			if (isHit)
 			{
 				e->SetIsHurt(true);	// UŒ‚‚³‚ê‚½ó‘Ô‚É‘JˆÚ
+				e->SetWasHurt(true);
 				e->CalculateHpCurrent(damage); // ‘Ì—ÍŒvŽZ
 				e->SetBeAttackedType(GetDoAttackType());
 

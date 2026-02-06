@@ -98,6 +98,18 @@ public:
 		}
 		return false;
 	}
+	void SetWasHurt(bool state) { WasHurt = state; }
+	bool GetWasHurt(void) 
+	{ 
+		if (WasHurt)
+		{
+			WasHurt = false;
+			return true;
+		}
+		else
+			return false;
+	}
+	virtual int GetKillScore() const noexcept = 0;
 	ENEMY_TYPE_ID GetEnemyType(void) const { return Type; }
 	ObjectBase* GetAttackTarget(void) { return AttackTarget; }
 	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
@@ -122,6 +134,7 @@ protected:
 	BoxCollider searchCollider;				// 検査のコリジョン
 	bool IsInArea{ false };					// ターゲットが検査範囲にいる
 	bool IsInAttackArea{ false };			// ターゲットが攻撃範囲にいる
+	bool WasHurt{ false };					// 攻撃されたかどうかのフラグ
 #ifdef _DEBUG
 	std::unique_ptr<CubeWireframe> searchColliderWire;
 #endif

@@ -1,9 +1,8 @@
 #pragma once
 #include "Graphics.h"
 #include "RenderGraph.h"
-#include "Block.h"
-#include "BlockTiled.h"
-#include "BlockInvisible.h"
+
+#include "Environment.h"
 
 class EnvironmentManager
 {
@@ -17,7 +16,5 @@ private:
 	Graphics& gfx;
 	Rgph::RenderGraph& rg;
 
-	std::vector<Block*> blocks;
-	BlockTiled* blockTiled;
-	std::vector<BlockInvisible*> blocksInvisible;
+	std::vector<Environment*> environments;
 };

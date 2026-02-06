@@ -64,6 +64,7 @@ public:
 	};
 	void Update(float dt) override;
 	void Submit(void) override;
+	int GetKillScore() const noexcept override { return 40; }
 private:
 	void SetupTransitions(void) override;
 private:
