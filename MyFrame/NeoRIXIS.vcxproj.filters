@@ -172,6 +172,12 @@
     <Filter Include="Source Files\Object\Character\Enemy\Player">
       <UniqueIdentifier>{dfa29992-e1f5-4453-82dc-d84dd1514dea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{d163a4e0-ebd2-4d25-a066-461f4baf3dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{1baa78fb-e28f-465a-8866-e03436744ba3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -486,6 +492,9 @@
     <ClCompile Include="Enemy_Green_1.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="SoundCodex.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -615,9 +624,6 @@
       <Filter>Header Files\GraphPass\PassLib</Filter>
     </ClInclude>
     <ClInclude Include="Bindable.h">
-      <Filter>Header Files\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="BindableCodex.h">
       <Filter>Header Files\Bindable\Core</Filter>
     </ClInclude>
     <ClInclude Include="BindableCommon.h">
@@ -965,6 +971,15 @@
     <ClInclude Include="Enemy_Green_1.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="BindableCodex.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundCodex.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPaths.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NeoRIXIS.rc">
@@ -973,6 +988,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="asset\Icon\XYX.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="asset\Icon\Logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="asset\Icon\GameLogo.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -1,12 +1,8 @@
 #include "Player.h"
+#include "Enemy.h"
 #include "Channels.h"
 
-#include "Enemy.h"
-#include "Enemy_Red_0.h"
-#include "Enemy_Red_1.h"
-#include "Enemy_Green_0.h"
-#include "Enemy_Blue_0.h"
-#include "Enemy_Blue_1.h"
+#include "SoundCodex.h"
 
 void Player::Update(float dt)
 {
@@ -548,8 +544,10 @@ void Player_AttackState::OnEnter(Player* owner)
 		packs[mode].FrameTotalCount = 15;
 		owner->SetDoAttackType(Player_Attack_1);
 		owner->GetWeaponSlots()->UseWeapon(-10.0f);
-	}
+	
+		SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_1, 0, 0.3f);
 		break;
+	}
 	case WEAPON_TYPE_1:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_1);	break;
 	case WEAPON_TYPE_2:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_2);	break;
 	case WEAPON_TYPE_3:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_3);	break;
@@ -572,6 +570,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 	assist.Update(dt);
 
 	auto type = owner->GetWeaponSlots()->GetCurrentSlot().GetType();
+	auto attackType = owner->GetDoAttackType();
 
 	// ダッシュで攻撃をキャンセル
 	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
@@ -582,7 +581,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 		if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
 			if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)
 				owner->SetIsSkill(true);
-		if (!isCombo)
+		if (!isCombo && attackType != Player_Attack_3)
 		{
 			if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))
 			{
@@ -590,7 +589,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 
 				if (!owner->GetIsFever()) 
 				{
-					if (owner->GetDoAttackType() == Player_Attack_1)
+					if (attackType == Player_Attack_1)
 					{
 						switch (type)
 						{
@@ -599,7 +598,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 						case WEAPON_TYPE_3: owner->GetWeaponSlots()->UseWeapon(-10.0f); break;
 						}
 					}
-					if (owner->GetDoAttackType() == Player_Attack_2)
+					if (attackType == Player_Attack_2)
 					{
 						switch (type)
 						{
@@ -615,7 +614,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 
 	if (mode != 2)
 	{
-		switch (owner->GetDoAttackType())
+		switch (attackType)
 		{
 		case Player_Attack_1:
 		{
@@ -679,7 +678,7 @@ void Player_AttackState::Update(Player* owner, float dt)
 	}
 	else
 	{
-		switch (owner->GetDoAttackType())
+		switch (attackType)
 		{
 		case Player_Attack_1:
 		{
@@ -723,10 +722,21 @@ void Player_AttackState::Update(Player* owner, float dt)
 	{
 		// もし連撃したら、スキルの事前入力を消ます
 		owner->SetIsSkill(false);
-		owner->SetDoAttackType(static_cast<Attack_Type_Tag>(owner->GetDoAttackType() + 1));
+		owner->SetDoAttackType(static_cast<Attack_Type_Tag>(attackType + 1));
 
 		if (mode != 2)
-			packs[mode].FrameTotalCount = (owner->GetDoAttackType() == Player_Attack_2) ? 32 : 48;
+		{
+			if (owner->GetDoAttackType() == Player_Attack_2)
+			{
+				packs[mode].FrameTotalCount = 32;
+				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_2, 0, 0.3f);
+			}
+			else
+			{
+				packs[mode].FrameTotalCount = 48;
+				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_3, 0, 0.3f);
+			}
+		}
 		else
 			packs[mode].FrameTotalCount = (owner->GetDoAttackType() == Player_Attack_2) ? 30 : 48;
 		assist.FrameTotal = packs[mode].FrameTotalCount;
@@ -833,6 +843,8 @@ void Player_SkillState::OnEnter(Player* owner)
 		break;
 	}
 	owner->GetWeaponSlots()->UseWeapon(-100.0f);
+
+	oldFrame = 0;
 }
 
 void Player_SkillState::OnExit(Player* owner)
@@ -897,9 +909,13 @@ void Player_SkillState::Update(Player* owner, float dt)
 	{
 		owner->SetAttackPosition(owner->GetPosition());
 		// 攻撃コリジョンを開けるフレーム
-		if (currentFrame == 31) owner->SetAttackCollisionOnOff(true);
+		if (currentFrame == 31 && oldFrame != currentFrame) 
+		{
+			owner->SetAttackCollisionOnOff(true);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_1, 0, 0.3f);
+		}
 		// 攻撃コリジョンを閉じるフレーム
-		if (currentFrame == 46) owner->SetAttackCollisionOnOff(false);
+		if (currentFrame == 46 && oldFrame != currentFrame) owner->SetAttackCollisionOnOff(false);
 		// 攻撃当たる判定
 		if (owner->GetAttackCollisionOnOff()) 
 			owner->AttackCollide(-3.0f, { 1.0f,0.5f,1.0f });
@@ -909,21 +925,26 @@ void Player_SkillState::Update(Player* owner, float dt)
 		break;
 	}
 	case WEAPON_TYPE_2:
-		if (currentFrame == 45) owner->CalculateHpCurrent(3.0f);
+		if (currentFrame == 45 && oldFrame != currentFrame) 
+		{
+			owner->CalculateHpCurrent(3.0f);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_2, 0, 0.3f);
+		}
 		// VisualPrePos
 		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 1.25f, pos.z + 0.1f);
 		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y + 1.25f, pos.z - 0.1f);
 		break;
 	case WEAPON_TYPE_3:
 		// 攻撃コリジョンを開けるフレーム
-		if (currentFrame == 17)
+		if (currentFrame == 17 && oldFrame != currentFrame)
 		{
 			owner->SetAttackCollisionOnOff(true);
 			owner->SetCollisionOnOff(false);	// コリジュンを閉じる
 			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.1f, 0.0f);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_3, 0, 0.3f);
 		}
 		// 攻撃コリジョンを閉じるフレーム
-		if (currentFrame == 43) owner->SetAttackCollisionOnOff(false);
+		if (currentFrame == 43 && oldFrame != currentFrame) owner->SetAttackCollisionOnOff(false);
 		// 攻撃当たる判定
 		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-1.0f, { 0.5f,0.0f,1.0f });
 		// VisualPrePos
@@ -937,6 +958,9 @@ void Player_SkillState::Update(Player* owner, float dt)
 
 	// 終わったらスキルフラグを閉じる
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsSkill(false);
+
+	// save old frame
+	oldFrame = currentFrame;
 }
 
 

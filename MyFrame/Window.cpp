@@ -4,6 +4,8 @@
 #include "WindowsThrowMacros.h"
 #include "imgui/imgui_impl_win32.h"
 
+#include "SoundCodex.h"
+
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
 
@@ -19,16 +21,16 @@ Window::WindowClass::WindowClass() noexcept
 	wc.cbWndExtra = 0;
 	wc.hInstance = GetInstance();
 	wc.hIcon = static_cast<HICON>(LoadImage( 
-		GetInstance(),MAKEINTRESOURCE( IDI_ICON1 ),
-		IMAGE_ICON,32,32,0
+		GetInstance(),MAKEINTRESOURCE( IDI_ICON3 ),
+		IMAGE_ICON,256,256,0
 	));
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);;
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = GetName();
 	wc.hIconSm = static_cast<HICON>(LoadImage(
-		GetInstance(),MAKEINTRESOURCE( IDI_ICON1 ),
-		IMAGE_ICON,16,16,0
+		GetInstance(),MAKEINTRESOURCE( IDI_ICON3 ),
+		IMAGE_ICON, 256, 256,0
 	));
 	RegisterClassEx( &wc );
 }
@@ -94,12 +96,18 @@ Window::Window( int width,int height,const char* name )
 	{
 		throw CHWND_LAST_EXCEPT();
 	}
+
+	// Init SoundCodex
+	SoundCodex::Get().Init(hWnd);
 }
 
 Window::~Window()
 {
 	ImGui_ImplWin32_Shutdown();
 	DestroyWindow( hWnd );
+
+	// Uninit SoundCodex
+	SoundCodex::Get().UnInit();
 }
 
 void Window::SetTitle( const std::string& title )

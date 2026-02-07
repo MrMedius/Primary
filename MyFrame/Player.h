@@ -292,6 +292,7 @@ private:
 	std::vector<SpriteAnimeInfo> bgPacks;
 	XMFLOAT3 baseAttackCollisionSize{ 0.0f,0.0f, 0.0f };
 	WEAPON_TYPE_ID WeaponType{ WEAPON_TYPE_NONE };
+	int oldFrame{ 0 };
 };
 
 /*------------------------------------------------------------------------------

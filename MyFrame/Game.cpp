@@ -12,6 +12,7 @@
 #include "ModelWindow.h"
 #include "ObjectBase.h"
 #include "ObjectCodex.h"
+#include "SoundCodex.h"
 
 namespace dx = DirectX;
 
@@ -39,6 +40,8 @@ Game::Game(const std::string& commandLine)
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
+
+	SoundCodex::Get().PlayBGM(SndPath::BGM_Main, -1);
 }
 
 Game::~Game()
@@ -73,6 +76,7 @@ int Game::RunGame()
 			Update(timer_update.Mark() * speed_factor);
 			wnd.kbd.Update();
 			wnd.mouse.Update();
+			SoundCodex::Get().Update();
 			/********************************/
 
 			/********************************/

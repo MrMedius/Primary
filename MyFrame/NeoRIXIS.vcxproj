@@ -212,6 +212,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Player_ResourceSystem.cpp" />
     <ClCompile Include="RingParamsCbuf.cpp" />
+    <ClCompile Include="SoundCodex.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
     <ClCompile Include="Sprite2DPolygon.cpp" />
@@ -341,6 +342,8 @@
     <ClInclude Include="Player_ResourceSystem.h" />
     <ClInclude Include="RingParamsCbuf.h" />
     <ClInclude Include="Score.h" />
+    <ClInclude Include="SoundCodex.h" />
+    <ClInclude Include="SoundPaths.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sprite2D.h" />
     <ClInclude Include="Sprite2DPolygon.h" />
@@ -453,6 +456,8 @@
     <ResourceCompile Include="NeoRIXIS.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="asset\Icon\GameLogo.ico" />
+    <Image Include="asset\Icon\Logo.ico" />
     <Image Include="asset\Icon\XYX.ico" />
   </ItemGroup>
   <ItemGroup>

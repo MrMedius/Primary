@@ -1,8 +1,12 @@
 #pragma once
 
-// target Windows 7 or later
-#define _WIN32_WINNT 0x0601
-#include <sdkddkver.h>
+// target Windows 8 or later
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0602
+#endif
+#ifndef WINVER
+#define WINVER 0x0602
+#endif
 // The following #defines disable a bunch of unused windows stuff. If you 
 // get weird errors when trying to do some windows stuff, try removing some
 // (or all) of these defines (it will increase build time though).

@@ -1,6 +1,7 @@
 #include "Util.h"
 #include <sstream>
 #include <iomanip>
+#include <Windows.h>
 
 std::vector<std::string> TokenizeQuoted( const std::string& input )
 {
@@ -21,6 +22,15 @@ std::wstring ToWide( const std::string& narrow )
 	wchar_t wide[512];
 	mbstowcs_s( nullptr,wide,narrow.c_str(),_TRUNCATE );
 	return wide;
+}
+
+std::wstring ToWideUtf8(std::string_view utf8)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), nullptr, 0);
+	if (len <= 0) return L"";
+	std::wstring w(len, L'\0');
+	MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), w.data(), len);
+	return w;
 }
 
 std::string ToNarrow( const std::wstring& wide )

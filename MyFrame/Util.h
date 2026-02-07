@@ -8,6 +8,8 @@ std::vector<std::string> TokenizeQuoted( const std::string& input );
 
 std::wstring ToWide( const std::string& narrow );
 
+std::wstring ToWideUtf8(std::string_view utf8);
+
 std::string ToNarrow( const std::wstring& wide );
 
 template<class Iter>
