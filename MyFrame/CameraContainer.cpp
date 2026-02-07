@@ -4,12 +4,14 @@
 #include "Graphics.h"
 #include "RenderGraph.h"
 
+#include "SoundCodex.h"
+
 namespace dx = DirectX;
 
 CameraContainer::CameraContainer(Graphics& gfx)
 {
-	AddCamera(std::make_unique<Camera>(gfx, "Main Camera", dx::XMFLOAT3{ 0.0f,25.0f,-30.0f }, PI / 6.0f, 0.0f));
-	AddCamera(std::make_unique<Camera>(gfx, "Observer", dx::XMFLOAT3{ -13.5f,28.8f,-6.4f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+	AddCamera(std::make_unique<Camera>(gfx, "Main Camera", dx::XMFLOAT3{ 0.0f,0.0f,0.0f }, PI / 6.0f, 0.0f));
+	AddCamera(std::make_unique<Camera>(gfx, "Observer", dx::XMFLOAT3{ 0.0f,10.0f,0.0f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
 }
 
 void CameraContainer::Bind( Graphics& gfx )

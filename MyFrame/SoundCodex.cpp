@@ -1,6 +1,14 @@
 #include "SoundCodex.h"
 #include <algorithm>
+#include <cstring>
+#include <cmath>
 #include "Util.h"
+#include "imgui/imgui.h"
+
+static inline float clamp01(float v)
+{
+    return std::clamp(v, 0.0f, 1.0f);
+}
 
 bool SoundCodex::Init(HWND hWnd)
 {
@@ -8,56 +16,82 @@ bool SoundCodex::Init(HWND hWnd)
 
     // COM init
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (FAILED(hr))
     {
-        MessageBox(hWnd, "COM initialization failed!", "WARNING！", MB_ICONWARNING);
-        return false;
-    }
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, "COM initialization failed!", "WARNING！", MB_ICONWARNING);
+            return false;
+        }
 
-    hr = XAudio2Create(XAudio2.GetAddressOf(), 0);
-    if (FAILED(hr))
-    {
-        MessageBox(hWnd, "Failed to create XAudio2 object!", "WARNING！", MB_ICONWARNING);
-        CoUninitialize();
-        return false;
-    }
+        hr = XAudio2Create(XAudio2.GetAddressOf(), 0);
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, "Failed to create XAudio2 object!", "WARNING！", MB_ICONWARNING);
+            CoUninitialize();
+            return false;
+        }
 
-    hr = XAudio2->CreateMasteringVoice(&masterVoice);
-    if (FAILED(hr))
-    {
-        MessageBox(hWnd, "Master voice generation failed!", "WARNING！", MB_ICONWARNING);
-        XAudio2.Reset();
-        CoUninitialize();
-        return false;
+        hr = XAudio2->CreateMasteringVoice(&masterVoice);
+        if (FAILED(hr))
+        {
+            MessageBox(hWnd, "Master voice generation failed!", "WARNING！", MB_ICONWARNING);
+            XAudio2.Reset();
+            CoUninitialize();
+            return false;
+        }
     }
 
     // Submix(Bus) init
     XAUDIO2_VOICE_DETAILS mv{};
-    masterVoice->GetVoiceDetails(&mv);
-    hr = XAudio2->CreateSubmixVoice(&bgmBus, mv.InputChannels, mv.InputSampleRate);
-    if (FAILED(hr))
     {
-        MessageBoxA(hWnd, "Failed to create BGM bus (SubmixVoice)!", "WARNING", MB_ICONWARNING);
-        masterVoice->DestroyVoice();
-        masterVoice = nullptr;
-        XAudio2.Reset();
-        CoUninitialize();
-        return false;
+        masterVoice->GetVoiceDetails(&mv);
+
+        hr = XAudio2->CreateSubmixVoice(&bgmBus, mv.InputChannels, mv.InputSampleRate);
+        if (FAILED(hr))
+        {
+            MessageBoxA(hWnd, "Failed to create BGM bus (SubmixVoice)!", "WARNING", MB_ICONWARNING);
+            masterVoice->DestroyVoice();
+            masterVoice = nullptr;
+            XAudio2.Reset();
+            CoUninitialize();
+            return false;
+        }
+        hr = XAudio2->CreateSubmixVoice(&seBus, mv.InputChannels, mv.InputSampleRate);
+        if (FAILED(hr))
+        {
+            MessageBoxA(hWnd, "Failed to create SE bus (SubmixVoice)!", "WARNING", MB_ICONWARNING);
+            if (bgmBus) { bgmBus->DestroyVoice(); bgmBus = nullptr; }
+            masterVoice->DestroyVoice();
+            masterVoice = nullptr;
+            XAudio2.Reset();
+            CoUninitialize();
+            return false;
+        }
+
+        masterVoice->SetVolume(std::clamp(masterVolume, 0.0f, 1.0f));
+        bgmBus->SetVolume(std::clamp(bgmBusVolume, 0.0f, 1.0f));
+        seBus->SetVolume(std::clamp(seBusVolume, 0.0f, 1.0f));
     }
-    hr = XAudio2->CreateSubmixVoice(&seBus, mv.InputChannels, mv.InputSampleRate);
-    if (FAILED(hr))
+
+    // X3DAudio init
     {
-        MessageBoxA(hWnd, "Failed to create SE bus (SubmixVoice)!", "WARNING", MB_ICONWARNING);
-        if (bgmBus) { bgmBus->DestroyVoice(); bgmBus = nullptr; }
-        masterVoice->DestroyVoice();
-        masterVoice = nullptr;
-        XAudio2.Reset();
-        CoUninitialize();
-        return false;
+        dstChannels_ = mv.InputChannels;
+
+        HRESULT hrMask = masterVoice->GetChannelMask(&channelMask_);
+        if (FAILED(hrMask) || channelMask_ == 0)
+        {
+            // fallback
+            channelMask_ = SPEAKER_STEREO;
+        }
+
+        X3DAudioInitialize(channelMask_, X3DAUDIO_SPEED_OF_SOUND, x3d_);
+
+        // listener defaults
+        listener_.Position = { 0,0,0 };
+        listener_.OrientFront = { 0,0,1 };
+        listener_.OrientTop = { 0,1,0 };
+        listener_.Velocity = { 0,0,0 };
     }
-    masterVoice->SetVolume(std::clamp(masterVolume, 0.0f, 1.0f));
-    bgmBus->SetVolume(std::clamp(bgmBusVolume, 0.0f, 1.0f));
-    seBus->SetVolume(std::clamp(seBusVolume, 0.0f, 1.0f));
 
     inited = true;
     return true;
@@ -77,9 +111,9 @@ void SoundCodex::UnInit()
         s.inUse = false;
         s.clip.reset();
         std::memset(&s.fmt, 0, sizeof(WAVEFORMATEX));
+        s.matrix.clear();
     }
     sePool.clear();
-
     // discard the cache (AudioClip is a shared_ptr, so it is released here)
     clipCache.clear();
 
@@ -93,11 +127,7 @@ void SoundCodex::UnInit()
         masterVoice->DestroyVoice();
         masterVoice = nullptr;
     }
-
-    if (XAudio2)
-    {
-        XAudio2.Reset();
-    }
+    XAudio2.Reset();
 
     CoUninitialize();
     inited = false;
@@ -112,14 +142,19 @@ void SoundCodex::Update()
     {
         if (!s.voice || !s.inUse) continue;
 
+        // 3D update first (so moving sounds spatialize while playing)
+        if (s.is3D) Apply3D_(s);
+
         XAUDIO2_VOICE_STATE st{};
         s.voice->GetState(&st);
 
         if (st.BuffersQueued == 0)
         {
-            // end of playback: release slot (leave voice = reuse if format matches)
+            // end of playback
             s.inUse = false;
             s.clip.reset();
+            s.is3D = false;
+            s.handle = 0;
             // just to be safe
             s.voice->FlushSourceBuffers();
         }
@@ -150,7 +185,7 @@ void SoundCodex::SetSeVolume(float vol)
 
 // ------------------------------------------
 // BGM
-bool SoundCodex::PlayBGM(std::string path, int loopCount)
+bool SoundCodex::PlayBGM(const std::string path, int loopCount)
 {
     if (!inited) return false;
 
@@ -162,7 +197,6 @@ bool SoundCodex::PlayBGM(std::string path, int loopCount)
 
     // set BGM voice output destination to bgmBus
     bgmVoice = CreateSourceVoice_(clip->fmt, bgmBus);
-
     if (!bgmVoice) return false;
 
     bgmClip = clip;
@@ -175,7 +209,7 @@ bool SoundCodex::PlayBGM(std::string path, int loopCount)
     buf.LoopCount = loopCount;
 
     bgmVoice->SubmitSourceBuffer(&buf);
-    bgmVoice->SetVolume(1.0f);
+    bgmVoice->SetVolume(1.0f); // bus / master handle overall volume
     bgmVoice->Start(0);
 
     return true;
@@ -195,18 +229,18 @@ void SoundCodex::StopBGM()
 
 
 // ------------------------------------------
-// SE
-bool SoundCodex::PlaySE(std::string path, int loopCount, float volume)
+// SE(2D)
+SoundCodex::SeHandle SoundCodex::PlaySE(const std::string& path, int loopCount, float volume)
 {
-    if (!inited) return false;
+    if (!inited) return 0;
 
     auto clip = GetOrLoadClip_(path);
-    if (!clip) return false;
+    if (!clip) return 0;
 
-    volume = std::clamp(volume, 0.0f, 1.0f);
+    volume = clamp01(volume);
 
     SeVoiceSlot* slot = AcquireSeSlot_(clip->fmt);
-    if (!slot || !slot->voice) return false;
+    if (!slot || !slot->voice) return 0;
 
     // safety precautions when reusing
     slot->voice->Stop(0);
@@ -222,15 +256,16 @@ bool SoundCodex::PlaySE(std::string path, int loopCount, float volume)
     slot->clip = clip;
     slot->inUse = true;
     slot->volume = volume;
-    slot->lastUseTick = m_Tick++;
+    slot->lastUseTick = tick_++;
+    slot->handle = nextHandle_++;
+    slot->is3D = false;
 
     slot->voice->SubmitSourceBuffer(&buf);
-
     // leave the individual SE volume to voice and the overall volume to seBus
     slot->voice->SetVolume(volume);
-
     slot->voice->Start(0);
-    return true;
+
+    return slot->handle;
 }
 
 void SoundCodex::StopAllSE()
@@ -244,7 +279,118 @@ void SoundCodex::StopAllSE()
         }
         s.inUse = false;
         s.clip.reset();
+        s.is3D = false;
+        s.handle = 0;
     }
+}
+
+
+// ------------------------------------------
+// SE(3D)
+SoundCodex::SeHandle SoundCodex::PlaySE3D(const std::string& path, int loopCount, float volume,
+    float emitterX, float emitterY, float emitterZ,
+    bool enableDistanceAtten, float minDistance, float maxDistance,
+    float rolloff)
+{
+    if (!inited) return 0;
+
+    auto clip = GetOrLoadClip_(path);
+    if (!clip) return 0;
+
+    volume = clamp01(volume);
+
+    SeVoiceSlot* slot = AcquireSeSlot_(clip->fmt);
+    if (!slot || !slot->voice) return 0;
+
+    slot->voice->Stop(0);
+    slot->voice->FlushSourceBuffers();
+
+    XAUDIO2_BUFFER buf{};
+    buf.AudioBytes = static_cast<UINT32>(clip->data.size());
+    buf.pAudioData = clip->data.data();
+    buf.Flags = XAUDIO2_END_OF_STREAM;
+    if (loopCount < 0) loopCount = XAUDIO2_LOOP_INFINITE;
+    buf.LoopCount = loopCount;
+
+    slot->clip = clip;
+    slot->inUse = true;
+    slot->volume = volume;
+    slot->lastUseTick = tick_++;
+    slot->handle = nextHandle_++;
+
+    // 3D params
+    slot->is3D = true;
+    slot->enableDistanceAtten = enableDistanceAtten;
+    slot->minDistance = max(0.001f, minDistance);
+    slot->maxDistance = max(slot->minDistance, maxDistance);
+    slot->rolloff = max(0.0f, rolloff);
+
+    // emitter init
+    slot->emitter = {};
+    slot->emitter.OrientFront = { 0,0,1 };
+    slot->emitter.OrientTop = { 0,1,0 };
+    slot->emitter.Position = { emitterX, emitterY, emitterZ };
+    slot->emitter.Velocity = { 0,0,0 };
+    slot->emitter.ChannelCount = slot->srcChannels;
+    slot->emitter.CurveDistanceScaler = 1.0f;
+    slot->emitter.DopplerScaler = 1.0f;
+
+    slot->voice->SubmitSourceBuffer(&buf);
+
+    // 3D compatible → Volume compatible → Start
+    Apply3D_(*slot);
+    slot->voice->Start(0);
+    return slot->handle;
+}
+
+void SoundCodex::UpdateSE3D(SeHandle h, float emitterX, float emitterY, float emitterZ)
+{
+    if (!inited || h == 0) return;
+
+    for (auto& s : sePool)
+    {
+        if (!s.inUse || !s.is3D || s.handle != h) continue;
+        s.emitter.Position = { emitterX, emitterY, emitterZ };
+        // basically leave the work to Update()
+        Apply3D_(s);
+        return;
+    }
+}
+
+
+// ----------------------------------------
+// listener
+void SoundCodex::SetListenerPosition(float x, float y, float z)
+{
+    listener_.Position = { x,y,z };
+}
+
+void SoundCodex::SetListenerTransform(float px, float py, float pz,
+    float fx, float fy, float fz,
+    float ux, float uy, float uz)
+{
+    listener_.Position = { px,py,pz };
+    listener_.OrientFront = { fx,fy,fz };
+    listener_.OrientTop = { ux,uy,uz };
+}
+
+
+// ----------------------------------------
+// state query
+bool SoundCodex::IsSePlaying(SeHandle h) const
+{
+    if (!inited || h == 0) return false;
+
+    for (const auto& s : sePool)
+    {
+        if (!s.inUse || !s.voice) continue;
+        if (s.handle != h) continue;
+
+        XAUDIO2_VOICE_STATE st{};
+        s.voice->GetState(&st);
+        return (st.BuffersQueued != 0);
+    }
+    return false;
 }
 
 
@@ -254,17 +400,14 @@ std::shared_ptr<SoundCodex::AudioClip> SoundCodex::GetOrLoadClip_(std::string pa
 {
     if (path.empty()) return nullptr;
 
-    // leave the key as is (better to add NormalizePath later)
-    std::string key(path);
-
-    auto it = clipCache.find(key);
+    auto it = clipCache.find(path);
     if (it != clipCache.end())
         return it->second;
 
     auto clip = LoadWavClip_(path);
     if (!clip) return nullptr;
 
-    clipCache.emplace(key, clip);
+    clipCache.emplace(path, clip);
     return clip;
 }
 
@@ -338,7 +481,9 @@ std::shared_ptr<SoundCodex::AudioClip> SoundCodex::LoadWavClip_(std::string path
     return clip;
 }
 
-// specify the output bus
+
+// ----------------------------------------
+// voice create / destroy
 IXAudio2SourceVoice* SoundCodex::CreateSourceVoice_(const WAVEFORMATEX& fmt, IXAudio2Voice* dstBus)
 {
     if (!XAudio2 || !dstBus) return nullptr;
@@ -377,36 +522,39 @@ void SoundCodex::DestroySourceVoice_(IXAudio2SourceVoice*& v)
 }
 
 // ------------------------------------------
-// slot acquire (free, addition, or replacement)
+    // slot acquire (free / add / replace)
 SoundCodex::SeVoiceSlot* SoundCodex::AcquireSeSlot_(const WAVEFORMATEX& fmt)
 {
-    // 1) prioritize free slots that match fmt
+    // 1) free slot with same fmt
     for (auto& s : sePool)
     {
         if (!s.inUse && s.voice && FormatEquals_(s.fmt, fmt))
             return &s;
     }
 
-    // 2) has empty slot but the fmt is different → recreate a slot and use it
+    // 2) check if can add new
     if (sePool.size() < kMaxSeVoices)
     {
         SeVoiceSlot slot{};
         slot.voice = CreateSourceVoice_(fmt, seBus);
         if (!slot.voice) return nullptr;
+
         slot.fmt = fmt;
-        slot.inUse = false;
-        slot.lastUseTick = 0;
+
+        XAUDIO2_VOICE_DETAILS vd{};
+        slot.voice->GetVoiceDetails(&vd);
+        slot.srcChannels = vd.InputChannels;
+
         sePool.push_back(std::move(slot));
         return &sePool.back();
     }
 
-    // 3) pool full -> replace the oldest slot with SAME fmt first
+    // 3) replace oldest same fmt
     SeVoiceSlot* bestSame = nullptr;
     for (auto& s : sePool)
     {
         if (!s.voice) continue;
         if (!FormatEquals_(s.fmt, fmt)) continue;
-
         if (!bestSame || s.lastUseTick < bestSame->lastUseTick)
             bestSame = &s;
     }
@@ -417,10 +565,12 @@ SoundCodex::SeVoiceSlot* SoundCodex::AcquireSeSlot_(const WAVEFORMATEX& fmt)
         bestSame->voice->FlushSourceBuffers();
         bestSame->inUse = false;
         bestSame->clip.reset();
+        bestSame->is3D = false;
+        bestSame->handle = 0;
         return bestSame;
     }
 
-    // 4) no same fmt -> replace oldest ANY slot (must recreate voice)
+    // 4) replace oldest any (recreate voice)
     SeVoiceSlot* bestAny = &sePool[0];
     for (auto& s : sePool)
     {
@@ -435,10 +585,84 @@ SoundCodex::SeVoiceSlot* SoundCodex::AcquireSeSlot_(const WAVEFORMATEX& fmt)
     if (!bestAny->voice) return nullptr;
 
     bestAny->fmt = fmt;
+
+    XAUDIO2_VOICE_DETAILS vd{};
+    bestAny->voice->GetVoiceDetails(&vd);
+    bestAny->srcChannels = vd.InputChannels;
+
     bestAny->inUse = false;
     bestAny->clip.reset();
+    bestAny->is3D = false;
+    bestAny->handle = 0;
+    bestAny->matrix.clear();
+
     return bestAny;
 }
+
+
+// ------------------------------------------
+// 3D apply
+void SoundCodex::Apply3D_(SeVoiceSlot& slot)
+{
+    if (!slot.voice || !slot.is3D || !seBus) return;
+
+    // stereo input azimuths
+    static float s_azimuthsStereo[2] = { -X3DAUDIO_PI / 2.0f, X3DAUDIO_PI / 2.0f };
+    if (slot.srcChannels == 2)
+        slot.emitter.pChannelAzimuths = s_azimuthsStereo;
+    else
+        slot.emitter.pChannelAzimuths = nullptr;
+
+    slot.matrix.resize(static_cast<size_t>(slot.srcChannels) * dstChannels_);
+
+    X3DAUDIO_DSP_SETTINGS dsp{};
+    dsp.SrcChannelCount = slot.srcChannels;
+    dsp.DstChannelCount = dstChannels_;
+    dsp.pMatrixCoefficients = slot.matrix.data();
+
+    X3DAudioCalculate(
+        x3d_,
+        &listener_,
+        &slot.emitter,
+        X3DAUDIO_CALCULATE_MATRIX,
+        &dsp
+    );
+
+    // apply matrix to the send to seBus
+    slot.voice->SetOutputMatrix(
+        seBus,
+        slot.srcChannels,
+        dstChannels_,
+        slot.matrix.data()
+    );
+
+    // distance attenuation (simple & practical)
+    float atten = 1.0f;
+    if (slot.enableDistanceAtten)
+    {
+        const float dx = slot.emitter.Position.x - listener_.Position.x;
+        const float dy = slot.emitter.Position.y - listener_.Position.y;
+        const float dz = slot.emitter.Position.z - listener_.Position.z;
+        const float d = std::sqrt(dx * dx + dy * dy + dz * dz);
+        atten = ComputeDistanceAtten_(d, slot.minDistance, slot.maxDistance, slot.rolloff);
+    }
+
+    slot.voice->SetVolume(clamp01(slot.volume * atten));
+}
+
+float SoundCodex::ComputeDistanceAtten_(float d, float minD, float maxD, float rolloff)
+{
+    // clamp range
+    if (d <= minD) return 1.0f;
+    if (d >= maxD) return 0.0f;
+
+    // very simple rolloff curve:
+    // t in [0,1], atten = (1 - t)^(rolloff)
+    const float t = (d - minD) / (maxD - minD);
+    const float p = max(0.001f, rolloff);
+    return std::pow(1.0f - t, p);
+}
+
 
 // ------------------------------------------
 // format compare
@@ -520,4 +744,43 @@ HRESULT SoundCodex::ReadChunkData_(HANDLE hFile, void* pBuffer, DWORD dwBuffersi
         return HRESULT_FROM_WIN32(GetLastError());
 
     return S_OK;
+}
+
+
+// imgui window
+void SoundCodex::SpawnWindow() noexcept
+{
+    ImGui::Begin("Audio");
+
+    float master = masterVolume;
+    float bgm = bgmBusVolume;
+    float se = seBusVolume;
+
+    bool changed = false;
+
+    changed |= ImGui::SliderFloat("Master", &master, 0.0f, 1.0f, "%.2f");
+    changed |= ImGui::SliderFloat("BGM Bus", &bgm, 0.0f, 1.0f, "%.2f");
+    changed |= ImGui::SliderFloat("SE Bus", &se, 0.0f, 1.0f, "%.2f");
+
+    if (changed)
+    {
+        auto& snd = SoundCodex::Get();
+        snd.SetMasterVolume(master);
+        snd.SetBgmVolume(bgm);
+        snd.SetSeVolume(se);
+    }
+
+    if (ImGui::Button("Mute All"))
+    {
+        master = 0.0f;
+        bgm = 0.0f;
+        se = 0.0f;
+
+        auto& snd = SoundCodex::Get();
+        snd.SetMasterVolume(master);
+        snd.SetBgmVolume(bgm);
+        snd.SetSeVolume(se);
+    }
+
+    ImGui::End();
 }

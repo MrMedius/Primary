@@ -41,7 +41,11 @@ Game::Game(const std::string& commandLine)
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 
+	// Sound Base Setting
 	SoundCodex::Get().PlayBGM(SndPath::BGM_Main, -1);
+	SoundCodex::Get().SetBgmVolume(0.5f);
+	SoundCodex::Get().SetSeVolume(1.0f);
+	SoundCodex::Get().SetListenerTransform(0.0f, 0.0f, 0.0f, 0, 0, 1, 0, 1, 0);
 }
 
 Game::~Game()
@@ -111,10 +115,12 @@ void Game::Update(float dt)
 			// Check If Game Over
 			if (pPlayer->GetIsGameOver())	SetScene(SCENE_RESULT);
 
-			cameras.Update(dt, pPlayer->GetPosition(), &wnd);
+			// true loop
+			auto playerPos = pPlayer->GetPosition();
+			cameras.Update(dt, playerPos, &wnd);
 			if (!cameras.GetScreenFroze())
 			{
-				light.Update(dt, pPlayer->GetPosition());
+				light.Update(dt, playerPos);
 
 				pPlayer->Update(dt);
 				pUI_Game->Update(dt);
@@ -127,6 +133,7 @@ void Game::Update(float dt)
 				}
 			}
 			gameRG.Update(dt);
+			SoundCodex::Get().SetListenerPosition(playerPos);
 		}
 		break;
 	case SCENE_RESULT:
@@ -179,6 +186,7 @@ void Game::Draw()
 		// imgui windows
 		cameras.SpawnWindow(wnd.Gfx());
 		light.SpawnControlWindow();
+		SoundCodex::Get().SpawnWindow();
 
 		gameRG.RenderWindows(wnd.Gfx());
 #endif

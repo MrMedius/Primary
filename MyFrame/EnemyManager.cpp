@@ -1,6 +1,7 @@
 #include "EnemyManager.h"
 #include "ObjectCodex.h"
 #include <random>
+#include "SoundCodex.h"
 
 #include "Enemy_Red_0.h"
 #include "Enemy_Red_1.h"
@@ -75,7 +76,11 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	if (pKbd->KeyIsTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
 	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	Created = true; }
 	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	Created = true; }
-	if (Created) { Created = false;	enemies.back()->SpawnAt(pos); }
+	if (Created) { 
+		Created = false;
+		enemies.back()->SpawnAt(pos);
+		SoundCodex::Get().PlaySE3D(SndPath::SE_Enemy_Create, 0, 1.0f, pos.x, pos.y, pos.z);
+	}
 
 
 	for (int i = 0; i < enemies.size(); i++)
