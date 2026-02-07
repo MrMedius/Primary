@@ -74,8 +74,15 @@ public:
 	float GetFeverTimeDraw(void) const { return FeverTimeDraw / FeverCountdown; }
 	void Reset(void)
 	{
-		for (int i = 1;i < TotalSlots;i++)
-			Slots[i].SetWeapon(WEAPON_TYPE_NONE, 0.0f);
+		// normal slots
+		for (int i = 1;i < TotalSlots;i++) Slots[i].SetWeapon(WEAPON_TYPE_NONE, 0.0f);
+		CurrentSlot = 0;
+		// Fever related
+		CanChange = { false,WEAPON_TYPE_NONE };
+		IsChange = false;
+		IsFever = false;
+		FeverTime = 0.0f;
+		FeverTimeDraw = 0.0f;
 	}
 private:
 	void DiscardWeapon(int num);

@@ -25,7 +25,7 @@ public:
 		SetAttackCollisionSize({ 3.0f,8.0f,2.0f });
 		SetAttackInterval(2.0f);
 		SetEnemyType(ENEMY_TYPE_RED);
-		SetSearchArea({ 200.0f,10.0f,200.0f });
+		SetSearchArea({ 100.0f,10.0f,100.0f });
 
 		// graphics init
 		visualPre = std::make_unique<Sprite3D>(gfx, std::vector<std::string>{"asset\\Images\\\Enemy\\Enemy_Red_1.png"});

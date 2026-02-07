@@ -821,8 +821,8 @@ void Player_SkillState::OnEnter(Player* owner)
 		owner->SetDoAttackType(Player_Skill_1);
 		break;
 	case WEAPON_TYPE_2:
-		owner->GetVisualPreEffectBg()->SetScale(10.0f, 10.0f, 0.0f);
-		owner->GetVisualPreEffect()->SetScale(10.0f, 10.0f, 0.0f);
+		owner->GetVisualPreEffectBg()->SetScale(7.5f, 7.5f, 0.0f);
+		owner->GetVisualPreEffect()->SetScale(7.5, 7.5f, 0.0f);
 		owner->SetDoAttackType(Player_Skill_2);
 		break;
 	case WEAPON_TYPE_3:
@@ -911,8 +911,8 @@ void Player_SkillState::Update(Player* owner, float dt)
 	case WEAPON_TYPE_2:
 		if (currentFrame == 45) owner->CalculateHpCurrent(3.0f);
 		// VisualPrePos
-		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 2.5f, pos.z + 0.1f);
-		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y + 2.5f, pos.z - 0.1f);
+		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 1.25f, pos.z + 0.1f);
+		owner->GetVisualPreEffect()->SetPosition(pos.x, pos.y + 1.25f, pos.z - 0.1f);
 		break;
 	case WEAPON_TYPE_3:
 		// 攻撃コリジョンを開けるフレーム

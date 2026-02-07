@@ -185,9 +185,9 @@ void Enemy_Green_0_AttackState::Update(Enemy_Green_0* owner, float dt)
 
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
-	if (currentFrame == 6) owner->SetAttackCollisionOnOff(true);
+	if (currentFrame == 15) owner->SetAttackCollisionOnOff(true);
 	// 攻撃コリジョンを閉じるフレーム
-	if (currentFrame == 8) owner->SetAttackCollisionOnOff(false);
+	if (currentFrame == 16) owner->SetAttackCollisionOnOff(false);
 	// 攻撃当たる判定
 	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
 
