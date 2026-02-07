@@ -3,7 +3,7 @@
 #include "resource.h"
 #include "WindowsThrowMacros.h"
 #include "imgui/imgui_impl_win32.h"
-
+#include "InputCodex.h"
 #include "SoundCodex.h"
 
 // Window Class Stuff
@@ -248,6 +248,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	const auto& imio = ImGui::GetIO();
 
+	auto& input = InputCodex::Get();
 	switch( msg )
 	{
 	// we don't want the DefProc to handle this message because
@@ -257,7 +258,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		return 0;
 	// clear keystate when window loses focus to prevent input getting "stuck"
 	case WM_KILLFOCUS:
-		kbd.ClearState();
+		input.ClearAll();
 		break;
 	case WM_ACTIVATE:
 		// confine/free cursor on window to foreground/background if cursor disabled
@@ -285,9 +286,9 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		{
 			break;
 		}
-		if( !(lParam & 0x40000000) || kbd.AutorepeatIsEnabled() ) // filter autorepeat
+		if( !(lParam & 0x40000000) || input.KeyAutorepeatEnabled() ) // filter autorepeat
 		{
-			kbd.OnKeyPressed( static_cast<unsigned char>(wParam) );
+			input.OnKeyDown( static_cast<unsigned char>(wParam) );
 		}
 		break;
 	case WM_KEYUP:
@@ -297,7 +298,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		{
 			break;
 		}
-		kbd.OnKeyReleased( static_cast<unsigned char>(wParam) );
+		input.OnKeyUp( static_cast<unsigned char>(wParam) );
 		break;
 	case WM_CHAR:
 		// stifle this keyboard message if imgui wants to capture
@@ -305,7 +306,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		{
 			break;
 		}
-		kbd.OnChar( static_cast<unsigned char>(wParam) );
+		input.OnChar( static_cast<unsigned char>(wParam) );
 		break;
 	/*********** END KEYBOARD MESSAGES ***********/
 
@@ -316,27 +317,25 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		// cursorless exclusive gets first dibs
 		if( !cursorEnabled )
 		{
-			if( !mouse.IsInWindow() )
+			if( !input.MouseInWindow() )
 			{
 				SetCapture( hWnd );
-				mouse.OnMouseEnter();
+				input.OnMouseEnter();
 				HideCursor();
 			}
 			break;
 		}
 		// stifle this mouse message if imgui wants to capture
-		if( imio.WantCaptureMouse )
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		// in client region -> log move, and log enter + capture mouse (if not previously in window)
 		if( pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height )
 		{
-			mouse.OnMouseMove( pt.x,pt.y );
-			if( !mouse.IsInWindow() )
+			input.OnMouseMove( pt.x,pt.y );
+			if( !input.MouseInWindow() )
 			{
 				SetCapture( hWnd );
-				mouse.OnMouseEnter();
+				input.OnMouseEnter();
 			}
 		}
 		// not in client -> log move / maintain capture if button down
@@ -344,13 +343,13 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		{
 			if( wParam & (MK_LBUTTON | MK_RBUTTON) )
 			{
-				mouse.OnMouseMove( pt.x,pt.y );
+				input.OnMouseMove( pt.x,pt.y );
 			}
 			// button up -> release capture / log event for leaving
 			else
 			{
 				ReleaseCapture();
-				mouse.OnMouseLeave();
+				input.OnMouseLeave();
 			}
 		}
 		break;
@@ -364,75 +363,60 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 			HideCursor();
 		}
 		// stifle this mouse message if imgui wants to capture
-		if( imio.WantCaptureMouse )
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		const POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnLeftPressed(pt.x, pt.y);
+		input.OnLeftDown(pt.x, pt.y);
 		break;
 	}
 	case WM_RBUTTONDOWN:
 	{
 		// stifle this mouse message if imgui wants to capture
-		if( imio.WantCaptureMouse )
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		const POINTS pt = MAKEPOINTS( lParam );
-		mouse.OnRightPressed( pt.x,pt.y );
+		input.OnRightDown( pt.x,pt.y );
 		break;
 	}
 	case WM_LBUTTONUP:
 	{
 		// stifle this mouse message if imgui wants to capture
-		if( imio.WantCaptureMouse )
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		const POINTS pt = MAKEPOINTS( lParam );
-		mouse.OnLeftReleased( pt.x,pt.y );
+		input.OnLeftUp( pt.x,pt.y );
 		// release mouse if outside of window
 		if( pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height )
 		{
 			ReleaseCapture();
-			mouse.OnMouseLeave();
+			input.OnMouseLeave();
 		}
 		break;
 	}
 	case WM_RBUTTONUP:
 	{
 		// stifle this mouse message if imgui wants to capture
-		if( imio.WantCaptureMouse )
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		const POINTS pt = MAKEPOINTS( lParam );
-		mouse.OnRightReleased( pt.x,pt.y );
+		input.OnRightUp( pt.x,pt.y );
 		// release mouse if outside of window
 		if( pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height )
 		{
 			ReleaseCapture();
-			mouse.OnMouseLeave();
+			input.OnMouseLeave();
 		}
 		break;
 	}
 	case WM_MOUSEWHEEL:
 	{
 		// stifle this mouse message if imgui wants to capture
-		if (imio.WantCaptureMouse)
-		{
-			break;
-		}
+		if (imio.WantCaptureMouse) break;
+
 		const POINTS pt = MAKEPOINTS(lParam);
-		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
-		{
-			mouse.OnWheelUp(pt.x, pt.y);
-		}
-		else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
-		{
-			mouse.OnWheelDown(pt.x, pt.y);
-		}
+		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+		InputCodex::Get().OnWheelDelta(pt.x, pt.y, delta);
 		break;
 	}
 	/************** END MOUSE MESSAGES **************/
@@ -440,7 +424,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	/************** RAW MOUSE MESSAGES **************/
 	case WM_INPUT:
 	{
-		if( !mouse.RawEnabled() )
+		if( !input.RawMouseEnabled() )
 		{
 			break;
 		}
@@ -473,7 +457,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if( ri.header.dwType == RIM_TYPEMOUSE &&
 			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0) )
 		{
-			mouse.OnRawDelta( ri.data.mouse.lLastX,ri.data.mouse.lLastY );
+			input.OnRawDelta( ri.data.mouse.lLastX,ri.data.mouse.lLastY );
 		}
 		break;
 	}

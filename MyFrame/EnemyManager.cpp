@@ -1,6 +1,8 @@
 #include "EnemyManager.h"
 #include "ObjectCodex.h"
 #include <random>
+
+#include "InputCodex.h"
 #include "SoundCodex.h"
 
 #include "Enemy_Red_0.h"
@@ -11,11 +13,10 @@
 #include "Enemy_Blue_1.h"
 //#include "EnemyBoss.h"
 
-EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Score* score)
+EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Score* score)
 	:
 	gfx(gfx),
 	rg(rg),
-	pKbd(kbd),
 	pScore(score)
 {
 	auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
@@ -68,14 +69,13 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	//	NewEnemy = false;
 	//}
 
-	assert(pKbd);
 	// V‚µEnemyTest‚ð¶¬‚·‚é
-	if (pKbd->KeyIsTriggered(KK_NUMPAD1) || type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));		Created = true; }
-	if (pKbd->KeyIsTriggered(KK_NUMPAD4) || type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));		Created = true; }
-	if (pKbd->KeyIsTriggered(KK_NUMPAD2) || type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
-	if (pKbd->KeyIsTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
-	if (pKbd->KeyIsTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	Created = true; }
-	if (pKbd->KeyIsTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD1) || type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));	  Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD4) || type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));	  Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD2) || type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	  Created = true; }
+	if (InputCodex::Get().KeyTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	  Created = true; }
 	if (Created) { 
 		Created = false;
 		enemies.back()->SpawnAt(pos);

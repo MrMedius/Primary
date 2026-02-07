@@ -3,8 +3,7 @@
 #include "Camera.h"
 #include "Graphics.h"
 #include "RenderGraph.h"
-
-#include "SoundCodex.h"
+#include "InputCodex.h"
 
 namespace dx = DirectX;
 
@@ -57,7 +56,9 @@ void CameraContainer::Update(float dt, DirectX::XMFLOAT3 pos,Window* wnd) noexce
 	if (FrozeFrames > 0) ScreenFroze();
 
 #ifdef _DEBUG
-	while (const auto e = wnd->kbd.ReadKey())
+	auto& input = InputCodex::Get();
+
+	while (const auto e = input.Get().ReadKey())
 	{
 		if (!e->IsPress())
 		{
@@ -70,12 +71,12 @@ void CameraContainer::Update(float dt, DirectX::XMFLOAT3 pos,Window* wnd) noexce
 			if (wnd->CursorEnabled())
 			{
 				wnd->DisableCursor();
-				wnd->mouse.EnableRaw();
+				input.Get().EnableRawMouse();
 			}
 			else
 			{
 				wnd->EnableCursor();
-				wnd->mouse.DisableRaw();
+				input.Get().DisableRawMouse();
 			}
 			break;
 		}
@@ -83,13 +84,13 @@ void CameraContainer::Update(float dt, DirectX::XMFLOAT3 pos,Window* wnd) noexce
 
 	if (!wnd->CursorEnabled() && controlled != 0)
 	{
-		if (wnd->kbd.KeyIsPressed(KK_UP))	 GetControlledCamera().Translate({   0,  0, dt });
-		if (wnd->kbd.KeyIsPressed(KK_DOWN))  GetControlledCamera().Translate({   0,  0,-dt });
-		if (wnd->kbd.KeyIsPressed(KK_LEFT))  GetControlledCamera().Translate({ -dt,  0,  0 });
-		if (wnd->kbd.KeyIsPressed(KK_RIGHT)) GetControlledCamera().Translate({  dt,  0,  0 });
+		if (input.Get().KeyPressed(KK_UP))	  GetControlledCamera().Translate({   0,  0, dt });
+		if (input.Get().KeyPressed(KK_DOWN))  GetControlledCamera().Translate({   0,  0,-dt });
+		if (input.Get().KeyPressed(KK_LEFT))  GetControlledCamera().Translate({ -dt,  0,  0 });
+		if (input.Get().KeyPressed(KK_RIGHT)) GetControlledCamera().Translate({  dt,  0,  0 });
 	}
 
-	while (const auto delta = wnd->mouse.ReadRawDelta())
+	while (const auto delta = input.Get().ReadRawDelta())
 	{
 		if (!wnd->CursorEnabled() && controlled != 0)
 		{

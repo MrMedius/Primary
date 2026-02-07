@@ -11,8 +11,10 @@
 #include "Channels.h"
 #include "ModelWindow.h"
 #include "ObjectBase.h"
-#include "ObjectCodex.h"
+
+#include "InputCodex.h"
 #include "SoundCodex.h"
+#include "ObjectCodex.h"
 
 namespace dx = DirectX;
 
@@ -32,13 +34,13 @@ Game::Game(const std::string& commandLine)
 
 	// UI
 	pScore = std::make_unique<Score>(wnd.Gfx(), gameRG);
-	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG, &wnd.kbd, &wnd.mouse);
+	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG);
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	// Objects
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &wnd.kbd, &wnd.mouse, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
-	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, &wnd.kbd, pScore.get());
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, pScore.get());
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 
 	// Sound Base Setting
@@ -78,8 +80,7 @@ int Game::RunGame()
 			/*@@	   @ Update            */
 			wnd.Gfx().BeginFrame();
 			Update(timer_update.Mark() * speed_factor);
-			wnd.kbd.Update();
-			wnd.mouse.Update();
+			InputCodex::Get().Update();
 			SoundCodex::Get().Update();
 			/********************************/
 
@@ -139,7 +140,7 @@ void Game::Update(float dt)
 	case SCENE_RESULT:
 		pUI_Result->Update();
 
-		if (wnd.kbd.KeyIsTriggered(KK_SPACE))
+		if (InputCodex::Get().KeyTriggered(KK_SPACE))
 		{
 			SetScene(SCENE_TITLE);
 

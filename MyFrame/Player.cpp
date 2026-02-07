@@ -2,10 +2,13 @@
 #include "Enemy.h"
 #include "Channels.h"
 
+#include "InputCodex.h"
 #include "SoundCodex.h"
 
 void Player::Update(float dt)
 {
+	auto& input = InputCodex::Get();
+
 	// 変更前の座標を格納
 	auto Position = transInfo.position;
 	PositionOld = Position;
@@ -17,7 +20,7 @@ void Player::Update(float dt)
 	// Fever related
 	if (GetWeaponSlots()->GetCanChange().first && !IsDeath)
 	{
-		if (((GetMouse()->LeftIsPressed() && GetMouse()->RightIsPressed()) || (GetKbd()->KeyIsPressed(KK_J) && GetKbd()->KeyIsPressed(KK_K))) || // Get into Fever
+		if (((input.MouseLeftPressed() && input.MouseRightPressed()) || (input.KeyPressed(KK_J) && input.KeyPressed(KK_K))) || // Get into Fever
 			(IsFever && !GetWeaponSlots()->GetIsFever())) // Exit Fever
 		{
 			SetIsChange(true);	// Feverに入る
@@ -32,8 +35,8 @@ void Player::Update(float dt)
 	{
 		if (!FSM->IsInState("PLAYER_ATTACK") && !FSM->IsInState("PLAYER_SKILL"))
 		{
-			if (GetKbd()->KeyIsTriggered(KK_Q)) pWeapon->SwitchSlot(true);
-			if (GetKbd()->KeyIsTriggered(KK_E)) pWeapon->SwitchSlot(false);
+			if (input.KeyTriggered(KK_Q)) pWeapon->SwitchSlot(true);
+			if (input.KeyTriggered(KK_E)) pWeapon->SwitchSlot(false);
 		}
 		if ((currentWeaponType != pWeapon->GetCurrentSlot().GetType() && !FSM->IsInState("PLAYER_SKILL")) || // Not in Skill
 			GetWasSkill()) // after Skill
@@ -98,13 +101,15 @@ void Player::Submit(void)
 
 void Player::DoMove(float ratio)
 {
-	if (GetKbd()->KeyIsPressed(KK_A) || GetKbd()->KeyIsPressed(KK_D) || GetKbd()->KeyIsPressed(KK_W) || GetKbd()->KeyIsPressed(KK_S))
+	auto& input = InputCodex::Get();
+
+	if (input.KeyPressed(KK_A) || input.KeyPressed(KK_D) || input.KeyPressed(KK_W) || input.KeyPressed(KK_S))
 	{
 		float dx = 0.0f, dz = 0.0f;
-		if (GetKbd()->KeyIsPressed(KK_A)) dx--;
-		if (GetKbd()->KeyIsPressed(KK_D)) dx++;
-		if (GetKbd()->KeyIsPressed(KK_W)) dz++;
-		if (GetKbd()->KeyIsPressed(KK_S)) dz--;
+		if (input.KeyPressed(KK_A)) dx--;
+		if (input.KeyPressed(KK_D)) dx++;
+		if (input.KeyPressed(KK_W)) dz++;
+		if (input.KeyPressed(KK_S)) dz--;
 		if (abs(dx) > 0 || abs(dz) > 0)
 		{
 			float angle = atan2f(dx, dz);
@@ -188,7 +193,8 @@ void Player::SetupTransitions(void)
 	// PLAYER_IDLE → PLAYER_MOVE
 	FSM->AddTransition(PLAYER_STATE[PLAYER_IDLE], PLAYER_STATE[PLAYER_MOVE], [](Character* owner) {
 		auto player = static_cast<Player*>(owner);	// 入った対象をPlayerになる
-		return player->pKbd->KeyIsPressed(KK_A) || player->pKbd->KeyIsPressed(KK_D) || player->pKbd->KeyIsPressed(KK_W) || player->pKbd->KeyIsPressed(KK_S); // 判断の条件
+		auto& input = InputCodex::Get();
+		return input.KeyPressed(KK_A) || input.KeyPressed(KK_D) || input.KeyPressed(KK_W) || input.KeyPressed(KK_S); // 判断の条件
 		});
 
 	// PLAYER_IDLE → PLAYER_DASH
@@ -224,7 +230,8 @@ void Player::SetupTransitions(void)
 	// PLAYER_MOVE → PLAYER_IDLE
 	FSM->AddTransition(PLAYER_STATE[PLAYER_MOVE], PLAYER_STATE[PLAYER_IDLE], [](Character* owner) {
 		auto player = static_cast<Player*>(owner);
-		return !player->pKbd->KeyIsPressed(KK_A) && !player->pKbd->KeyIsPressed(KK_D) && !player->pKbd->KeyIsPressed(KK_W) && !player->pKbd->KeyIsPressed(KK_S);
+		auto& input = InputCodex::Get();
+		return !input.KeyPressed(KK_A) && !input.KeyPressed(KK_D) && !input.KeyPressed(KK_W) && !input.KeyPressed(KK_S);
 		});
 
 	// PLAYER_MOVE → PLAYER_DASH
@@ -367,10 +374,10 @@ void Player_IdleState::Update(Player* owner,  float dt)
 	assist.Update(dt);
 
 	// 遷移判断
-	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))										owner->SetIsDash(true);
-	if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))	owner->SetIsAttack(true);
-	if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
-		if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)		owner->SetIsSkill(true);
+	auto& input = InputCodex::Get();
+	if (input.KeyTriggered(KK_SPACE)) owner->SetIsDash(true);
+	if (input.MouseLeftTriggered() || input.KeyTriggered(KK_J))	owner->SetIsAttack(true);
+	if (input.MouseRightTriggered() || input.KeyTriggered(KK_K)) if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0) owner->SetIsSkill(true);
 
 	// 攻撃をカウントダウン
 	owner->DoAttackCountDown();
@@ -418,14 +425,14 @@ void Player_MoveState::Update(Player* owner, float dt)
 	assist.Update(dt);
 
 	// 遷移判断
-	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))										owner->SetIsDash(true);
-	if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))	owner->SetIsAttack(true);
-	if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
-		if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)		owner->SetIsSkill(true);
+	auto& input = InputCodex::Get();
+	if (input.KeyTriggered(KK_SPACE)) owner->SetIsDash(true);
+	if (input.MouseLeftTriggered() || input.KeyTriggered(KK_J))	owner->SetIsAttack(true);
+	if (input.MouseRightTriggered() || input.KeyTriggered(KK_K)) if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0) owner->SetIsSkill(true);
 
 	// 方向判断
-	if (owner->GetKbd()->KeyIsPressed(KK_A)) owner->SetIsFlip(true);
-	if (owner->GetKbd()->KeyIsPressed(KK_D)) owner->SetIsFlip(false);
+	if (input.KeyPressed(KK_A)) owner->SetIsFlip(true);
+	if (input.KeyPressed(KK_D)) owner->SetIsFlip(false);
 
 	// 移動
 	owner->DoMove(1.0f);
@@ -461,7 +468,8 @@ void Player_DashState::OnEnter(Player* owner)
 	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetMoveVelocity().x >= 0 ? true : false, false);
 
 	// dash direction preparation
-	if (owner->GetKbd()->KeyIsPressed(KK_A) || owner->GetKbd()->KeyIsPressed(KK_D) || owner->GetKbd()->KeyIsPressed(KK_W) || owner->GetKbd()->KeyIsPressed(KK_S))
+	auto& input = InputCodex::Get();
+	if (input.KeyPressed(KK_A) || input.KeyPressed(KK_D) || input.KeyPressed(KK_W) || input.KeyPressed(KK_S))
 		isInput = true;
 	else
 		isInput = false;
@@ -478,9 +486,9 @@ void Player_DashState::Update(Player* owner, float dt)
 	{
 		if (!owner->GetIsAttack() && !owner->GetIsSkill())
 		{
-			if (owner->GetMouse()->LeftIsTriggered()  || owner->GetKbd()->KeyIsTriggered(KK_J))	owner->SetIsAttack(true);
-			if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
-				if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)		owner->SetIsSkill(true);
+			auto& input = InputCodex::Get();
+			if (input.MouseLeftTriggered()  || input.KeyTriggered(KK_J)) owner->SetIsAttack(true);
+			if (input.MouseRightTriggered() || input.KeyTriggered(KK_K)) if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0) owner->SetIsSkill(true);
 		}
 	}
 
@@ -573,17 +581,18 @@ void Player_AttackState::Update(Player* owner, float dt)
 	auto attackType = owner->GetDoAttackType();
 
 	// ダッシュで攻撃をキャンセル
-	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
+	auto& input = InputCodex::Get();
+	if (input.KeyTriggered(KK_SPACE)) owner->SetIsDash(true);
 	// 攻撃中にスキルを事前入力する
 	int currentFrame = assist.GetCurrentFrame();
 	if (packs[mode].FrameTotalCount - currentFrame < 10)
 	{
-		if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
+		if (input.MouseRightTriggered() || input.KeyTriggered(KK_K))
 			if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)
 				owner->SetIsSkill(true);
 		if (!isCombo && attackType != Player_Attack_3)
 		{
-			if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))
+			if (input.MouseLeftTriggered() || input.KeyTriggered(KK_J))
 			{
 				isCombo = true;
 
@@ -888,7 +897,8 @@ void Player_SkillState::Update(Player* owner, float dt)
 	owner->GetVisualPreEffect()->Update(dt);
 
 	// ダッシュでスキルをキャンセル
-	if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))	owner->SetIsDash(true);
+	auto& input = InputCodex::Get();
+	if (input.KeyTriggered(KK_SPACE))	owner->SetIsDash(true);
 	// スキル中に攻撃とスキルを事前入力する
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 
@@ -896,9 +906,8 @@ void Player_SkillState::Update(Player* owner, float dt)
 	{
 		if (!owner->GetIsAttack() && !owner->GetIsSkill())
 		{
-			if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))	owner->SetIsAttack(true);
-			if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
-				if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)		owner->SetIsSkill(true);
+			if (input.MouseLeftTriggered()  || input.KeyTriggered(KK_J)) owner->SetIsAttack(true);
+			if (input.MouseRightTriggered() || input.KeyTriggered(KK_K)) if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0) owner->SetIsSkill(true);
 		}
 	}
 
@@ -992,10 +1001,10 @@ void Player_HurtState::Update(Player* owner, float dt)
 	{
 		if (!owner->GetIsDash() && !owner->GetIsAttack() && !owner->GetIsSkill())
 		{
-			if (owner->GetKbd()->KeyIsTriggered(KK_SPACE))										owner->SetIsDash(true);
-			if (owner->GetMouse()->LeftIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_J))	owner->SetIsAttack(true);
-			if (owner->GetMouse()->RightIsTriggered() || owner->GetKbd()->KeyIsTriggered(KK_K))
-				if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0)		owner->SetIsSkill(true);
+			auto& input = InputCodex::Get();
+			if (input.KeyTriggered(KK_SPACE)) owner->SetIsDash(true);
+			if (input.MouseLeftTriggered()  || input.KeyTriggered(KK_J)) owner->SetIsAttack(true);
+			if (input.MouseRightTriggered() || input.KeyTriggered(KK_K)) if (owner->GetWeaponSlots()->GetCurrentSlot().GetType() != WEAPON_TYPE_0) owner->SetIsSkill(true);
 		}
 	}
 

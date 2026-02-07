@@ -2,11 +2,11 @@
 #include <memory>
 #include <unordered_map>
 #include "Graphics.h"
-#include "Keyboard.h"
-#include "Mouse.h"
 #include "Button.h"
 #include "Sprite2D.h"
 #include "Channels.h"
+
+#include "InputCodex.h"
 
 class UI_Title
 {
@@ -19,10 +19,7 @@ private:
 		Title_Button_End,
 	};
 public:
-	UI_Title(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse)
-		:
-		pKbd(kbd),
-		pMouse(mouse)
+	UI_Title(Graphics& gfx, Rgph::RenderGraph& rg)
 	{
 		// Background
 		pBackground = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game_Title.png" });
@@ -38,9 +35,11 @@ public:
 
 	void Update(void)
 	{
-		if (pMouse->IsMove()) // mouse
+		auto& input = InputCodex::Get();
+
+		if (input.MouseMovedOrButtons()) // mouse
 		{
-			XMFLOAT2 mousePos = { static_cast<float>(pMouse->GetPosX()),static_cast<float>(pMouse->GetPosY()) };
+			XMFLOAT2 mousePos = { static_cast<float>(input.MouseX()),static_cast<float>(input.MouseY()) };
 
 			bool haveChoose = false;
 			for (auto& b : pButtons)
@@ -48,7 +47,7 @@ public:
 				{
 					chosenButtonTag = b.first;
 					b.second->SetOnChoose(true);
-					b.second->SetOnClick(pMouse->LeftIsPressed());
+					b.second->SetOnClick(input.MouseLeftPressed());
 
 					haveChoose = true;
 				}
@@ -59,18 +58,18 @@ public:
 		}
 		else // keyboard
 		{
-			if (pKbd->KeyIsTriggered(KK_S))
-				if (chosenButtonTag != Title_Button_End)
+			if (input.KeyTriggered(KK_S))
+				if (chosenButtonTag != Title_Button_End && chosenButtonTag < 2)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag + 1);
-			if (pKbd->KeyIsTriggered(KK_W))
-				if (chosenButtonTag != Title_Button_Start)
+			if (input.KeyTriggered(KK_W))
+				if (chosenButtonTag != Title_Button_Start && chosenButtonTag > 1)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag - 1);
 			for (auto& b : pButtons)
 			{
 				if (b.first == chosenButtonTag)
 				{
 					b.second->SetOnChoose(true);
-					b.second->SetOnClick(pKbd->KeyIsPressed(KK_ENTER));
+					b.second->SetOnClick(input.KeyPressed(KK_ENTER));
 				}
 				else
 					b.second->SetOnChoose(false);
@@ -78,7 +77,7 @@ public:
 		}
 		if (chosenButtonTag != Title_Button_None)
 		{
-			if (pMouse->LeftIsReleased() || pKbd->KeyIsReleased(KK_ENTER))
+			if (input.MouseLeftReleased() || input.KeyReleased(KK_ENTER))
 			{
 				pButtons[chosenButtonTag]->SetOnExecute(true);
 				OnExecute = true;
@@ -118,8 +117,6 @@ public:
 	bool GetIsStart() const { return IsStart; }
 	bool GetIsEnd() const { return IsEnd; }
 private:
-	Keyboard* pKbd;
-	Mouse* pMouse;
 	// Background
 	std::unique_ptr<Sprite2D> pBackground;
 	// Buttons

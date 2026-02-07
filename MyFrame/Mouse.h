@@ -4,7 +4,7 @@
 
 class Mouse
 {
-	friend class Window;
+	friend class InputCodex;
 public:
 	struct RawDelta
 	{

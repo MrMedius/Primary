@@ -208,6 +208,7 @@
     <ClCompile Include="CameraContainer.cpp" />
     <ClCompile Include="CameraIndicator.cpp" />
     <ClCompile Include="ExceptionBase.cpp" />
+    <ClCompile Include="InputCodex.cpp" />
     <ClCompile Include="InUserInterfaceRenderGraph.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Player_ResourceSystem.cpp" />
@@ -332,6 +333,7 @@
     <ClInclude Include="Channels.h" />
     <ClInclude Include="ExceptionBase.h" />
     <ClInclude Include="HrUtils.h" />
+    <ClInclude Include="InputCodex.h" />
     <ClInclude Include="InUserInterfaceRenderGraph.h" />
     <ClInclude Include="Effect_Player_Remote_1.h" />
     <ClInclude Include="Provides.h" />

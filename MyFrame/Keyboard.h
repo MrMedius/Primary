@@ -5,7 +5,7 @@
 
 class Keyboard
 {
-	friend class Window;
+    friend class InputCodex;
 public:
 	class Event
 	{

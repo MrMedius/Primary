@@ -2,8 +2,6 @@
 #include "Character.h"
 #include "RenderGraph.h"
 #include "ObjectCodex.h"
-#include "Keyboard.h"
-#include "Mouse.h"
 #include "CameraContainer.h"
 #include "Sprite3D.h"
 #include "Sprite3DNoLit.h"
@@ -43,13 +41,11 @@ class Player_ChangeState;
 class Player : public Character
 {
 public:
-	Player(Graphics& gfx, Rgph::RenderGraph& rg, Keyboard* kbd, Mouse* mouse, CameraContainer* camera, XMFLOAT3 position, Object_Type_Tag tag = character_Player)
+	Player(Graphics& gfx, Rgph::RenderGraph& rg, CameraContainer* camera, XMFLOAT3 position, Object_Type_Tag tag = character_Player)
 		:
 		Character(tag),
 		Gfx(gfx),
 		Rg(rg),
-		pKbd(kbd),
-		pMouse(mouse),
 		pCamera(camera)
 	{
 		// parameters init
@@ -142,8 +138,6 @@ public:
 	}
 	void Update(float dt) override;
 	void Submit(void) override;
-	Keyboard* GetKbd(void) const { return pKbd; }
-	Mouse* GetMouse(void) const { return pMouse; }
 	float GetHpDrawParameter(void)
 	{
 		if (HpDraw != HpCurrent)
@@ -190,8 +184,6 @@ private:
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect;
 	Graphics& Gfx;
 	Rgph::RenderGraph& Rg;
-	Keyboard* pKbd;
-	Mouse* pMouse;
 	CameraContainer* pCamera;
 	std::unique_ptr<StateMachine<Player>> FSM;
 	std::unique_ptr<ResourceBars> pResource;
