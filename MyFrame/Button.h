@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics.h"
 #include "Sprite2D.h"
 #include "Channels.h"
 
@@ -62,7 +61,6 @@ public:
 		OnExecute = false;
 	}
 private:
-	Graphics* pGfx;
 	std::unique_ptr<Sprite2D> visualPre;
 	int NumU{ 0 };
 	int NumV{ 0 };

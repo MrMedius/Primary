@@ -48,6 +48,9 @@ public:
 		Rg(rg),
 		pCamera(camera)
 	{
+		// control init
+		BindPad(0);
+
 		// parameters init
 		SetPosition(position);
 		SetSize({ 5.0f, 5.0f, 0.0f });
@@ -197,6 +200,39 @@ private:
 	bool IsFever{ false };
 	WEAPON_TYPE_ID FeverType{ WEAPON_TYPE_0 };
 	bool IsGameOver{ false };
+
+// input related
+	struct PlayerInputSnapshot
+	{
+		int padIndex = 0;
+
+		float moveX = 0.0f;
+		float moveZ = 0.0f;
+
+		bool moveHeld = false;
+
+		bool dash = false;
+		bool attack = false;
+		bool skill = false;
+		bool change = false;
+		bool slotL = false;
+		bool slotR = false;
+
+		void ClearOneShots() noexcept
+		{
+			dash = attack = skill = change = false;
+		}
+	};
+public:
+	const PlayerInputSnapshot& Input() const noexcept { return inputSnap; }
+
+	void BindPad(int idx) noexcept { boundPadIndex = idx; }   // 0..3
+	void UseKeyboardMouse() noexcept { boundPadIndex = -1; }
+	int GetBoundPad() const noexcept { return boundPadIndex; }
+	PlayerInputSnapshot inputSnap{};
+	int boundPadIndex = -1;
+private:
+	void BuildInputSnapshot();
 };
 
 /*------------------------------------------------------------------------------

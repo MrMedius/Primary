@@ -2,6 +2,7 @@
 #include <optional>
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Gamepad.h"
 
 class InputCodex
 {
@@ -20,8 +21,10 @@ public:
     {
         keyboard.Update();
         mouse.Update();
+        for (int i = 0; i < kMaxPads; ++i) pads[i].Update();
     }
 
+    // -----------------------------------------------------------
     // Keyboard query
     bool KeyPressed(unsigned char key) const noexcept   { return keyboard.KeyIsPressed(key); }
     bool KeyTriggered(unsigned char key) const noexcept { return keyboard.KeyIsTriggered(key); }
@@ -35,6 +38,8 @@ public:
     void DisableKeyAutorepeat() noexcept        { keyboard.DisableAutorepeat(); }
     bool KeyAutorepeatEnabled() const noexcept  { return keyboard.AutorepeatIsEnabled(); }
 
+
+    // -----------------------------------------------------------
     // Mouse query
     std::pair<int, int> MousePos() const noexcept   { return mouse.GetPos(); }
     int MouseX() const noexcept                     { return mouse.GetPosX(); }
@@ -58,6 +63,40 @@ public:
     bool RawMouseEnabled() const noexcept                   { return mouse.RawEnabled(); }
     std::optional<Mouse::RawDelta> ReadRawDelta() noexcept  { return mouse.ReadRawDelta(); }
 
+
+    // -----------------------------------------------------------
+    // Gamepad query (by index)
+    bool PadConnected(int idx) const noexcept   { return Pad(idx).IsConnected(); }
+
+    int FindFirstConnectedPad() const noexcept
+    {
+        for (int i = 0; i < kMaxPads; ++i)
+            if (pads[i].IsConnected()) return i;
+        return -1;
+    }
+    int PollJoinRequestPadIndex(WORD b) noexcept
+    {
+        for (int i = 0; i < kMaxPads; ++i)
+            if (pads[i].IsConnected() && pads[i].ButtonTriggered(b))
+                return i;
+        return -1;
+    }
+
+    bool GP_Pressed(int idx, WORD b) const noexcept     { return Pad(idx).ButtonPressed(b); }
+    bool GP_Triggered(int idx, WORD b) const noexcept   { return Pad(idx).ButtonTriggered(b); }
+    bool GP_Released(int idx, WORD b) const noexcept    { return Pad(idx).ButtonReleased(b); }
+
+    float GP_LeftX(int idx)  const noexcept { return Pad(idx).LeftX(); }
+    float GP_LeftY(int idx)  const noexcept { return Pad(idx).LeftY(); }
+    float GP_RightX(int idx) const noexcept { return Pad(idx).RightX(); }
+    float GP_RightY(int idx) const noexcept { return Pad(idx).RightY(); }
+
+    float GP_LT(int idx) const noexcept { return Pad(idx).LT_Axis(); }
+    float GP_RT(int idx) const noexcept { return Pad(idx).RT_Axis(); }
+
+    bool GP_LT_Triggered(int idx) const noexcept { return Pad(idx).LT_Triggered(); }
+    bool GP_RT_Triggered(int idx) const noexcept { return Pad(idx).RT_Triggered(); }
+
 private:
     // Injection API (called from Window/WndProc)
     void ClearAll() noexcept;
@@ -79,10 +118,29 @@ private:
     void OnRawDelta(int dx, int dy) noexcept;
 
     // Direct access (optional)
+    // Keyboard
     Keyboard& Kbd() noexcept { return keyboard; }
-    Mouse& Mse() noexcept { return mouse; }
     const Keyboard& Kbd() const noexcept { return keyboard; }
+    // Mouse
+    Mouse& Mse() noexcept { return mouse; }
     const Mouse& Mse() const noexcept { return mouse; }
+    // Gamepad
+    static constexpr bool IsValidPadIndex(int idx) noexcept { return idx >= 0 && idx < kMaxPads; }
+    Gamepad& Pad(int idx) noexcept
+    {
+#ifdef _DEBUG
+        if (!IsValidPadIndex(idx)) __debugbreak();
+#endif
+        if (idx < 0) idx = 0;
+        if (idx >= kMaxPads) idx = kMaxPads - 1;
+        return pads[idx];
+    }
+    const Gamepad& Pad(int idx) const noexcept
+    {
+        if (idx < 0) idx = 0;
+        if (idx >= kMaxPads) idx = kMaxPads - 1;
+        return pads[idx];
+    }
 
 private:
     InputCodex() = default;
@@ -91,4 +149,6 @@ private:
 private:
     Keyboard keyboard;
     Mouse mouse;
+    static constexpr int kMaxPads = 4;
+    Gamepad pads[kMaxPads] = { Gamepad(0), Gamepad(1), Gamepad(2), Gamepad(3) };
 };

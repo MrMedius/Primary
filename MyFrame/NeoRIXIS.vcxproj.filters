@@ -525,6 +525,9 @@
     <ClCompile Include="Transformation.cpp">
       <Filter>Source Files\Framework\Helper</Filter>
     </ClCompile>
+    <ClCompile Include="Gamepad.cpp">
+      <Filter>Source Files\Framework\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -1012,6 +1015,9 @@
     </ClInclude>
     <ClInclude Include="Transformation.h">
       <Filter>Header Files\Framework\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Gamepad.h">
+      <Filter>Header Files\Framework\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

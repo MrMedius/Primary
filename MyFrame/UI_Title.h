@@ -58,10 +58,10 @@ public:
 		}
 		else // keyboard
 		{
-			if (input.KeyTriggered(KK_S))
+			if (input.KeyTriggered(KK_S) || input.GP_Triggered(0, Gamepad::GP_DPAD_DOWN) || input.GP_LeftY(0) < 0)
 				if (chosenButtonTag != Title_Button_End && chosenButtonTag < 2)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag + 1);
-			if (input.KeyTriggered(KK_W))
+			if (input.KeyTriggered(KK_W) || input.GP_Triggered(0, Gamepad::GP_DPAD_UP) || input.GP_LeftY(0) > 0)
 				if (chosenButtonTag != Title_Button_Start && chosenButtonTag > 1)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag - 1);
 			for (auto& b : pButtons)
@@ -69,7 +69,7 @@ public:
 				if (b.first == chosenButtonTag)
 				{
 					b.second->SetOnChoose(true);
-					b.second->SetOnClick(input.KeyPressed(KK_ENTER));
+					b.second->SetOnClick(input.KeyPressed(KK_ENTER) || input.GP_Pressed(0, Gamepad::GP_A));
 				}
 				else
 					b.second->SetOnChoose(false);
@@ -77,7 +77,7 @@ public:
 		}
 		if (chosenButtonTag != Title_Button_None)
 		{
-			if (input.MouseLeftReleased() || input.KeyReleased(KK_ENTER))
+			if (input.MouseLeftReleased() || input.KeyReleased(KK_ENTER) || input.GP_Released(0, Gamepad::GP_A))
 			{
 				pButtons[chosenButtonTag]->SetOnExecute(true);
 				OnExecute = true;

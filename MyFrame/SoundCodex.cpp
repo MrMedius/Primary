@@ -260,6 +260,18 @@ SoundCodex::SeHandle SoundCodex::PlaySE(const std::string& path, int loopCount, 
     slot->handle = nextHandle_++;
     slot->is3D = false;
 
+    // reset 3D output matrix->make sure this voice plays as normal 2D
+    XAUDIO2_VOICE_DETAILS vd{};
+    slot->voice->GetVoiceDetails(&vd);
+    const UINT32 srcCh = vd.InputChannels;
+    XAUDIO2_VOICE_DETAILS busd{};
+    seBus->GetVoiceDetails(&busd);
+    const UINT32 dstCh = busd.InputChannels;
+    // Neutral matrix: distribute each input channel evenly to all output channels
+    std::vector<float> m(static_cast<size_t>(srcCh) * dstCh, 1.0f / float(dstCh));
+    slot->voice->SetOutputMatrix(seBus, srcCh, dstCh, m.data());
+    
+
     slot->voice->SubmitSourceBuffer(&buf);
     // leave the individual SE volume to voice and the overall volume to seBus
     slot->voice->SetVolume(volume);
