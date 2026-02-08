@@ -44,10 +44,12 @@ namespace Rgph
 	private:
 		void EnsureDummyRT(Graphics& gfx) const
 		{
-			if (!dummyRT)
+			// reset the size to fit fullscreen
+			const UINT w = depthStencil->GetWidth();
+			const UINT h = depthStencil->GetHeight();
+
+			if (!dummyRT || dummyRT->GetWidth() != w || dummyRT->GetHeight() != h)
 			{
-				const UINT w = depthStencil->GetWidth();
-				const UINT h = depthStencil->GetHeight();
 				dummyRT = std::make_unique<Bind::ShaderInputRenderTarget>(gfx, w, h, 0u);
 			}
 		}

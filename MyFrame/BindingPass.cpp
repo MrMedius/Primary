@@ -19,7 +19,16 @@ namespace Rgph
 
 	void BindingPass::BindAll(Graphics& gfx) const noxnd
 	{
+		// bind the output (this step will trigger OMSetRenderTargets)
 		BindBufferResources(gfx);
+
+		// set the viewport based on the final output
+		if (renderTarget)
+		{
+			gfx.SetViewportForRenderTarget(*renderTarget);
+		}
+
+		// bind other states
 		for (auto& bind : binds)
 		{
 			bind->Bind(gfx);

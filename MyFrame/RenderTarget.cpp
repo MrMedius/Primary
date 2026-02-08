@@ -74,6 +74,35 @@ namespace Bind
 		) );
 	}
 
+	void RenderTarget::ResetFromTexture(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<UINT> face)
+	{
+		INFOMAN(gfx);
+
+		D3D11_TEXTURE2D_DESC textureDesc{};
+		pTexture->GetDesc(&textureDesc);
+		width = textureDesc.Width;
+		height = textureDesc.Height;
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
+		rtvDesc.Format = textureDesc.Format;
+
+		if (face.has_value())
+		{
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+			rtvDesc.Texture2DArray.ArraySize = 1;
+			rtvDesc.Texture2DArray.FirstArraySlice = *face;
+			rtvDesc.Texture2DArray.MipSlice = 0;
+		}
+		else
+		{
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		}
+
+		pTargetView.Reset();
+		GFX_THROW_INFO(GetDevice(gfx)->CreateRenderTargetView(pTexture, &rtvDesc, &pTargetView));
+	}
+
 	void RenderTarget::BindAsBuffer( Graphics& gfx ) noxnd
 	{
 		ID3D11DepthStencilView* const null = nullptr;
@@ -95,16 +124,6 @@ namespace Bind
 	{
 		INFOMAN_NOHR(gfx);
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->OMSetRenderTargets(1, pTargetView.GetAddressOf(), pDepthStencilView));
-
-		// configure viewport
-		D3D11_VIEWPORT vp;
-		vp.Width = (float)width;
-		vp.Height = (float)height;
-		vp.MinDepth = 0.0f;
-		vp.MaxDepth = 1.0f;
-		vp.TopLeftX = 0.0f;
-		vp.TopLeftY = 0.0f;
-		GFX_THROW_INFO_ONLY(GetContext(gfx)->RSSetViewports(1u, &vp));
 	}
 
 	void RenderTarget::Clear( Graphics& gfx,const std::array<float,4>& color ) noxnd
@@ -210,7 +229,6 @@ namespace Bind
 		//GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1, pShaderResourceView.GetAddressOf()));
 		GetContext(gfx)->PSSetShaderResources(slot, 1, pShaderResourceView.GetAddressOf());
 	}
-	
 
 	void OutputOnlyRenderTarget::Bind( Graphics& gfx ) noxnd
 	{
@@ -221,4 +239,15 @@ namespace Bind
 		:
 		RenderTarget(gfx, pTexture, face)
 	{}
+
+	void Bind::OutputOnlyRenderTarget::Reset(Graphics& gfx, ID3D11Texture2D* pTexture)
+	{
+		ResetFromTexture(gfx, pTexture);
+	}
+
+	// Release RTV before ResizeBuffers
+	void Bind::OutputOnlyRenderTarget::ReleaseView() noexcept
+	{
+		pTargetView.Reset();
+	}
 }

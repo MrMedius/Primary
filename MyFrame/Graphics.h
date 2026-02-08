@@ -19,6 +19,7 @@ namespace Bind
 	class Bindable;
 	class Bindable_Ex;
 	class RenderTarget;
+	class DepthStencil;
 }
 
 class Graphics
@@ -79,10 +80,24 @@ public:
 	bool IsImguiEnabled() const noexcept;
 	UINT GetWidth() const noexcept;
 	UINT GetHeight() const noexcept;
-	std::shared_ptr<Bind::RenderTarget> GetTarget();
+	std::shared_ptr<Bind::RenderTarget> GetTarget() const noexcept;
+	std::shared_ptr<Bind::DepthStencil> GetMasterDepth() const noexcept;
+	// screen related
+	void OnWindowResize(UINT newClientW, UINT newClientH) noexcept;
+	void ResizeBackbuffer(UINT newClientW, UINT newClientH) noxnd;
+	void SetViewportFull(UINT w, UINT h) noexcept;
+	void SetViewportForRenderTarget(const Bind::RenderTarget& rt) noexcept;
+	D3D11_VIEWPORT GetMainViewport() const noexcept { return mainViewport; }
+private:
+	void UpdateViewport() noexcept;
 public:
+	// screen related
+	HWND hWnd = nullptr;
 	UINT width;
 	UINT height;
+	UINT windowWidth;
+	UINT windowHeight;
+	D3D11_VIEWPORT mainViewport{};
 	DirectX::XMMATRIX projection;
 	DirectX::XMMATRIX camera;
 	bool imguiEnabled = true;
@@ -93,4 +108,5 @@ public:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwap;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pContext;
 	std::shared_ptr<Bind::RenderTarget> pTarget;
+	std::shared_ptr<Bind::DepthStencil> pMasterDepth;
 };

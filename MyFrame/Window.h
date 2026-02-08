@@ -5,6 +5,7 @@
 #include <optional>
 #include <memory>
 
+namespace Rgph { class RenderGraph; }
 
 class Window
 {
@@ -60,6 +61,8 @@ public:
 	bool CursorEnabled() const noexcept;
 	static std::optional<int> ProcessMessages() noexcept;
 	Graphics& Gfx();
+	void ToggleFullscreen() noexcept;
+	bool IsFullscreen() const noexcept;
 private:
 	void ConfineCursor() noexcept;
 	void FreeCursor() noexcept;
@@ -67,11 +70,16 @@ private:
 	void HideCursor() noexcept;
 	void EnableImGuiMouse() noexcept;
 	void DisableImGuiMouse() noexcept;
+	bool MapClientToGame(int cx, int cy, int& outX, int& outY) noexcept;
 	static LRESULT CALLBACK HandleMsgSetup( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept;
 	static LRESULT CALLBACK HandleMsgThunk( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept;
 	LRESULT HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept;
 private:
 	bool cursorEnabled = true;
+	bool isFullscreen = false;
+	RECT windowedRect;
+	DWORD windowedStyle;
+	DWORD windowedExStyle;
 	int width;
 	int height;
 	HWND hWnd;

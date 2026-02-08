@@ -5,6 +5,8 @@
 #include "imgui/imgui_impl_win32.h"
 #include "InputCodex.h"
 #include "SoundCodex.h"
+#include "RenderGraph.h"
+
 
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
@@ -21,16 +23,16 @@ Window::WindowClass::WindowClass() noexcept
 	wc.cbWndExtra = 0;
 	wc.hInstance = GetInstance();
 	wc.hIcon = static_cast<HICON>(LoadImage( 
-		GetInstance(),MAKEINTRESOURCE( IDI_ICON3 ),
-		IMAGE_ICON,256,256,0
+		GetInstance(),MAKEINTRESOURCE( IDI_ICON1 ),
+		IMAGE_ICON, 0, 0, LR_DEFAULTSIZE
 	));
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);;
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = GetName();
 	wc.hIconSm = static_cast<HICON>(LoadImage(
-		GetInstance(),MAKEINTRESOURCE( IDI_ICON3 ),
-		IMAGE_ICON, 256, 256,0
+		GetInstance(),MAKEINTRESOURCE( IDI_ICON1 ),
+		IMAGE_ICON, 16, 16, 0
 	));
 	RegisterClassEx( &wc );
 }
@@ -149,6 +151,74 @@ bool Window::CursorEnabled() const noexcept
 	return cursorEnabled;
 }
 
+// helper
+static void GetClientSize(HWND hWnd, UINT& outW, UINT& outH) noexcept
+{
+	RECT rc{};
+	GetClientRect(hWnd, &rc);
+	outW = (UINT)(rc.right - rc.left);
+	outH = (UINT)(rc.bottom - rc.top);
+}
+void Window::ToggleFullscreen() noexcept
+{
+	if( !isFullscreen )
+	{
+		// Save current window position and size
+		GetWindowRect( hWnd, &windowedRect );
+		windowedStyle = GetWindowLong( hWnd, GWL_STYLE );
+		windowedExStyle = GetWindowLong( hWnd, GWL_EXSTYLE );
+
+		// Get main display information
+		MONITORINFO mi = { sizeof( MONITORINFO ) };
+		GetMonitorInfo( MonitorFromWindow( hWnd, MONITOR_DEFAULTTONEAREST ), &mi );
+
+		// Set borderless full-screen style
+		SetWindowLong( hWnd, GWL_STYLE, windowedStyle & ~( WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU ) );
+		SetWindowLong( hWnd, GWL_EXSTYLE, windowedExStyle & ~( WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE ) );
+
+		// Set window position and size to full screen
+		SetWindowPos( hWnd, HWND_TOP,
+			mi.rcMonitor.left,
+			mi.rcMonitor.top,
+			mi.rcMonitor.right - mi.rcMonitor.left,
+			mi.rcMonitor.bottom - mi.rcMonitor.top,
+			SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE );
+
+		// Update the size of the Graphics (using the original resolution; the Graphics internally handles letterboxing)
+		UINT cw, ch;
+		GetClientSize(hWnd, cw, ch);
+		pGfx->OnWindowResize(cw, ch);
+
+		isFullscreen = true;
+	}
+	else
+	{
+		// Restore window style
+		SetWindowLong( hWnd, GWL_STYLE, windowedStyle );
+		SetWindowLong( hWnd, GWL_EXSTYLE, windowedExStyle );
+
+		// Restore window position and size
+		SetWindowPos( hWnd, HWND_NOTOPMOST,
+			windowedRect.left,
+			windowedRect.top,
+			windowedRect.right - windowedRect.left,
+			windowedRect.bottom - windowedRect.top,
+			SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE );
+
+		// Restore Graphics Size
+		UINT cw, ch;
+		GetClientSize(hWnd, cw, ch);
+		pGfx->OnWindowResize(cw, ch);
+
+		isFullscreen = false;
+	}
+}
+
+bool Window::IsFullscreen() const noexcept
+{
+	return isFullscreen;
+}
+
 std::optional<int> Window::ProcessMessages() noexcept
 {
 	MSG msg;
@@ -211,6 +281,27 @@ void Window::EnableImGuiMouse() noexcept
 void Window::DisableImGuiMouse() noexcept
 {
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+}
+
+bool Window::MapClientToGame(int cx, int cy, int& outX, int& outY) noexcept
+{
+	if (!pGfx) return false;
+
+	const D3D11_VIEWPORT vp = pGfx->GetMainViewport();
+
+	const float vx = (float)cx - vp.TopLeftX;
+	const float vy = (float)cy - vp.TopLeftY;
+
+	// Black border area: deemed invalid
+	if (vx < 0.0f || vy < 0.0f || vx >= vp.Width || vy >= vp.Height)
+		return false;
+
+	const float nx = vx / vp.Width;   // 0..1
+	const float ny = vy / vp.Height;  // 0..1
+
+	outX = (int)(nx * (float)SCREEN_WIDTH);
+	outY = (int)(ny * (float)SCREEN_HEIGHT);
+	return true;
 }
 
 LRESULT CALLBACK Window::HandleMsgSetup( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept
@@ -329,12 +420,13 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if (imio.WantCaptureMouse) break;
 
 		// in client region -> log move, and log enter + capture mouse (if not previously in window)
-		if( pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height )
+		int gx, gy;
+		if (MapClientToGame(pt.x, pt.y, gx, gy))
 		{
-			input.OnMouseMove( pt.x,pt.y );
-			if( !input.MouseInWindow() )
+			input.OnMouseMove(gx, gy);
+			if (!input.MouseInWindow())
 			{
-				SetCapture( hWnd );
+				SetCapture(hWnd);
 				input.OnMouseEnter();
 			}
 		}
@@ -366,7 +458,9 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if (imio.WantCaptureMouse) break;
 
 		const POINTS pt = MAKEPOINTS(lParam);
-		input.OnLeftDown(pt.x, pt.y);
+		int gx, gy;
+		if (!MapClientToGame(pt.x, pt.y, gx, gy)) break;
+		input.OnLeftDown(gx, gy);
 		break;
 	}
 	case WM_RBUTTONDOWN:
@@ -374,8 +468,10 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		// stifle this mouse message if imgui wants to capture
 		if (imio.WantCaptureMouse) break;
 
-		const POINTS pt = MAKEPOINTS( lParam );
-		input.OnRightDown( pt.x,pt.y );
+		const POINTS pt = MAKEPOINTS(lParam);
+		int gx, gy;
+		if (!MapClientToGame(pt.x, pt.y, gx, gy)) break;
+		input.OnRightDown(gx, gy);
 		break;
 	}
 	case WM_LBUTTONUP:
@@ -384,13 +480,16 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if (imio.WantCaptureMouse) break;
 
 		const POINTS pt = MAKEPOINTS( lParam );
-		input.OnLeftUp( pt.x,pt.y );
+		int gx, gy;
 		// release mouse if outside of window
-		if( pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height )
+		if(!MapClientToGame(pt.x, pt.y, gx, gy))
 		{
+			input.OnLeftUp(0, 0);
 			ReleaseCapture();
 			input.OnMouseLeave();
+			break;
 		}
+		input.OnLeftUp(gx, gy);
 		break;
 	}
 	case WM_RBUTTONUP:
@@ -399,13 +498,16 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if (imio.WantCaptureMouse) break;
 
 		const POINTS pt = MAKEPOINTS( lParam );
-		input.OnRightUp( pt.x,pt.y );
+		int gx, gy;
 		// release mouse if outside of window
-		if( pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height )
+		if(!MapClientToGame(pt.x, pt.y, gx, gy))
 		{
+			input.OnRightUp(0, 0);
 			ReleaseCapture();
 			input.OnMouseLeave();
+			break;
 		}
+		input.OnRightUp(gx, gy);
 		break;
 	}
 	case WM_MOUSEWHEEL:
@@ -416,7 +518,9 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		const POINTS pt = MAKEPOINTS(lParam);
 		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
-		InputCodex::Get().OnWheelDelta(pt.x, pt.y, delta);
+		int gx, gy;
+		if (!MapClientToGame(pt.x, pt.y, gx, gy)) break;
+		input.OnWheelDelta(gx, gy, delta);
 		break;
 	}
 	/************** END MOUSE MESSAGES **************/

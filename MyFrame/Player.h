@@ -56,7 +56,7 @@ public:
 		SetSize({ 5.0f, 5.0f, 0.0f });
 		SetCollisionSize({ 1.5f, 4.0f, 2.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(5.0f);
+		SetHpMax(20.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });

@@ -16,6 +16,7 @@ private:
 		Title_Button_None,
 
 		Title_Button_Start,
+		Title_Button_Fullscreen,
 		Title_Button_End,
 	};
 public:
@@ -28,8 +29,9 @@ public:
 		pBackground->SetFrame(1, 1, 1, 1, 1, 0, false);
 		pBackground->LinkTechniques(rg);
 		// Buttons
-		pButtons[Title_Button_Start] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 200.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Start_Button.png");
-		pButtons[Title_Button_End] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_End_Button.png");
+		pButtons[Title_Button_Start] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 190.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_Start.png");
+		pButtons[Title_Button_Fullscreen] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 120.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_Fullscreen.png");
+		pButtons[Title_Button_End] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_End.png");
 	}
 	~UI_Title() = default;
 
@@ -59,10 +61,10 @@ public:
 		else // keyboard
 		{
 			if (input.KeyTriggered(KK_S) || input.GP_Triggered(0, Gamepad::GP_DPAD_DOWN) || input.GP_LeftY(0) < 0)
-				if (chosenButtonTag != Title_Button_End && chosenButtonTag < 2)
+				if (chosenButtonTag != Title_Button_End && chosenButtonTag < Title_Button_End)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag + 1);
 			if (input.KeyTriggered(KK_W) || input.GP_Triggered(0, Gamepad::GP_DPAD_UP) || input.GP_LeftY(0) > 0)
-				if (chosenButtonTag != Title_Button_Start && chosenButtonTag > 1)
+				if (chosenButtonTag != Title_Button_Start && chosenButtonTag > Title_Button_Start)
 					chosenButtonTag = static_cast<Title_Button_Type_Tag>(chosenButtonTag - 1);
 			for (auto& b : pButtons)
 			{
@@ -90,10 +92,14 @@ public:
 			case UI_Title::Title_Button_Start:
 				IsStart = true;
 				break;
+			case UI_Title::Title_Button_Fullscreen:
+				IsFullscreen = true;
+				break;
 			case UI_Title::Title_Button_End:
 				IsEnd = true;
 				break;
 			}
+			OnExecute = false;
 		}
 	}
 
@@ -110,11 +116,14 @@ public:
 		chosenButtonTag = Title_Button_None;
 		OnExecute = false;
 		IsStart = false;
+		IsFullscreen = false;
 		IsEnd = false;
 		for (auto& b : pButtons) b.second->Reset();
 	}
 
 	bool GetIsStart() const { return IsStart; }
+	bool GetIsFullscreen() const { return IsFullscreen; }
+	void ResetFullscreen() { IsFullscreen = false; }
 	bool GetIsEnd() const { return IsEnd; }
 private:
 	// Background
@@ -124,5 +133,6 @@ private:
 	Title_Button_Type_Tag chosenButtonTag{ Title_Button_None };
 	bool OnExecute{ false };
 	bool IsStart{ false };
+	bool IsFullscreen{ false };
 	bool IsEnd{ false };
 };

@@ -20,8 +20,11 @@ namespace dx = DirectX;
 
 Graphics::Graphics( HWND hWnd,int width,int height )
 	:
+	hWnd(hWnd),
 	width(width),
-	height(height)
+	height(height),
+	windowWidth(width),
+	windowHeight(height)
 {
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = width;
@@ -68,6 +71,8 @@ Graphics::Graphics( HWND hWnd,int width,int height )
 	wrl::ComPtr<ID3D11Texture2D> pBackBuffer;
 	GFX_THROW_INFO(pSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer));
 	pTarget = std::shared_ptr<Bind::RenderTarget>{ new Bind::OutputOnlyRenderTarget(*this,pBackBuffer.Get()) };
+
+	pMasterDepth = std::make_shared<Bind::OutputOnlyDepthStencil>(*this, width, height);
 
 	// viewport always fullscreen (for now)
 	D3D11_VIEWPORT vp;
@@ -185,9 +190,127 @@ UINT Graphics::GetHeight() const noexcept
 	return height;
 }
 
-std::shared_ptr<Bind::RenderTarget> Graphics::GetTarget()
+std::shared_ptr<Bind::RenderTarget> Graphics::GetTarget() const noexcept
 {
 	return pTarget;
+}
+
+std::shared_ptr<Bind::DepthStencil> Graphics::GetMasterDepth() const noexcept
+{ 
+	return pMasterDepth; 
+}
+
+void Graphics::UpdateViewport() noexcept
+{
+	// Calculate the scaling (preserving the original aspect ratio)
+	float aspectRatio = (float)width / (float)height;
+	float windowAspectRatio = (float)windowWidth / (float)windowHeight;
+
+	float viewportWidth, viewportHeight;
+	float viewportX, viewportY;
+
+	if( windowAspectRatio > aspectRatio )
+	{
+		// if wider, black borders at the top and bottom
+		viewportHeight = (float)windowHeight;
+		viewportWidth = viewportHeight * aspectRatio;
+		viewportX = (windowWidth - viewportWidth) * 0.5f;
+		viewportY = 0.0f;
+	}
+	else
+	{
+		// if higher, black borders on the left and right
+		viewportWidth = (float)windowWidth;
+		viewportHeight = viewportWidth / aspectRatio;
+		viewportX = 0.0f;
+		viewportY = (windowHeight - viewportHeight) * 0.5f;
+	}
+
+	// update the viewport to enable letterboxing
+	D3D11_VIEWPORT vp{};
+	vp.Width = viewportWidth;
+	vp.Height = viewportHeight;
+	vp.TopLeftX = viewportX;
+	vp.TopLeftY = viewportY;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+
+	mainViewport = vp;
+	pContext->RSSetViewports( 1u, &vp );
+}
+
+void Graphics::OnWindowResize(UINT newClientW, UINT newClientH) noexcept
+{
+	windowWidth = newClientW;
+	windowHeight = newClientH;
+	ResizeBackbuffer(newClientW, newClientH);
+
+	UpdateViewport();
+}
+
+void Graphics::ResizeBackbuffer(UINT newW, UINT newH) noxnd
+{
+	if (newW == 0 || newH == 0) return;
+
+	// 1) Clears all bindings
+	pContext->OMSetRenderTargets(0, nullptr, nullptr);
+	// Unbind shaders
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	pContext->VSSetShaderResources(0, 16, nullSRV);
+	pContext->PSSetShaderResources(0, 16, nullSRV);
+	pContext->GSSetShaderResources(0, 16, nullSRV);
+	pContext->CSSetShaderResources(0, 16, nullSRV);
+	pContext->Flush();
+
+	// 2) Release old backbuffer RTV
+	if (auto* pOut = dynamic_cast<Bind::OutputOnlyRenderTarget*>(pTarget.get()))
+	{
+		pOut->ReleaseView();
+	}
+
+	// 3) ResizeBuffers
+	GFX_THROW_INFO_ONLY(pSwap->ResizeBuffers(0, newW, newH, DXGI_FORMAT_UNKNOWN, 0));
+
+	// 4) Get new backbuffer
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer;
+	GFX_THROW_INFO_ONLY(pSwap->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer));
+
+	// 5) Rebuild RTV
+	if (auto* pOut = dynamic_cast<Bind::OutputOnlyRenderTarget*>(pTarget.get()))
+	{
+		pOut->Reset(*this, pBackBuffer.Get());
+	}
+
+	// 6) Rebuilde the DepthStencil
+	if (auto pDS = std::dynamic_pointer_cast<Bind::OutputOnlyDepthStencil>(pMasterDepth))
+	{
+		pDS->Reset(*this, newW, newH);
+	}
+}
+
+void Graphics::SetViewportFull(UINT w, UINT h) noexcept
+{
+	D3D11_VIEWPORT vp{};
+	vp.Width = (float)w;
+	vp.Height = (float)h;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	pContext->RSSetViewports(1u, &vp);
+}
+
+void Graphics::SetViewportForRenderTarget(const Bind::RenderTarget& rt) noexcept
+{
+	// backbuffer: letterbox, offscreen: full RT
+	if (&rt == GetTarget().get())
+	{
+		UpdateViewport();
+	}
+	else
+	{
+		SetViewportFull(rt.GetWidth(), rt.GetHeight());
+	}
 }
 
 // Graphics exception stuff

@@ -25,6 +25,7 @@ namespace Bind
 	protected:
 		RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<UINT> face);
 		RenderTarget( Graphics& gfx,UINT width,UINT height );
+		void ResetFromTexture(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<UINT> face = {});
 		UINT width;
 		UINT height;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTargetView;
@@ -46,5 +47,7 @@ namespace Bind
 	public:
 		void Bind( Graphics& gfx ) noxnd override;
 		OutputOnlyRenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<UINT> face = {});
+		void Reset(Graphics& gfx, ID3D11Texture2D* pTexture);
+		void ReleaseView() noexcept;		
 	};
 }

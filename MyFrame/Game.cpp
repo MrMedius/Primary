@@ -45,7 +45,7 @@ Game::Game(const std::string& commandLine)
 
 	// Sound Base Setting
 	SoundCodex::Get().PlayBGM(SndPath::BGM_Main, -1);
-	SoundCodex::Get().SetBgmVolume(0.5f);
+	SoundCodex::Get().SetBgmVolume(1.0f);
 	SoundCodex::Get().SetSeVolume(1.0f);
 	SoundCodex::Get().SetListenerTransform(0.0f, 0.0f, 0.0f, 0, 0, 1, 0, 1, 0);
 }
@@ -77,7 +77,7 @@ int Game::RunGame()
 			}
 #endif
 			/********************************/
-			/*　　	   　 Update            */
+			/*            Update            */
 			wnd.Gfx().BeginFrame();
 			Update(timer_update.Mark() * speed_factor);
 			InputCodex::Get().Update();
@@ -85,7 +85,7 @@ int Game::RunGame()
 			/********************************/
 
 			/********************************/
-			/*　　	     　Draw             */
+			/*             Draw             */
 			Draw();
 			wnd.Gfx().EndFrame(); // present
 			gameRG.Reset();
@@ -97,6 +97,11 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
+	if( InputCodex::Get().KeyTriggered( VK_F11 ) )
+	{
+		wnd.ToggleFullscreen();
+	}
+
 	switch (Scene)
 	{
 	case SCENE_TITLE:
@@ -106,6 +111,11 @@ void Game::Update(float dt)
 		{
 			pUI_Title->Reset();
 			SetScene(SCENE_GAME);
+		}
+		if (pUI_Title->GetIsFullscreen())
+		{
+			wnd.ToggleFullscreen();
+			pUI_Title->ResetFullscreen();
 		}
 		if (pUI_Title->GetIsEnd())
 			PostQuitMessage(0);

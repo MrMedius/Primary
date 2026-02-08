@@ -99,6 +99,43 @@ namespace Bind
 		));
 	}
 
+	void DepthStencil::ResetForSize(Graphics& gfx, UINT w, UINT h, bool canBindShaderInput, Usage usage)
+	{
+		INFOMAN(gfx);
+
+		width = w;
+		height = h;
+
+		// release DSV
+		pDepthStencilView.Reset();
+
+		// recreate depth stencil texture
+		wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
+		D3D11_TEXTURE2D_DESC descDepth = {};
+		descDepth.Width = w;
+		descDepth.Height = h;
+		descDepth.MipLevels = 1u;
+		descDepth.ArraySize = 1u;
+		descDepth.Format = MapUsageTypeless(usage);
+		descDepth.SampleDesc.Count = 1u;
+		descDepth.SampleDesc.Quality = 0u;
+		descDepth.Usage = D3D11_USAGE_DEFAULT;
+		descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL | (canBindShaderInput ? D3D11_BIND_SHADER_RESOURCE : 0);
+
+		GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(&descDepth, nullptr, &pDepthStencil));
+
+		// create DSV
+		D3D11_DEPTH_STENCIL_VIEW_DESC descView = {};
+		descView.Format = MapUsageTyped(usage);
+		descView.Flags = 0;
+		descView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		descView.Texture2D.MipSlice = 0;
+
+		GFX_THROW_INFO(GetDevice(gfx)->CreateDepthStencilView(
+			pDepthStencil.Get(), &descView, &pDepthStencilView
+		));
+	}
+
 	void DepthStencil::BindAsBuffer( Graphics& gfx ) noxnd
 	{
 		INFOMAN_NOHR(gfx);
@@ -271,6 +308,11 @@ namespace Bind
 		:
 		DepthStencil( gfx,width,height,false,Usage::DepthStencil )
 	{}
+
+	void Bind::OutputOnlyDepthStencil::Reset(Graphics & gfx, UINT width, UINT height)
+	{
+		ResetForSize(gfx, width, height, false, Usage::DepthStencil);
+	}
 
 	void OutputOnlyDepthStencil::Bind( Graphics& gfx ) noxnd
 	{

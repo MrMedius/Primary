@@ -44,6 +44,8 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Score* score)
 
 void EnemyManager::Update(float dt, XMFLOAT3 position)
 {
+
+#ifdef _DEBUG
 	if (CountDown < Interval) CountDown++;
 	if (CountDown >= Interval)
 	{
@@ -58,13 +60,13 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	//	type = enemyType(rng);
 	// 
 	// // get position around the player randomly
-	 	std::mt19937 rng(std::random_device{}());
-		std::uniform_real_distribution<float> d(-30.0f, 30.0f);
-		XMFLOAT3 pos = { position.x + d(rng),10.0f,position.z + d(rng) };
-		if (pos.x >  MapEdgeLeftAndRight) pos.x =  MapEdgeLeftAndRight - 20.0f;
-		if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + 20.0f;
-		if (pos.z >  MapEdgeFrontAndBack) pos.z =  MapEdgeFrontAndBack - 20.0f;
-		if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + 20.0f;
+	std::mt19937 rng(std::random_device{}());
+	std::uniform_real_distribution<float> d(-30.0f, 30.0f);
+	XMFLOAT3 pos = { position.x + d(rng),10.0f,position.z + d(rng) };
+	if (pos.x > MapEdgeLeftAndRight) pos.x = MapEdgeLeftAndRight - 20.0f;
+	if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + 20.0f;
+	if (pos.z > MapEdgeFrontAndBack) pos.z = MapEdgeFrontAndBack - 20.0f;
+	if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + 20.0f;
 
 	//	NewEnemy = false;
 	//}
@@ -76,12 +78,54 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 	if (InputCodex::Get().KeyTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
 	if (InputCodex::Get().KeyTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	  Created = true; }
 	if (InputCodex::Get().KeyTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	  Created = true; }
-	if (Created) { 
+	if (Created) 
+	{
 		Created = false;
 		enemies.back()->SpawnAt(pos);
 		SoundCodex::Get().PlaySE3D(SndPath::SE_Enemy_Create, 0, 1.0f, pos.x, pos.y, pos.z);
 	}
+#else
+	if (CountDown < Interval) CountDown++;
+	if (CountDown >= Interval)
+	{
+		CountDown = 0;
+		NewEnemy = true;
+	}
+	int type = 0;
+	if (NewEnemy)
+	{
+		std::mt19937 rng(std::random_device{}());
 
+		// get new enemy type randomly
+		std::uniform_int_distribution<int> enemyType(1, 6);
+		type = enemyType(rng);
+
+		// get position around the player randomly
+		std::uniform_real_distribution<float> d(-30.0f, 30.0f);
+		XMFLOAT3 pos = { position.x + d(rng),10.0f,position.z + d(rng) };
+		if (pos.x > MapEdgeLeftAndRight) pos.x = MapEdgeLeftAndRight - 20.0f;
+		if (pos.x < -MapEdgeLeftAndRight) pos.x = -MapEdgeLeftAndRight + 20.0f;
+		if (pos.z > MapEdgeFrontAndBack) pos.z = MapEdgeFrontAndBack - 20.0f;
+		if (pos.z < -MapEdgeFrontAndBack) pos.z = -MapEdgeFrontAndBack + 20.0f;
+
+		NewEnemy = false;
+
+		// V‚µEnemyTest‚ð¶¬‚·‚é
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD1) || type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));	  Created = true; }
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD4) || type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));	  Created = true; }
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD2) || type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	  Created = true; }
+		if (InputCodex::Get().KeyTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	  Created = true; }
+
+		if (Created)
+		{
+			Created = false;
+			enemies.back()->SpawnAt(pos);
+			SoundCodex::Get().PlaySE3D(SndPath::SE_Enemy_Create, 0, 1.0f, pos.x, pos.y, pos.z);
+		}
+	}
+#endif
 
 	for (int i = 0; i < enemies.size(); i++)
 	{

@@ -23,16 +23,30 @@ PointLight::PointLight(Graphics& gfx, DirectX::XMFLOAT3 pos, float radius)
 
 void PointLight::Update(float dt, DirectX::XMFLOAT3 pos) noexcept
 {
-	float dx = pos.x - cbData.pos.x;
-	float dz = pos.z - cbData.pos.z;
+	const float zBias = 10.0f;    // always bigger than player's Z
+	const float speed = 20.0f;    // chase speed
+	const float dist2Threshold = 50.0f;
 
-	if (dx * dx + dz * dz > 200)
+	// always bigger than player's Z
+	const float targetX = pos.x;
+	const float targetZ = pos.z + zBias;
+
+	const float dx = targetX - cbData.pos.x;
+	const float dz = targetZ - cbData.pos.z;
+
+	if (dx * dx + dz * dz > dist2Threshold)
 	{
 		const float angle = atan2f(dz, dx);
-		cbData.pos.x += cosf(angle) * 20.0f * dt;
-		cbData.pos.z += sinf(angle) * 20.0f * dt;
-		pCamera->SetPos(cbData.pos);
+		cbData.pos.x += cosf(angle) * speed * dt;
+		cbData.pos.z += sinf(angle) * speed * dt;
 	}
+	else
+	{
+		if (cbData.pos.z <= targetZ)
+			cbData.pos.z = targetZ;
+	}
+
+	pCamera->SetPos(cbData.pos);
 }
 
 void PointLight::SpawnControlWindow() noexcept

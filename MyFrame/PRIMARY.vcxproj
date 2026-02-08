@@ -24,7 +24,7 @@
     <ProjectGuid>{f3c66019-8803-435b-a1d7-d837f4c41b9c}</ProjectGuid>
     <RootNamespace>HW3D01</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>NeoRIXIS</ProjectName>
+    <ProjectName>PRIMARY</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -457,7 +457,7 @@
     <ClInclude Include="WireframePass.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="NeoRIXIS.rc" />
+    <ResourceCompile Include="PRIMARY.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="asset\Icon\GameLogo.ico" />

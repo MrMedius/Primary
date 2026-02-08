@@ -1021,7 +1021,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="NeoRIXIS.rc">
+    <ResourceCompile Include="PRIMARY.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
