@@ -10,6 +10,7 @@
 
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
+HCURSOR Window::hCursor = nullptr;
 
 Window::WindowClass::WindowClass() noexcept
 	:
@@ -26,7 +27,11 @@ Window::WindowClass::WindowClass() noexcept
 		GetInstance(),MAKEINTRESOURCE( IDI_ICON1 ),
 		IMAGE_ICON, 0, 0, LR_DEFAULTSIZE
 	));
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);;
+	hCursor = static_cast<HCURSOR>(LoadImage(
+		GetInstance(), MAKEINTRESOURCE(IDC_CURSOR1),
+		IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE
+	));
+	wc.hCursor = hCursor ? hCursor : LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = GetName();
@@ -130,12 +135,17 @@ void Window::SetDebugTitle(int CountFPS)
 	SetWindowText(hWnd, debugStr.c_str());
 }
 
+// ------------------------------------------------------------------------
+// cursor related
 void Window::EnableCursor() noexcept
 {
 	cursorEnabled = true;
 	ShowCursor();
 	EnableImGuiMouse();
 	FreeCursor();
+
+	cursorIdleTimer.Mark();
+	cursorHiddenByIdle = false;
 }
 
 void Window::DisableCursor() noexcept
@@ -144,6 +154,9 @@ void Window::DisableCursor() noexcept
 	HideCursor();
 	DisableImGuiMouse();
 	ConfineCursor();
+
+	cursorHiddenByIdle = false;
+	cursorIdleTimer.Mark();
 }
 
 bool Window::CursorEnabled() const noexcept
@@ -151,6 +164,33 @@ bool Window::CursorEnabled() const noexcept
 	return cursorEnabled;
 }
 
+HCURSOR Window::GetCursor() noexcept 
+{
+	return hCursor; 
+}
+
+void Window::SetCursorHandle(HCURSOR cur) noexcept 
+{
+	hCursor = cur; 
+}
+
+void Window::TickCursorAutoHide() noexcept
+{
+	if (!autoHideCursor) return;
+
+	// when first-person or locked mode, no participate in automatic hiding
+	if (!cursorEnabled) return;
+
+	// Timeout -> Hide
+	if (!cursorHiddenByIdle && cursorIdleTimer.Peek() >= cursorHideSeconds)
+	{
+		HideCursor();
+		cursorHiddenByIdle = true;
+	}
+}
+
+// ------------------------------------------------------------------------
+// screen related
 // helper
 static void GetClientSize(HWND hWnd, UINT& outW, UINT& outH) noexcept
 {
@@ -333,6 +373,28 @@ LRESULT CALLBACK Window::HandleMsgThunk( HWND hWnd,UINT msg,WPARAM wParam,LPARAM
 
 LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept
 {
+	// deal cursor
+	if (msg == WM_SETCURSOR)
+	{
+		if (LOWORD(lParam) == HTCLIENT)
+		{
+			if (!cursorHiddenByIdle)
+				::SetCursor(GetCursor());
+			return TRUE;
+		}
+	}
+	auto WakeCursor = [&]()
+		{
+			cursorIdleTimer.Mark();
+			if (cursorHiddenByIdle)
+			{
+				ShowCursor();
+				cursorHiddenByIdle = false;
+				::SetCursor(GetCursor());
+			}
+		};
+
+	// deal imgui
 	if( ImGui_ImplWin32_WndProcHandler( hWnd,msg,wParam,lParam ) )
 	{
 		return true;
@@ -340,22 +402,22 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	const auto& imio = ImGui::GetIO();
 
 	auto& input = InputCodex::Get();
-	switch( msg )
+	switch (msg)
 	{
-	// we don't want the DefProc to handle this message because
-	// we want our destructor to destroy the window, so return 0 instead of break
+		// we don't want the DefProc to handle this message because
+		// we want our destructor to destroy the window, so return 0 instead of break
 	case WM_CLOSE:
-		PostQuitMessage( 0 );
+		PostQuitMessage(0);
 		return 0;
-	// clear keystate when window loses focus to prevent input getting "stuck"
+		// clear keystate when window loses focus to prevent input getting "stuck"
 	case WM_KILLFOCUS:
 		input.ClearAll();
 		break;
 	case WM_ACTIVATE:
 		// confine/free cursor on window to foreground/background if cursor disabled
-		if( !cursorEnabled )
+		if (!cursorEnabled)
 		{
-			if( wParam & WA_ACTIVE )
+			if (wParam & WA_ACTIVE)
 			{
 				ConfineCursor();
 				HideCursor();
@@ -368,49 +430,51 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		}
 		break;
 
-	/*********** KEYBOARD MESSAGES ***********/
+		/*********** KEYBOARD MESSAGES ***********/
 	case WM_KEYDOWN:
-	// syskey commands need to be handled to track ALT key (VK_MENU) and F10
+		// syskey commands need to be handled to track ALT key (VK_MENU) and F10
 	case WM_SYSKEYDOWN:
 		// stifle this keyboard message if imgui wants to capture
-		if( imio.WantCaptureKeyboard )
+		if (imio.WantCaptureKeyboard)
 		{
 			break;
 		}
-		if( !(lParam & 0x40000000) || input.KeyAutorepeatEnabled() ) // filter autorepeat
+		if (!(lParam & 0x40000000) || input.KeyAutorepeatEnabled()) // filter autorepeat
 		{
-			input.OnKeyDown( static_cast<unsigned char>(wParam) );
+			input.OnKeyDown(static_cast<unsigned char>(wParam));
 		}
 		break;
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
 		// stifle this keyboard message if imgui wants to capture
-		if( imio.WantCaptureKeyboard )
+		if (imio.WantCaptureKeyboard)
 		{
 			break;
 		}
-		input.OnKeyUp( static_cast<unsigned char>(wParam) );
+		input.OnKeyUp(static_cast<unsigned char>(wParam));
 		break;
 	case WM_CHAR:
 		// stifle this keyboard message if imgui wants to capture
-		if( imio.WantCaptureKeyboard )
+		if (imio.WantCaptureKeyboard)
 		{
 			break;
 		}
-		input.OnChar( static_cast<unsigned char>(wParam) );
+		input.OnChar(static_cast<unsigned char>(wParam));
 		break;
-	/*********** END KEYBOARD MESSAGES ***********/
+		/*********** END KEYBOARD MESSAGES ***********/
 
-	/************* MOUSE MESSAGES ****************/
+		/************* MOUSE MESSAGES ****************/
 	case WM_MOUSEMOVE:
 	{
-		const POINTS pt = MAKEPOINTS( lParam );
+		WakeCursor();
+
+		const POINTS pt = MAKEPOINTS(lParam);
 		// cursorless exclusive gets first dibs
-		if( !cursorEnabled )
+		if (!cursorEnabled)
 		{
-			if( !input.MouseInWindow() )
+			if (!input.MouseInWindow())
 			{
-				SetCapture( hWnd );
+				SetCapture(hWnd);
 				input.OnMouseEnter();
 				HideCursor();
 			}
@@ -433,9 +497,9 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		// not in client -> log move / maintain capture if button down
 		else
 		{
-			if( wParam & (MK_LBUTTON | MK_RBUTTON) )
+			if (wParam & (MK_LBUTTON | MK_RBUTTON))
 			{
-				input.OnMouseMove( pt.x,pt.y );
+				input.OnMouseMove(pt.x, pt.y);
 			}
 			// button up -> release capture / log event for leaving
 			else
@@ -448,8 +512,10 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	case WM_LBUTTONDOWN:
 	{
-		SetForegroundWindow( hWnd );
-		if( !cursorEnabled )
+		WakeCursor();
+
+		SetForegroundWindow(hWnd);
+		if (!cursorEnabled)
 		{
 			ConfineCursor();
 			HideCursor();
@@ -465,6 +531,8 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	case WM_RBUTTONDOWN:
 	{
+		WakeCursor();
+
 		// stifle this mouse message if imgui wants to capture
 		if (imio.WantCaptureMouse) break;
 
@@ -476,13 +544,15 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	case WM_LBUTTONUP:
 	{
+		WakeCursor();
+
 		// stifle this mouse message if imgui wants to capture
 		if (imio.WantCaptureMouse) break;
 
-		const POINTS pt = MAKEPOINTS( lParam );
+		const POINTS pt = MAKEPOINTS(lParam);
 		int gx, gy;
 		// release mouse if outside of window
-		if(!MapClientToGame(pt.x, pt.y, gx, gy))
+		if (!MapClientToGame(pt.x, pt.y, gx, gy))
 		{
 			input.OnLeftUp(0, 0);
 			ReleaseCapture();
@@ -494,13 +564,15 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	case WM_RBUTTONUP:
 	{
+		WakeCursor();
+
 		// stifle this mouse message if imgui wants to capture
 		if (imio.WantCaptureMouse) break;
 
-		const POINTS pt = MAKEPOINTS( lParam );
+		const POINTS pt = MAKEPOINTS(lParam);
 		int gx, gy;
 		// release mouse if outside of window
-		if(!MapClientToGame(pt.x, pt.y, gx, gy))
+		if (!MapClientToGame(pt.x, pt.y, gx, gy))
 		{
 			input.OnRightUp(0, 0);
 			ReleaseCapture();
@@ -512,6 +584,8 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 	}
 	case WM_MOUSEWHEEL:
 	{
+		WakeCursor();
+
 		// stifle this mouse message if imgui wants to capture
 		if (imio.WantCaptureMouse) break;
 
@@ -524,44 +598,44 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		break;
 	}
 	/************** END MOUSE MESSAGES **************/
-	
+
 	/************** RAW MOUSE MESSAGES **************/
 	case WM_INPUT:
 	{
-		if( !input.RawMouseEnabled() )
+		if (!input.RawMouseEnabled())
 		{
 			break;
 		}
 		UINT size;
 		// first get the size of the input data
-		if( GetRawInputData(
+		if (GetRawInputData(
 			reinterpret_cast<HRAWINPUT>(lParam),
 			RID_INPUT,
 			nullptr,
 			&size,
-			sizeof( RAWINPUTHEADER ) ) == -1)
+			sizeof(RAWINPUTHEADER)) == -1)
 		{
 			// bail msg processing if error
 			break;
 		}
-		rawBuffer.resize( size );
+		rawBuffer.resize(size);
 		// read in the input data
-		if( GetRawInputData(
+		if (GetRawInputData(
 			reinterpret_cast<HRAWINPUT>(lParam),
 			RID_INPUT,
 			rawBuffer.data(),
 			&size,
-			sizeof( RAWINPUTHEADER ) ) != size )
+			sizeof(RAWINPUTHEADER)) != size)
 		{
 			// bail msg processing if error
 			break;
 		}
 		// process the raw input data
 		auto& ri = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
-		if( ri.header.dwType == RIM_TYPEMOUSE &&
-			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0) )
+		if (ri.header.dwType == RIM_TYPEMOUSE &&
+			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
 		{
-			input.OnRawDelta( ri.data.mouse.lLastX,ri.data.mouse.lLastY );
+			input.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
 		}
 		break;
 	}

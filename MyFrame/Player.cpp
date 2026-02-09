@@ -925,6 +925,7 @@ void Player_SkillState::OnEnter(Player* owner)
 	}
 	owner->GetWeaponSlots()->UseWeapon(-100.0f);
 
+	owner->SetCollisionOnOff(false);	// コリジュンを閉じる
 	oldFrame = 0;
 }
 
@@ -937,14 +938,12 @@ void Player_SkillState::OnExit(Player* owner)
 		owner->SetAttackCollisionSize(baseAttackCollisionSize);
 		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
 		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
-		owner->SetWasSkill(true);
 		break;
 	}
 	case WEAPON_TYPE_2:
 	{
 		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
 		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
-		owner->SetWasSkill(true);
 		break;
 	}
 	case WEAPON_TYPE_3:
@@ -952,14 +951,14 @@ void Player_SkillState::OnExit(Player* owner)
 		owner->SetAttackCollisionSize(baseAttackCollisionSize);
 		owner->GetVisualPreEffectBg()->SetScale(owner->GetEffectSize());
 		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
-		owner->SetCollisionOnOff(true); // コリジュンを開ける
-		owner->SetWasSkill(true);
 		break;
 	}
 	}
 
 	owner->SetDoAttackType(Attack_Type_None);
+	owner->SetCollisionOnOff(true); // コリジュンを開ける
 	owner->SetIsSkill(false);
+	owner->SetWasSkill(true);
 }
 
 void Player_SkillState::Update(Player* owner, float dt)
@@ -1020,7 +1019,6 @@ void Player_SkillState::Update(Player* owner, float dt)
 		if (currentFrame == 17 && oldFrame != currentFrame)
 		{
 			owner->SetAttackCollisionOnOff(true);
-			owner->SetCollisionOnOff(false);	// コリジュンを閉じる
 			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.1f, 0.0f);
 			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_3, 0, 0.3f);
 		}

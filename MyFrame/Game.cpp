@@ -78,6 +78,7 @@ int Game::RunGame()
 #endif
 			/********************************/
 			/*            Update            */
+			wnd.TickCursorAutoHide();
 			wnd.Gfx().BeginFrame();
 			Update(timer_update.Mark() * speed_factor);
 			InputCodex::Get().Update();

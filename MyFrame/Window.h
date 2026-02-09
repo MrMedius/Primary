@@ -4,6 +4,7 @@
 #include "Graphics.h"
 #include <optional>
 #include <memory>
+#include "Timer.h"
 
 namespace Rgph { class RenderGraph; }
 
@@ -56,14 +57,20 @@ public:
 	Window& operator=( const Window& ) = delete;
 	void SetTitle( const std::string& title );
 	void SetDebugTitle(int CountFPS);
+	// cursor related
 	void EnableCursor() noexcept;
 	void DisableCursor() noexcept;
 	bool CursorEnabled() const noexcept;
-	static std::optional<int> ProcessMessages() noexcept;
-	Graphics& Gfx();
+	static HCURSOR GetCursor() noexcept;
+	static void SetCursorHandle(HCURSOR cur) noexcept;
+	void TickCursorAutoHide() noexcept;
+	// screen related
 	void ToggleFullscreen() noexcept;
 	bool IsFullscreen() const noexcept;
+	static std::optional<int> ProcessMessages() noexcept;
+	Graphics& Gfx();
 private:
+	// cursor related
 	void ConfineCursor() noexcept;
 	void FreeCursor() noexcept;
 	void ShowCursor() noexcept;
@@ -75,7 +82,14 @@ private:
 	static LRESULT CALLBACK HandleMsgThunk( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept;
 	LRESULT HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noexcept;
 private:
+	// cursor related
 	bool cursorEnabled = true;
+	static HCURSOR hCursor;
+	Timer cursorIdleTimer;
+	bool autoHideCursor = true;
+	bool cursorHiddenByIdle = false;
+	float cursorHideSeconds = 2.0f;
+	// screen related
 	bool isFullscreen = false;
 	RECT windowedRect;
 	DWORD windowedStyle;

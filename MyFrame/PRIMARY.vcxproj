@@ -1013,6 +1013,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="asset\Icon\WhiteArrow.cur" />
     <None Include="LightVectorData.hlsli" />
     <None Include="MathHelpers.hlsli" />
     <None Include="PointLight.hlsli" />
