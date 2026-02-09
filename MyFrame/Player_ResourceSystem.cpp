@@ -1,5 +1,6 @@
 #include "Player_ResourceSystem.h"
 #include "GameStatsCodex.h"
+#include "SoundCodex.h"
 
 /*------------------------------------------------------------------------------
    Weapon
@@ -117,9 +118,18 @@ void WeaponSlots::SetNewWeapon(WEAPON_TYPE_ID type)
 	GameStatsCodex::AddTotalWeapon();
 	switch (type)
 	{
-	case WEAPON_TYPE_1:	GameStatsCodex::AddRedWeapon();	  break;
-	case WEAPON_TYPE_2:	GameStatsCodex::AddGreenWeapon(); break;
-	case WEAPON_TYPE_3:	GameStatsCodex::AddBlueWeapon();  break;
+	case WEAPON_TYPE_1:	
+		SoundCodex::Get().PlaySE(SndPath::SE_Player_Weapon_Get_Red);
+		GameStatsCodex::AddRedWeapon();
+		break;
+	case WEAPON_TYPE_2:	
+		SoundCodex::Get().PlaySE(SndPath::SE_Player_Weapon_Get_Green);
+		GameStatsCodex::AddGreenWeapon();
+		break;
+	case WEAPON_TYPE_3:	
+		SoundCodex::Get().PlaySE(SndPath::SE_Player_Weapon_Get_Blue);
+		GameStatsCodex::AddBlueWeapon();
+		break;
 	}
 }
 

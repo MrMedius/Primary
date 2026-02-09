@@ -44,8 +44,8 @@ Game::Game(const std::string& commandLine)
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 
 	// Sound Base Setting
-	SoundCodex::Get().PlayBGM(SndPath::BGM_Main, -1);
-	SoundCodex::Get().SetBgmVolume(1.0f);
+	SoundCodex::Get().PlayBGM(SndPath::BGM_Title, -1);
+	SoundCodex::Get().SetBgmVolume(0.5f);
 	SoundCodex::Get().SetSeVolume(1.0f);
 	SoundCodex::Get().SetListenerTransform(0.0f, 0.0f, 0.0f, 0, 0, 1, 0, 1, 0);
 }
@@ -112,6 +112,7 @@ void Game::Update(float dt)
 		{
 			pUI_Title->Reset();
 			SetScene(SCENE_GAME);
+			SoundCodex::Get().PlayBGM(SndPath::BGM_Game, -1);
 		}
 		if (pUI_Title->GetIsFullscreen())
 		{
@@ -127,9 +128,18 @@ void Game::Update(float dt)
 			// Check If Game Over
 			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsTimeUp())
 			{
-				if (pUI_Game->GetIsTimeUp()) GameStatsCodex::SetGameClear();
+				if (pUI_Game->GetIsTimeUp()) 
+				{
+					SoundCodex::Get().PlaySE(SndPath::SE_Game_Victory);
+					GameStatsCodex::SetGameClear();
+				}
+				if (pPlayer->GetIsGameOver())
+				{
+					SoundCodex::Get().PlaySE(SndPath::SE_Game_Over);
+				}
 				pUI_Result->Reset();
 				SetScene(SCENE_RESULT);
+				SoundCodex::Get().PlayBGM(SndPath::BGM_Result, -1);
 			}
 
 			// true loop
@@ -158,7 +168,7 @@ void Game::Update(float dt)
 	case SCENE_RESULT:
 		pUI_Result->Update(dt);
 
-		if (InputCodex::Get().KeyTriggered(KK_SPACE))
+		if (pUI_Result->GetToTitle())
 		{
 			SetScene(SCENE_TITLE);
 
@@ -168,6 +178,7 @@ void Game::Update(float dt)
 			pEffectManager->Reset();
 			pUI_Game->Reset();
 			GameStatsCodex::Reset();
+			SoundCodex::Get().PlayBGM(SndPath::BGM_Title, -1);
 		}
 		break;
 	}	

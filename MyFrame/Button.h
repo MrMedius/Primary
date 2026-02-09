@@ -2,6 +2,8 @@
 #include "Sprite2D.h"
 #include "Channels.h"
 
+#include "SoundCodex.h"
+
 class Button
 {
 public:
@@ -52,7 +54,14 @@ public:
 	bool GetOnChoose(void) const { return OnChoose; }
 	void SetOnClick(bool click) { OnClick = click; }
 	bool GetOnClick(void) const { return OnClick; }
-	void SetOnExecute(bool execute) { OnExecute = execute; }
+	void SetOnExecute(bool execute) 
+	{ 
+		if (execute && !OnExecute)
+		{
+			SoundCodex::Get().PlaySE(SndPath::SE_Button_Click);
+		}
+		OnExecute = execute;
+	}
 	bool GetOnExecute(void) const { return OnExecute; }
 	void Reset(void)
 	{

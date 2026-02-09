@@ -2,6 +2,7 @@
 #include <memory>
 #include <unordered_map>
 #include "Graphics.h"
+#include "Button.h"
 #include "Sprite2D.h"
 #include "Sprite2DPolygon.h"
 #include "Channels.h"
@@ -197,6 +198,8 @@ public:
 			inputNum[i]->SetScale(80.0f, 80.0f);
 			inputNum[i]->LinkTechniques(rg);
 		}
+		// Button
+		backButton = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH - 100.0f, SCREEN_HEIGHT - 100.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Result\\UI_Result_Back.png");
 	}
 	~UI_Result() = default;
 
@@ -209,25 +212,41 @@ public:
 				const float a = 1.0f - std::exp(-k * dt);   // 0..1 the bigger k is, the faster number changes
 				cur += (target - cur) * a;
 			};
-		float rate = 20.0f;
+		float rate = 10.0f;
+		auto SnapIfClose = [](float& cur, float target, float eps = 0.05f)
+			{
+				if (std::fabs(cur - target) <= eps) cur = target;
+			};
+		auto Reached = [](float cur, float target, float eps = 0.05f)
+			{
+				return std::fabs(cur - target) <= eps;
+			};
 
 		// Score
+		if (showPhase >= 0)
 		{
 			SmoothTo(scoreDraw, (float)data.score, rate, dt);
-			const int sd = (int)(scoreDraw + 0.5f);
+			SnapIfClose(scoreDraw, (float)data.score);
 
+			const int sd = (int)(scoreDraw + 0.5f);
 			int v = sd;
 			for (int i = 0; i < scoreDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
 				scoreNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
 			}
+
+			// Next Phase
+			if (Reached(scoreDraw, (float)data.score) && showPhase == 0)
+				showPhase = 1;
 		}
 		// Time
+		if (showPhase >= 1)
 		{
 			SmoothTo(timeDraw, data.lifeTime, rate, dt); // second
-			const int td = (int)(timeDraw + 0.5f);
+			SnapIfClose(timeDraw, data.lifeTime);
 
+			const int td = (int)(timeDraw + 0.5f);
 			// turn second to minute
 			int totalSec = (int)td;
 			int mm = totalSec / 60;
@@ -242,12 +261,30 @@ public:
 			{
 				timeNum[i]->SetFrame(5, 5, digits[i] + 1, 1, 1, 0, false);
 			}
+
+			// Next Phase
+			if (Reached(timeDraw, (float)data.lifeTime) && showPhase == 1)
+				showPhase = 2;
 		}
 		// Enemy
+		if (showPhase >= 2)
 		{
 			SmoothTo(enemyRDraw, enemyRTarget, rate, dt);
-			SmoothTo(enemyGDraw, enemyGTarget, rate, dt);
-			SmoothTo(enemyBDraw, enemyBTarget, rate, dt);
+			SnapIfClose(enemyRDraw, enemyRTarget);
+
+			const float rGate = enemyRTarget * 0.25f;
+			if (enemyRTarget <= 0.0f || enemyRDraw >= rGate)
+			{
+				SmoothTo(enemyGDraw, enemyGTarget, rate, dt);
+				SnapIfClose(enemyGDraw, enemyGTarget);
+			}
+
+			const float gGate = enemyGTarget * 0.25f;
+			if ((enemyRTarget <= 0.0f && enemyGTarget <= 0.0f) || enemyGDraw >= gGate)
+			{
+				SmoothTo(enemyBDraw, enemyBTarget, rate, dt);
+				SnapIfClose(enemyBDraw, enemyBTarget);
+			}
 
 			enemyRBar->SetRingRatio(std::clamp(enemyRDraw, 0.0f, 1.0f));
 			enemyGBar->SetRingRatio(std::clamp(enemyGDraw, 0.0f, 1.0f));
@@ -256,12 +293,33 @@ public:
 			enemyRBar->Update(dt);
 			enemyGBar->Update(dt);
 			enemyBBar->Update(dt);
+
+			// Next Phase
+			if (Reached(enemyRDraw, enemyRTarget) &&
+				Reached(enemyGDraw, enemyGTarget) &&
+				Reached(enemyBDraw, enemyBTarget) && 
+				showPhase >= 2) 
+				showPhase = 3;
 		}
 		// Weapon
+		if (showPhase == 3)
 		{
 			SmoothTo(weaponRDraw, weaponRTarget, rate, dt);
-			SmoothTo(weaponGDraw, weaponGTarget, rate, dt);
-			SmoothTo(weaponBDraw, weaponBTarget, rate, dt);
+			SnapIfClose(weaponRDraw, weaponRTarget);
+
+			const float rGate = weaponRTarget * 0.25f;
+			if (weaponRTarget <= 0.0f || weaponRDraw >= rGate)
+			{
+				SmoothTo(weaponGDraw, weaponGTarget, rate, dt);
+				SnapIfClose(weaponGDraw, weaponGTarget);
+			}
+
+			const float gGate = weaponGTarget * 0.25f;
+			if ((weaponRTarget <= 0.0f && weaponGTarget <= 0.0f) || weaponGDraw >= gGate)
+			{
+				SmoothTo(weaponBDraw, weaponBTarget, rate, dt);
+				SnapIfClose(weaponBDraw, weaponBTarget);
+			}
 
 			weaponRBar->SetRingRatio(std::clamp(weaponRDraw, 0.0f, 1.0f));
 			weaponGBar->SetRingRatio(std::clamp(weaponGDraw, 0.0f, 1.0f));
@@ -273,16 +331,37 @@ public:
 			weaponRBar->Update(dt);
 			weaponGBar->Update(dt);
 			weaponBBar->Update(dt);
+
+			// Next Phase
+			if (Reached(weaponRDraw, weaponRTarget) &&
+				Reached(weaponGDraw, weaponGTarget) &&
+				Reached(weaponBDraw, weaponBTarget) && 
+				showPhase >= 3) 
+				showPhase = 4;
 		}
 		// Combo
+		if (showPhase >= 4)
 		{
 			SmoothTo(comboRDraw, (float)data.rHighestCombo, rate, dt);
-			SmoothTo(comboGDraw, (float)data.gHighestCombo, rate, dt);
-			SmoothTo(comboBDraw, (float)data.bHighestCombo, rate, dt);
+			SnapIfClose(comboRDraw, (float)data.rHighestCombo);
+
+			const float rGate = (float)data.rHighestCombo * 0.25f;
+			if ((float)data.rHighestCombo <= 0.0f || comboRDraw >= rGate)
+			{
+				SmoothTo(comboGDraw, (float)data.gHighestCombo, rate, dt);
+				SnapIfClose(comboGDraw, (float)data.gHighestCombo);
+			}
+
+			const float gGate = (float)data.gHighestCombo * 0.25f;
+			if (((float)data.rHighestCombo <= 0.0f && (float)data.gHighestCombo <= 0.0f) || comboGDraw >= gGate)
+			{
+				SmoothTo(comboBDraw, (float)data.bHighestCombo, rate, dt);
+				SnapIfClose(comboBDraw, (float)data.bHighestCombo);
+			}
+
 			int r = (int)(comboRDraw + 0.5f);
 			int g = (int)(comboGDraw + 0.5f);
 			int b = (int)(comboBDraw + 0.5f);
-
 			r = std::clamp(r, 0, 99);
 			g = std::clamp(g, 0, 99);
 			b = std::clamp(b, 0, 99);
@@ -300,34 +379,56 @@ public:
 			SetDigits2(comboRNum, r);
 			SetDigits2(comboGNum, g);
 			SetDigits2(comboBNum, b);
+
+			// Next Phase
+			if (Reached(comboRDraw, (float)data.rHighestCombo) &&
+				Reached(comboGDraw, (float)data.gHighestCombo) &&
+				Reached(comboBDraw, (float)data.bHighestCombo) &&
+				showPhase == 4) 
+				showPhase = 5;
 		}
 		// Output
+		if (showPhase >= 5)
 		{
 			SmoothTo(outputDraw, (float)data.outputDamage, rate, dt);
-			const int sd = (int)(outputDraw + 0.5f);
+			SnapIfClose(outputDraw, (float)data.outputDamage);
 
+			const int sd = (int)(outputDraw + 0.5f);
 			int v = sd;
 			for (int i = 0; i < outputDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
 				outputNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
 			}
+
+			// Next Phase
+			if (Reached(outputDraw, (float)data.outputDamage) && showPhase == 5) 
+				showPhase = 6;
 		}
 		// Input
+		if (showPhase >= 6)
 		{
 			SmoothTo(inputDraw, (float)data.inputDamage, rate, dt);
-			const int sd = (int)(inputDraw + 0.5f);
+			SnapIfClose(inputDraw, (float)data.inputDamage);
 
+			const int sd = (int)(inputDraw + 0.5f);
 			int v = sd;
 			for (int i = 0; i < inputDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
 				inputNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
 			}
+
+			// Next Phase
+			if (Reached(inputDraw, (float)data.inputDamage) && showPhase == 6)
+				showPhase = 7;
 		}
 		// Total
+		if (showPhase >= 7)
 		{
 			SmoothTo(totalDraw, totalScore, rate, dt);
+			SnapIfClose(totalDraw, totalScore);
+
 			int td = (int)(totalDraw + 0.5f);
 			if (td < 0) td = 0;
 
@@ -337,6 +438,37 @@ public:
 				const int d = v % 10; v /= 10;
 				totalNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
 			}
+
+			// Next Phase
+			if (totalDraw >= totalScore && showPhase == 7) showPhase = 8;
+		}
+		// Button
+		if (showPhase >= 8)
+		{
+			auto& input = InputCodex::Get();
+			XMFLOAT2 mousePos = { (float)input.MouseX(), (float)input.MouseY() };
+
+			const bool mouseChoose = backButton->MouseEnterCheck(mousePos);
+
+			const bool keyClick = input.KeyPressed(KK_ENTER) || input.GP_Pressed(0, Gamepad::GP_A);
+			const bool keyExec = input.KeyReleased(KK_ENTER) || input.GP_Released(0, Gamepad::GP_A);
+
+			backButton->SetOnChoose(mouseChoose || keyClick || keyExec);
+
+			backButton->SetOnClick((mouseChoose && input.MouseLeftPressed()) || keyClick);
+
+			const bool execute = (mouseChoose && input.MouseLeftReleased()) || keyExec;
+
+			if (execute)
+			{
+				backButton->SetOnExecute(true);
+				backButton->SetOnExecute(false);
+				toTitle = true;
+			}
+			else
+			{
+				backButton->SetOnExecute(false);
+			}
 		}
 	}
 
@@ -345,28 +477,41 @@ public:
 		// Background
 		//pBackground->Submit(Chan::ui);
 		// Clear
-		pClear->Submit(Chan::ui);
-		// Score
-		for (auto& n : scoreNum)
+		if (showPhase >= 0)
 		{
-			n->Submit(Chan::ui);
+			pClear->Submit(Chan::ui);
+		}
+		// Score
+		if (showPhase >= 0)
+		{
+			for (auto& n : scoreNum)
+			{
+				n->Submit(Chan::ui);
+			}
 		}
 		// Time
-		pColon->Submit(Chan::ui);
-		for (auto& t : timeNum)
+		if (showPhase >= 1)
 		{
-			t->Submit(Chan::ui);
+			pColon->Submit(Chan::ui);
+			for (auto& t : timeNum)
+			{
+				t->Submit(Chan::ui);
+			}
 		}
 		// Enemy
+		if (showPhase >= 2)
 		{
-			enemyRBar->Submit(Chan::ui);
-			enemyGBar->Submit(Chan::ui);
-			enemyBBar->Submit(Chan::ui);
-			enemyR->Submit(Chan::ui);
-			enemyG->Submit(Chan::ui);
-			enemyB->Submit(Chan::ui);
+			{
+				enemyRBar->Submit(Chan::ui);
+				enemyGBar->Submit(Chan::ui);
+				enemyBBar->Submit(Chan::ui);
+				enemyR->Submit(Chan::ui);
+				enemyG->Submit(Chan::ui);
+				enemyB->Submit(Chan::ui);
+			}
 		}
 		// Weapon
+		if (showPhase >= 3)
 		{
 			weaponRBar->Submit(Chan::ui);
 			weaponGBar->Submit(Chan::ui);
@@ -376,6 +521,7 @@ public:
 			weaponB->Submit(Chan::ui);
 		}
 		// Combo
+		if (showPhase >= 4)
 		{
 			comboR->Submit(Chan::ui);
 			comboG->Submit(Chan::ui);
@@ -394,24 +540,39 @@ public:
 			}
 		}
 		// Output
-		for (auto& n : outputNum)
+		if (showPhase >= 5)
 		{
-			n->Submit(Chan::ui);
+			for (auto& n : outputNum)
+			{
+				n->Submit(Chan::ui);
+			}
 		}
 		// Input
-		for (auto& n : inputNum)
+		if (showPhase >= 6)
 		{
-			n->Submit(Chan::ui);
+			for (auto& n : inputNum)
+			{
+				n->Submit(Chan::ui);
+			}
 		}
 		// Total
-		for (auto& n : totalNum)
+		if (showPhase >= 7)
 		{
-			n->Submit(Chan::ui);
+			for (auto& n : totalNum)
+			{
+				n->Submit(Chan::ui);
+			}
+		}
+		// Button
+		if (showPhase >= 8)
+		{
+			backButton->Submit();
 		}
 	}
 
 	void Reset(void)
 	{
+		showPhase = 0;
 		auto data = GameStatsCodex::Get();
 		// Clear
 		pClear->SetFrame(1, 1, 1, 1, 1, data.gameClear ? 0 : 1);
@@ -455,6 +616,9 @@ public:
 		int totalInt = (int)(totalScore + 0.5f);
 		if (totalInt < 0) totalInt = 0;
 		RebuildTotalDigits(totalScore);
+		// Button
+		backButton->Reset();
+		toTitle = false;
 	}
 
 	void RebuildTotalDigits(int value)
@@ -501,9 +665,15 @@ public:
 		}
 	}
 
+	bool GetToTitle() const { return toTitle; }
+
+private:
+	void SetToTitle(bool state) { toTitle = state; }
+
 private:
 	Graphics& gfx;
 	Rgph::RenderGraph& rg;
+	int showPhase{ 0 };
 	// Background
 	std::unique_ptr<Sprite2D> pBackground;
 	// Clear
@@ -566,4 +736,7 @@ private:
 	float totalScore{ 0.0f };
 	float totalDraw{ 0.0f };
 	std::vector<std::unique_ptr<Sprite2D>> totalNum;
+	// Button
+	bool toTitle{ false };
+	std::unique_ptr<Button> backButton;
 };

@@ -152,6 +152,7 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				e->CalculateHpCurrent(damage); // 体力計算
 				GameStatsCodex::AddOutputDamage(-damage);
 				e->SetBeAttackedType(GetDoAttackType());
+				SoundCodex::Get().PlaySE(SndPath::SE_Enemy_Hurt);
 
 				float dx = e->GetPosition().x - transInfo.position.x;
 				float dz = e->GetPosition().z - transInfo.position.z;
@@ -165,14 +166,14 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				// カメラ効果
 				switch (DoAttackType)
 				{
-				case Player_Attack_1: AttackCameraShake(4, 0.3f, 0.5f); break;
-				case Player_Attack_2: AttackCameraShake(4, 0.5f, 1.0f); break;
-				case Player_Attack_3: AttackCameraShake(6, 1.0f, 1.5f); break;
-				case Player_Skill_1:  AttackCameraShake(8, 2.0f, 3.0f); pCamera->SetScreenFroze(16); break;
-				case Player_Skill_3:  AttackCameraShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8); break;
-				case Player_Fever_1:  AttackCameraShake(8, 3.0f, 4.0f); pCamera->SetScreenFroze(16); break;
-				case Player_Fever_2:  AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(8); break;
-				case Player_Fever_3:  AttackCameraShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(4); break;
+				case Player_Attack_1: AttackCameraShake(4, 0.3f, 0.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.2f, 0.2f, 10); break;
+				case Player_Attack_2: AttackCameraShake(4, 0.5f, 1.0f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.3f, 0.3f, 20); break;
+				case Player_Attack_3: AttackCameraShake(6, 1.0f, 1.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 30); break;
+				case Player_Skill_1:  AttackCameraShake(8, 2.0f, 3.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.8f, 0.8f, 80); break;
+				case Player_Skill_3:  AttackCameraShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8);	 InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.4f, 0.4f, 40);  break;
+				case Player_Fever_1:  AttackCameraShake(8, 3.0f, 4.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 16); break;
+				case Player_Fever_2:  AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(8);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 8);  break;
+				case Player_Fever_3:  AttackCameraShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(4);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 4);  break;
 				}
 			}
 		}
@@ -627,7 +628,7 @@ void Player_AttackState::OnEnter(Player* owner)
 		owner->SetDoAttackType(Player_Attack_1);
 		owner->GetWeaponSlots()->UseWeapon(-10.0f);
 	
-		SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_1, 0, 0.5f);
+		SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_1);
 		break;
 	}
 	case WEAPON_TYPE_1:	mode = 2; packs[mode].FrameTotalCount = 12; owner->SetDoAttackType(Player_Fever_1);	break;
@@ -812,12 +813,12 @@ void Player_AttackState::Update(Player* owner, float dt)
 			if (owner->GetDoAttackType() == Player_Attack_2)
 			{
 				packs[mode].FrameTotalCount = 32;
-				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_2, 0, 0.5f);
+				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_2);
 			}
 			else
 			{
 				packs[mode].FrameTotalCount = 48;
-				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_3, 0, 0.5f);
+				SoundCodex::Get().PlaySE(SndPath::SE_Player_Attack_3);
 			}
 		}
 		else
@@ -994,7 +995,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 		if (currentFrame == 31 && oldFrame != currentFrame) 
 		{
 			owner->SetAttackCollisionOnOff(true);
-			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_1, 0, 0.3f);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_Red);
 		}
 		// 攻撃コリジョンを閉じるフレーム
 		if (currentFrame == 46 && oldFrame != currentFrame) owner->SetAttackCollisionOnOff(false);
@@ -1010,7 +1011,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 		if (currentFrame == 45 && oldFrame != currentFrame) 
 		{
 			owner->CalculateHpCurrent(3.0f);
-			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_2, 0, 0.3f);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_Green);
 		}
 		// VisualPrePos
 		owner->GetVisualPreEffectBg()->SetPosition(pos.x, pos.y + 1.25f, pos.z + 0.1f);
@@ -1022,7 +1023,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 		{
 			owner->SetAttackCollisionOnOff(true);
 			owner->CalculateMoveVelocity((owner->GetIsFlip() ? -1.0f : 1.0f) * owner->GetMoveAccel() * 60.0f, 0.1f, 0.0f);
-			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_3, 0, 0.3f);
+			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_Blue);
 		}
 		// 攻撃コリジョンを閉じるフレーム
 		if (currentFrame == 43 && oldFrame != currentFrame) owner->SetAttackCollisionOnOff(false);
@@ -1056,6 +1057,9 @@ void Player_HurtState::OnEnter(Player* owner)
 	owner->SetCollisionOnOff(false); // コリジュンを閉じる
 
 	owner->GetResourceBars()->ResetCombo();
+
+	SoundCodex::Get().PlaySE(SndPath::SE_Player_Hurt);
+	InputCodex::Get().GP_SetVibrationPulse(owner->boundPadIndex, 0.8f, 0.8f, 30);
 }
 
 void Player_HurtState::OnExit(Player* owner)

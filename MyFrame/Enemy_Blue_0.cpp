@@ -164,6 +164,7 @@ void Enemy_Blue_0_AttackState::OnEnter(Enemy_Blue_0* owner)
 {
 	// set anime
 	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), false);
+	FrameNoOld = 0;
 	// make sure no repeated hits
 	HaveHit = false;
 }
@@ -182,18 +183,24 @@ void Enemy_Blue_0_AttackState::Update(Enemy_Blue_0* owner, float dt)
 
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
-	if (currentFrame == 12)  owner->SetAttackCollisionOnOff(true);
+	if (currentFrame == 12 && FrameNoOld != currentFrame)
+	{
+		owner->SetAttackCollisionOnOff(true);
+		SoundCodex::Get().PlaySE(SndPath::SE_Enemy_Attack_Blue_0);
+	}
 	// 攻撃コリジョンを閉じるフレーム
-	if (currentFrame == 18) owner->SetAttackCollisionOnOff(false);
+	if (currentFrame == 18 && FrameNoOld != currentFrame) owner->SetAttackCollisionOnOff(false);
 
 	// jump attack
-	if (currentFrame == 10) owner->CalculateMoveVelocity(0.0f, 0.15f, 0.0f);
+	if (currentFrame == 10 && FrameNoOld != currentFrame) owner->CalculateMoveVelocity(0.0f, 0.5f, 0.0f);
 
 	// 攻撃当たる判定
 	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
 
 	// 終わったら攻撃フラグを閉じる
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
+
+	FrameNoOld = currentFrame;
 }
 
 
@@ -252,6 +259,8 @@ void Enemy_Blue_0_DeathState::OnEnter(Enemy_Blue_0* owner)
 	owner->CalculateMoveVelocity(a * b, a, 0.0f);
 	// set collision
 	owner->SetCollisionSize({ 3.0f, 3.3f, 2.0f });
+
+	SoundCodex::Get().PlaySE(SndPath::SE_Enemy_Dead_Blue_0);
 }
 
 void Enemy_Blue_0_DeathState::OnExit(Enemy_Blue_0* owner)

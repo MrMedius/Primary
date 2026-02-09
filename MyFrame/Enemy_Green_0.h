@@ -111,6 +111,7 @@ public:
 	std::string GetName() const override { return ENEMY_STATE[ENEMY_ATTACK]; }
 private:
 	SpriteAnimeInfo pack{ 12, 8, 1, 24 };
+	unsigned int FrameNoOld{ 0 };
 	bool HaveHit{ false };
 };
 

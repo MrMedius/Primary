@@ -196,9 +196,13 @@ void Enemy_Red_0_AttackState::Update(Enemy_Red_0* owner, float dt)
 
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
-	if (currentFrame == 8)  owner->SetAttackCollisionOnOff(true);
+	if (currentFrame == 8 && FrameNoOld != currentFrame)
+	{
+		owner->SetAttackCollisionOnOff(true);
+		SoundCodex::Get().PlaySE(SndPath::SE_Enemy_Attack_Red_0);
+	}
 	// 攻撃コリジョンを閉じるフレーム
-	if (currentFrame == 20) owner->SetAttackCollisionOnOff(false);
+	if (currentFrame == 20 && FrameNoOld != currentFrame) owner->SetAttackCollisionOnOff(false);
 
 	// dash attack
 	if (currentFrame < 20 && FrameNoOld != currentFrame)
@@ -206,7 +210,6 @@ void Enemy_Red_0_AttackState::Update(Enemy_Red_0* owner, float dt)
 		float a = 20.0f;
 		float accel = ease_in_back<float>(currentFrame / a, 7 / a, 1.5f) * 0.1f;
 		owner->CalculateMoveVelocity(AttackVec.x * accel, 0.005f, AttackVec.z * accel);
-		FrameNoOld = currentFrame;
 	}
 	
 	// 攻撃当たる判定
@@ -214,6 +217,8 @@ void Enemy_Red_0_AttackState::Update(Enemy_Red_0* owner, float dt)
 
 	// 終わったら攻撃フラグを閉じる
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
+
+	FrameNoOld = currentFrame;
 }
 
 
@@ -262,6 +267,8 @@ void Enemy_Red_0_DeathState::OnEnter(Enemy_Red_0* owner)
 {
 	// set anime
 	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, !owner->GetIsFlip(), false);
+
+	SoundCodex::Get().PlaySE(SndPath::SE_Enemy_Dead_Red_0);
 }
 
 void Enemy_Red_0_DeathState::Update(Enemy_Red_0* owner, float dt)

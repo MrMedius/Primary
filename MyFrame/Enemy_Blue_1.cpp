@@ -169,6 +169,7 @@ void Enemy_Blue_1_AttackState::OnEnter(Enemy_Blue_1* owner)
 {
 	// set anime
 	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, owner->GetIsFlip(), false);
+	FrameNoOld = 0;
 	// make sure no repeated hits
 	HaveHit = false;
 }
@@ -188,15 +189,17 @@ void Enemy_Blue_1_AttackState::Update(Enemy_Blue_1* owner, float dt)
 
 	int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
 	// 攻撃コリジョンを開けるフレーム
-	if (currentFrame == 17)  owner->SetAttackCollisionOnOff(true);
+	if (currentFrame == 17 && FrameNoOld != currentFrame) owner->SetAttackCollisionOnOff(true);
 	// 攻撃コリジョンを閉じるフレーム
-	if (currentFrame == 19) owner->SetAttackCollisionOnOff(false);
+	if (currentFrame == 19 && FrameNoOld != currentFrame) owner->SetAttackCollisionOnOff(false);
 
 	// 攻撃当たる判定
 	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-2.0f, { 0.5f ,0.1f,0.5f });
 
 	// 終わったら攻撃フラグを閉じる
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);
+
+	FrameNoOld = currentFrame;
 }
 
 

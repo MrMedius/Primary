@@ -97,6 +97,27 @@ public:
     bool GP_LT_Triggered(int idx) const noexcept { return Pad(idx).LT_Triggered(); }
     bool GP_RT_Triggered(int idx) const noexcept { return Pad(idx).RT_Triggered(); }
 
+    void GP_SetVibration(int idx, float leftMotor, float rightMotor) noexcept
+    {
+        Pad(idx).SetVibration(leftMotor, rightMotor);
+    }
+    void GP_SetVibrationPulse(int idx, float leftMotor, float rightMotor, int frames) noexcept
+    {
+        Pad(idx).SetVibrationPulse(leftMotor, rightMotor, frames);
+    }
+    void GP_SetVibrationAll(float leftMotor, float rightMotor) noexcept
+    {
+        for (int i = 0; i < kMaxPads; ++i)
+            if (pads[i].IsConnected())
+                pads[i].SetVibration(leftMotor, rightMotor);
+    }
+    void GP_SetVibrationPulseAll(float leftMotor, float rightMotor, int frames) noexcept
+    {
+        for (int i = 0; i < kMaxPads; ++i)
+            if (pads[i].IsConnected())
+                pads[i].SetVibrationPulse(leftMotor, rightMotor, frames);
+    }
+
 private:
     // Injection API (called from Window/WndProc)
     void ClearAll() noexcept;

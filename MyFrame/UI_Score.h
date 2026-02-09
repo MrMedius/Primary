@@ -3,6 +3,7 @@
 #include "Sprite2D.h"
 #include "Channels.h"
 #include "GameStatsCodex.h"
+#include "SoundCodex.h"
 
 class UI_Score
 {
@@ -32,6 +33,11 @@ public:
 
 		SmoothTo(scoreDraw, scoreCumulated, 20.0f, dt);
 		const int sd = (int)(scoreDraw + 0.5f);
+		if (sd != prevScoreDraw) 
+		{
+			SoundCodex::Get().PlaySE(SndPath::SE_Score_Roll);
+			prevScoreDraw = sd;
+		}
 
 		int v = sd;
 		for (int i = 0; i < digitsNum; i++)
@@ -57,4 +63,5 @@ private:
 	static constexpr int digitsNum = 8;
 	std::vector<std::unique_ptr<Sprite2D>> num;
 	float scoreDraw{ 0 }; // 描く用のスコア
+	int prevScoreDraw = 0;
 };
