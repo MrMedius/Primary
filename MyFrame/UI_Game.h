@@ -55,6 +55,20 @@ public:
 				pCombo[i][j]->LinkTechniques(rg);
 			}
 		}
+		// CountDown
+		{
+			pCd_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Bars.png" });
+			pCd_Frame->SetPosition(50.0f, 300.0f);
+			pCd_Frame->SetScale(50.0f, 200.0f);
+			pCd_Frame->SetFrame(2, 1, 1, 1, 1, 0, false);
+			pCd_Frame->LinkTechniques(rg);
+			pCd_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Bars.png" });
+			pCd_Bar->SetPosition(50.0f, 300.0f);
+			pCd_Bar->SetRotation(180.0f);
+			pCd_Bar->SetScale(50.0f, 200.0f);
+			pCd_Bar->SetFrame(2, 1, 2, 1, 1, 0, false);
+			pCd_Bar->LinkTechniques(rg);
+		}
 	}
 	~UI_Game() = default;
 
@@ -118,6 +132,12 @@ public:
 		}
 		// Score
 		pScore->Update();
+		// CountDown
+		{
+			cdRemain -= dt;
+			if (cdRemain <= 0.0f) isTimeUp = true;
+			pCd_Bar->SetRatioOffset(1.0f, cdRemain / cdTotal);
+		}
 	}
 
 	void Submit(void)
@@ -146,7 +166,25 @@ public:
 		}
 		// Score
 		pScore->Submit();
+		// CountDown
+		pCd_Frame->Submit(Chan::ui);
+		pCd_Bar->Submit(Chan::ui);
 	}
+
+	void Reset(void)
+	{
+		// Score
+		pScore->Reset();
+		// CountDown
+		cdRemain = cdTotal;
+		isTimeUp = false;
+	}
+
+	bool GetIsTimeUp() const 
+	{
+		return isTimeUp;
+	}
+
 private:
 	// PlayerHpBar_Frame
 	std::unique_ptr<Sprite2D> pPlayerHpBar_Frame;
@@ -164,4 +202,11 @@ private:
 	std::vector<std::vector<std::unique_ptr<Sprite2D>>> pCombo;
 	// Score
 	Score* pScore;
+
+	// CountDown
+	static constexpr float cdTotal = 120.0f;
+	float cdRemain{ 10.0f };
+	std::unique_ptr<Sprite2D> pCd_Frame;
+	std::unique_ptr<Sprite2D> pCd_Bar;
+	bool isTimeUp{ false };
 };

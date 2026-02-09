@@ -125,7 +125,8 @@ void Game::Update(float dt)
 		if (!Pause)
 		{
 			// Check If Game Over
-			if (pPlayer->GetIsGameOver())	SetScene(SCENE_RESULT);
+			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsTimeUp())
+				SetScene(SCENE_RESULT);
 
 			// true loop
 			auto playerPos = pPlayer->GetPosition();
@@ -135,10 +136,11 @@ void Game::Update(float dt)
 				light.Update(dt, playerPos);
 
 				pPlayer->Update(dt);
-				pUI_Game->Update(dt);
 
 				if (!pPlayer->GetIsChange())
 				{
+					pUI_Game->Update(dt);
+
 					pEnvironmentManager->Update(dt);
 					pEnemyManager->Update(dt, pPlayer->GetPosition());
 					pEffectManager->Update(dt);
@@ -159,6 +161,7 @@ void Game::Update(float dt)
 			pEnemyManager->Reset();
 			pEnvironmentManager->Reset();
 			pEffectManager->Reset();
+			pUI_Game->Reset();
 		}
 		break;
 	}	

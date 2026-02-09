@@ -635,6 +635,7 @@ LRESULT Window::HandleMsg( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam ) noex
 		if (ri.header.dwType == RIM_TYPEMOUSE &&
 			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
 		{
+			WakeCursor();
 			input.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
 		}
 		break;
