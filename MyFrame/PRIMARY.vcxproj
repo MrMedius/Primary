@@ -326,6 +326,7 @@
     <ClInclude Include="Blender.h" />
     <ClInclude Include="BlurOutlineDrawingPass.h" />
     <ClInclude Include="Gamepad.h" />
+    <ClInclude Include="GameStatsCodex.h" />
     <ClInclude Include="InGameRenderGraph.h" />
     <ClInclude Include="BufferClearPass.h" />
     <ClInclude Include="BufferResource.h" />
@@ -345,7 +346,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Player_ResourceSystem.h" />
     <ClInclude Include="RingParamsCbuf.h" />
-    <ClInclude Include="Score.h" />
+    <ClInclude Include="UI_Score.h" />
     <ClInclude Include="SoundCodex.h" />
     <ClInclude Include="SoundPaths.h" />
     <ClInclude Include="Sprite.h" />

@@ -189,7 +189,7 @@ void Enemy_Green_0_AttackState::Update(Enemy_Green_0* owner, float dt)
 	// 攻撃コリジョンを閉じるフレーム
 	if (currentFrame == 16) owner->SetAttackCollisionOnOff(false);
 	// 攻撃当たる判定
-	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
+	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 1.0f ,0.2f,1.0f });
 
 	// 終わったら攻撃フラグを閉じる
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);

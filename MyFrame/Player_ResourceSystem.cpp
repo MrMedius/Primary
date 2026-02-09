@@ -1,6 +1,5 @@
 #include "Player_ResourceSystem.h"
-//#include "Enemy.h"
-
+#include "GameStatsCodex.h"
 
 /*------------------------------------------------------------------------------
    Weapon
@@ -114,6 +113,14 @@ void WeaponSlots::SetNewWeapon(WEAPON_TYPE_ID type)
 		slot--;
 
 	Slots[slot + 1].SetWeapon(type, 100.0f);
+
+	GameStatsCodex::AddTotalWeapon();
+	switch (type)
+	{
+	case WEAPON_TYPE_1:	GameStatsCodex::AddRedWeapon();	  break;
+	case WEAPON_TYPE_2:	GameStatsCodex::AddGreenWeapon(); break;
+	case WEAPON_TYPE_3:	GameStatsCodex::AddBlueWeapon();  break;
+	}
 }
 
 void WeaponSlots::UseWeapon(float offset)
@@ -197,6 +204,13 @@ void ResourceBars::AttackSettlement(int enemyType, bool isFever)
 {
 	AttackCombos[enemyType - 1]++;
 	AttackComboCountdowns[enemyType - 1] = ComboCountdown;
+
+	switch (enemyType)
+	{
+	case 1:	GameStatsCodex::ReportRedCombo(AttackCombos[enemyType - 1]);	break;
+	case 2:	GameStatsCodex::ReportGreenCombo(AttackCombos[enemyType - 1]);	break;
+	case 3:	GameStatsCodex::ReportBlueCombo(AttackCombos[enemyType - 1]);	break;
+	}
 
 	if (!isFever)
 	{

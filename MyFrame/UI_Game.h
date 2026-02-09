@@ -6,19 +6,17 @@
 #include "Sprite2DPolygon.h"
 #include "UI_ResourceSlot.h"
 #include "UI_WeaponSlot.h"
+#include "UI_Score.h"
 #include "Channels.h"
-#include "Score.h"
 
 class UI_Game
 {
 public:
-	UI_Game(Graphics& gfx, Rgph::RenderGraph& rg, Score* score)
-		:
-		pScore(score)
+	UI_Game(Graphics& gfx, Rgph::RenderGraph& rg)
 	{
 		// PlayerHpBar_Frame
 		{
-			pPlayerHpBar_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Player_HP_Bar.png" });
+			pPlayerHpBar_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Bar.png" });
 			pPlayerHpBar_Frame->SetPosition(210.0f, SCREEN_HEIGHT - 120.0f);
 			pPlayerHpBar_Frame->SetScale(400.0f, 200.0f);
 			pPlayerHpBar_Frame->SetFrame(2, 1, 1, 1, 1, 0, false);
@@ -26,7 +24,7 @@ public:
 		}
 		// PlayerHpBar_Bar
 		{
-			pPlayerHpBar_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Player_HP_Bar.png" });
+			pPlayerHpBar_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Bar.png" });
 			pPlayerHpBar_Bar->SetPosition(210.0f, SCREEN_HEIGHT - 120.0f);
 			pPlayerHpBar_Bar->SetScale(400.0f, 200.0f);
 			pPlayerHpBar_Bar->SetFrame(2, 1, 2, 1, 1, 0, false);
@@ -51,18 +49,21 @@ public:
 			comboNum[i].resize(maxDigit, 0);
 			for (size_t j = 0;j < maxDigit;j++)
 			{
-				pCombo[i].push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Number.png" }));
+				pCombo[i].push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number.png" }));
 				pCombo[i][j]->LinkTechniques(rg);
 			}
 		}
+		// Score
+		pScore = std::make_unique<UI_Score>(gfx, rg);
 		// CountDown
 		{
-			pCd_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Bars.png" });
+			cdRemain = cdTotal;
+			pCd_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Bars.png" });
 			pCd_Frame->SetPosition(50.0f, 300.0f);
 			pCd_Frame->SetScale(50.0f, 200.0f);
 			pCd_Frame->SetFrame(2, 1, 1, 1, 1, 0, false);
 			pCd_Frame->LinkTechniques(rg);
-			pCd_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Bars.png" });
+			pCd_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Bars.png" });
 			pCd_Bar->SetPosition(50.0f, 300.0f);
 			pCd_Bar->SetRotation(180.0f);
 			pCd_Bar->SetScale(50.0f, 200.0f);
@@ -131,7 +132,7 @@ public:
 			}
 		}
 		// Score
-		pScore->Update();
+		pScore->Update(dt);
 		// CountDown
 		{
 			cdRemain -= dt;
@@ -178,6 +179,7 @@ public:
 		// CountDown
 		cdRemain = cdTotal;
 		isTimeUp = false;
+		pCd_Bar->SetRatioOffset(1.0f, 1.0f);
 	}
 
 	bool GetIsTimeUp() const 
@@ -201,12 +203,11 @@ private:
 	std::vector<bool> comboActive;
 	std::vector<std::vector<std::unique_ptr<Sprite2D>>> pCombo;
 	// Score
-	Score* pScore;
-
+	std::unique_ptr<UI_Score> pScore;
 	// CountDown
 	static constexpr float cdTotal = 120.0f;
-	float cdRemain{ 10.0f };
+	float cdRemain{ 0.0f };
+	bool isTimeUp{ false };
 	std::unique_ptr<Sprite2D> pCd_Frame;
 	std::unique_ptr<Sprite2D> pCd_Bar;
-	bool isTimeUp{ false };
 };

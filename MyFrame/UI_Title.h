@@ -23,15 +23,15 @@ public:
 	UI_Title(Graphics& gfx, Rgph::RenderGraph& rg)
 	{
 		// Background
-		pBackground = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game_Title.png" });
+		pBackground = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Title\\UI_Title.png" });
 		pBackground->SetPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 		pBackground->SetScale(SCREEN_WIDTH, SCREEN_HEIGHT);
 		pBackground->SetFrame(1, 1, 1, 1, 1, 0, false);
 		pBackground->LinkTechniques(rg);
 		// Buttons
-		pButtons[Title_Button_Start] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 190.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_Start.png");
-		pButtons[Title_Button_Fullscreen] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 120.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_Fullscreen.png");
-		pButtons[Title_Button_End] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\Game_UI\\UI_Title_End.png");
+		pButtons[Title_Button_Start] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 190.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Title\\UI_Title_Start.png");
+		pButtons[Title_Button_Fullscreen] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 120.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Title\\UI_Title_Fullscreen.png");
+		pButtons[Title_Button_End] = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 50.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Title\\UI_Title_End.png");
 	}
 	~UI_Title() = default;
 

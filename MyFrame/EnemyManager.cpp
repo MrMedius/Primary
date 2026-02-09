@@ -4,6 +4,7 @@
 
 #include "InputCodex.h"
 #include "SoundCodex.h"
+#include "GameStatsCodex.h"
 
 #include "Enemy_Red_0.h"
 #include "Enemy_Red_1.h"
@@ -13,11 +14,10 @@
 #include "Enemy_Blue_1.h"
 //#include "EnemyBoss.h"
 
-EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg, Score* score)
+EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	:
 	gfx(gfx),
-	rg(rg),
-	pScore(score)
+	rg(rg)
 {
 	auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
 	MapEdgeLeftAndRight = mapSize.x / 2.0f;
@@ -134,7 +134,14 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 			enemies[i]->Update(dt);
 		else
 		{
-			pScore->CalculateScore(enemies[i]->GetKillScore());
+			GameStatsCodex::AddTotalDefeat();
+			switch (enemies[i]->GetEnemyType())
+			{
+			case ENEMY_TYPE_RED:	GameStatsCodex::AddRedDefeat();		break;
+			case ENEMY_TYPE_GREEN:	GameStatsCodex::AddGreenDefeat();	break;
+			case ENEMY_TYPE_BLUE:	GameStatsCodex::AddBlueDefeat();	break;
+			}
+			GameStatsCodex::AddScore(enemies[i]->GetKillScore());
 			enemies.erase(enemies.begin() + i);
 		}
 	}

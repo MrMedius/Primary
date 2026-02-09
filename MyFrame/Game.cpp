@@ -15,6 +15,7 @@
 #include "InputCodex.h"
 #include "SoundCodex.h"
 #include "ObjectCodex.h"
+#include "GameStatsCodex.h"
 
 namespace dx = DirectX;
 
@@ -33,14 +34,13 @@ Game::Game(const std::string& commandLine)
 	cameras.LinkTechniques(gameRG);
 
 	// UI
-	pScore = std::make_unique<Score>(wnd.Gfx(), gameRG);
 	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG);
-	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG, pScore.get());
+	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG);
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	// Objects
 	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
-	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG, pScore.get());
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG);
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 
 	// Sound Base Setting
@@ -126,7 +126,11 @@ void Game::Update(float dt)
 		{
 			// Check If Game Over
 			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsTimeUp())
+			{
+				if (pUI_Game->GetIsTimeUp()) GameStatsCodex::SetGameClear();
+				pUI_Result->Reset();
 				SetScene(SCENE_RESULT);
+			}
 
 			// true loop
 			auto playerPos = pPlayer->GetPosition();
@@ -139,6 +143,7 @@ void Game::Update(float dt)
 
 				if (!pPlayer->GetIsChange())
 				{
+					GameStatsCodex::Update(dt);
 					pUI_Game->Update(dt);
 
 					pEnvironmentManager->Update(dt);
@@ -151,7 +156,7 @@ void Game::Update(float dt)
 		}
 		break;
 	case SCENE_RESULT:
-		pUI_Result->Update();
+		pUI_Result->Update(dt);
 
 		if (InputCodex::Get().KeyTriggered(KK_SPACE))
 		{
@@ -162,6 +167,7 @@ void Game::Update(float dt)
 			pEnvironmentManager->Reset();
 			pEffectManager->Reset();
 			pUI_Game->Reset();
+			GameStatsCodex::Reset();
 		}
 		break;
 	}	
@@ -202,6 +208,7 @@ void Game::Draw()
 		cameras.SpawnWindow(wnd.Gfx());
 		light.SpawnControlWindow();
 		SoundCodex::Get().SpawnWindow();
+		GameStatsCodex::SpawnWindow();
 
 		gameRG.RenderWindows(wnd.Gfx());
 #endif

@@ -4,6 +4,7 @@
 
 #include "InputCodex.h"
 #include "SoundCodex.h"
+#include "GameStatsCodex.h"
 
 static void Normalize2D(float& x, float& z) noexcept
 {
@@ -149,6 +150,7 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				e->SetIsHurt(true);	// UŒ‚‚³‚ê‚½ó‘Ô‚É‘JˆÚ
 				e->SetWasHurt(true);
 				e->CalculateHpCurrent(damage); // ‘Ì—ÍŒvŽZ
+				GameStatsCodex::AddOutputDamage(-damage);
 				e->SetBeAttackedType(GetDoAttackType());
 
 				float dx = e->GetPosition().x - transInfo.position.x;

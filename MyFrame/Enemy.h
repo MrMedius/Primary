@@ -3,6 +3,8 @@
 #include "Sprite3D.h"
 #include "Player.h"
 
+#include "GameStatsCodex.h"
+
 // “Gó‘Ô‚ÌID
 enum ENEMY_STATE_ID {
 	ENEMY_IDLE,
@@ -76,12 +78,12 @@ public:
 			{
 				AttackTarget->SetIsHurt(true);
 				AttackTarget->CalculateHpCurrent(damage);
+				GameStatsCodex::AddInputDamage(-damage);
 
 				float dx = AttackTarget->GetPosition().x - transInfo.position.x;
 				float dz = AttackTarget->GetPosition().z - transInfo.position.z;
 				float angle = atan2f(dx, dz);
 				AttackTarget->CalculateMoveVelocity(sinf(angle) * repel.x, repel.y, cosf(angle) * repel.z); // Œ‚‘Þ‚·‚é
-				//AttackTarget->CalculateMoveVelocity(IsFlip ? -repel : repel, 0.0f, 0.0f);
 				return true;
 			}
 		}

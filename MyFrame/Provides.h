@@ -24,7 +24,7 @@ struct RingParamsTag
     struct value_type
     {
         float startAngleDeg{ 0.0f };
-        float endAngleDeg{ 360.0f };
+        float endAngleDeg{ 359.0f };
         float ratio{ 1.0f };
         float padding;
     };

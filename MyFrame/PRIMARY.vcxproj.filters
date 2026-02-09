@@ -28,9 +28,6 @@
     <Filter Include="Header Files\Framework">
       <UniqueIdentifier>{cfb9cbab-184f-4318-82d4-055e081e1557}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tool">
-      <UniqueIdentifier>{cdc9966f-a965-4341-b93a-08314f78cea9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Framework">
       <UniqueIdentifier>{c76930d3-6478-4ac6-8de5-34fd4c942f46}</UniqueIdentifier>
     </Filter>
@@ -204,6 +201,9 @@
     </Filter>
     <Filter Include="Source Files\Object\Character\Player">
       <UniqueIdentifier>{dfa29992-e1f5-4453-82dc-d84dd1514dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tool">
+      <UniqueIdentifier>{cdc9966f-a965-4341-b93a-08314f78cea9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -875,7 +875,7 @@
     <ClInclude Include="UI_WeaponSlot.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Score.h">
+    <ClInclude Include="UI_Score.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="UI_Title.h">
@@ -1018,6 +1018,9 @@
     </ClInclude>
     <ClInclude Include="Gamepad.h">
       <Filter>Header Files\Framework\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStatsCodex.h">
+      <Filter>Header Files\Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ public:
 	{
 		// WeaponSlot_Bg
 		{
-			Bg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot.png" });
+			Bg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Weapon_Slot.png" });
 			Bg->SetPosition(SCREEN_WIDTH - 260.0f, SCREEN_HEIGHT - 50.0f);
 			Bg->SetScale(520.0f, 520.0f);
 			Bg->SetFrameAuto(8, 8, 1, 64, 1, 0, false, true);
@@ -19,7 +19,7 @@ public:
 		}
 		// WeaponSlot_Chosen
 		{
-			Chosen = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Chosen.png" });
+			Chosen = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Weapon_Slot_Chosen.png" });
 			Chosen->SetFrameAuto(29, 7, 30, 29 * 4, 1, 0, false, true);
 			Chosen->LinkTechniques(rg);
 		}
@@ -30,14 +30,14 @@ public:
 		for (int i = 0; i < totalIcon; i++)
 		{
 			// WeaponSlot_Icon
-			Icon.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Icon.png" }));
+			Icon.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Weapon_Slot_Icon.png" }));
 			Icon[i]->SetPosition(baseX + gap * i, baseY);
 			Icon[i]->SetScale(iconSize, iconSize);
 			Icon[i]->SetFrameAuto(29, 21, 1, 29 * 21, 1, 20.0f, false, true);
 			Icon[i]->LinkTechniques(rg);
 			// WeaponSlot_Icon_Bg
 			float scale = 1.2f;
-			IconBg.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Weapon_Slot_Icon_Bg.png" }));
+			IconBg.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Weapon_Slot_Icon_Bg.png" }));
 			IconBg[i]->SetPosition(baseX + gap * i, baseY);
 			IconBg[i]->SetScale(iconSize * scale, iconSize * scale);
 			IconBg[i]->SetFrameAuto(29, 21, 1, 29 * 21, 1, 20.0f, false, true);

@@ -193,7 +193,7 @@ void Enemy_Red_1_AttackState::Update(Enemy_Red_1* owner, float dt)
 	if (currentFrame == 19) owner->SetAttackCollisionOnOff(false);
 
 	// UŒ‚“–‚½‚é”»’è
-	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-1.0f, { 0.5f ,0.1f,0.5f });
+	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-3.0f, { 0.5f ,0.1f,0.5f });
 
 	// I‚í‚Á‚½‚çUŒ‚ƒtƒ‰ƒO‚ð•Â‚¶‚é
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);

@@ -16,7 +16,7 @@ public:
 
 		// ResourceSlot_Bg
 		{
-			Bg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Bg.png" });
+			Bg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Bg.png" });
 			Bg->SetPosition(posX, posY);
 			Bg->SetScale(size, size);
 			Bg->SetFrameAuto(10, 10, 1, 100, 0, 20.0f, false, true);
@@ -25,7 +25,7 @@ public:
 		// ResourceSlot_Icon_Bg
 		{
 			float scale = 0.9f;
-			IconBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Icon_Bg.png" });
+			IconBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Icon_Bg.png" });
 			IconBg->SetPosition(posX, posY);
 			IconBg->SetScale(size * scale, size * scale);
 			IconBg->SetFrame(3, 1, count + 1, 1, 1, 0, false);
@@ -33,7 +33,7 @@ public:
 		}
 		// ResourceSlot_Icon
 		{
-			Icon = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Icon.png" });
+			Icon = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Icon.png" });
 			Icon->SetPosition(posX, posY);
 			Icon->SetScale(size / 2.2f, size / 2.2f);
 			Icon->SetFrame(3, 1, count + 1, 1, 1, 0, false);
@@ -41,7 +41,7 @@ public:
 		}
 		// ResourceSlot_Bar
 		{
-			Bar = std::make_unique<Sprite2DPolygon>(gfx, std::vector<std::string>{ "asset\\Images\\Game_UI\\Resource_Slot_Bar.png" }, 30);
+			Bar = std::make_unique<Sprite2DPolygon>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Bar.png" });
 			Bar->SetPosition(posX, posY);
 			Bar->SetScale(size, size);
 			Bar->SetFrameAuto(8, 3, 17 - count * 8, 2, 0, 20.0f, false, true);

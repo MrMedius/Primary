@@ -14,7 +14,6 @@
 #include "EnemyManager.h"
 #include "EffectManager.h"
 
-#include "Score.h"
 #include "UI_Game.h"
 #include "UI_Title.h"
 #include "UI_Result.h"
@@ -66,7 +65,6 @@ private:
 	std::unique_ptr<EnemyManager> pEnemyManager;
 	std::unique_ptr<EffectManager> pEffectManager;
 	// UI
-	std::unique_ptr<Score> pScore;
 	std::unique_ptr<UI_Title> pUI_Title;
 	std::unique_ptr<UI_Game> pUI_Game;
 	std::unique_ptr<UI_Result> pUI_Result;
