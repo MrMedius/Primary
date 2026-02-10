@@ -4,7 +4,6 @@
 #include <cassert>
 #include "BindableCommon.h"
 #include "BindableCodex.h"
-#include <assimp/scene.h>
 #include "Material.h"
 
 using namespace Bind;

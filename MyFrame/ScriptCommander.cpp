@@ -75,7 +75,8 @@ void ScriptCommander::Publish( std::string path ) const
 	fs::create_directory( path );
 	// copy executable
 	fs::copy_file( R"(..\x64\Release\hw3d.exe)",path + R"(\hw3d.exe)",fs::copy_options::overwrite_existing );
-	// copy assimp ini
+	// copy 
+	// ini
 	fs::copy_file( "imgui_default.ini",path + R"(\imgui_default.ini)",fs::copy_options::overwrite_existing );
 	// copy all dlls
 	for( auto& p : fs::directory_iterator( "" ) )
