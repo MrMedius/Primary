@@ -30,6 +30,7 @@ enum Object_Type_Tag
 	effect_Player_Remote_Attack_2 = 0x201,
 	effect_Player_Remote_Attack_3 = 0x202,
 	effect_Player_Hit = 0x212,
+	effect_Player_EnergyAbsorb = 0x213,
 };
 
 class ObjectBase

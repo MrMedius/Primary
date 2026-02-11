@@ -111,6 +111,13 @@ void CameraContainer::Submit(size_t channels) const
 	}
 }
 
+void CameraContainer::Reset()
+{
+	FollowTarget = { 0.0f, 0.0f, 0.0f };
+	cameras[0]->SetPos(FollowTarget);
+}
+
+
 void CameraContainer::SpawnWindow(Graphics& gfx)
 {
 	if (ImGui::Begin("Cameras"))

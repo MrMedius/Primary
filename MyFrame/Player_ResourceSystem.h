@@ -115,6 +115,7 @@ public:
 			EnergyCumulated.push_back(0.0f);
 			EnergyDraw.push_back(0.0f);
 			EnergyFull.push_back(false);
+			EnergyChanged.push_back(false);
 			AttackCombos.push_back(0);
 			AttackComboCountdowns.push_back(0.0f);
 		}
@@ -137,6 +138,19 @@ public:
 	{ 
 		EnergyFull[i] = v; 
 	}
+	bool GetEnergyChangedAt(size_t i)
+	{
+		if (EnergyChanged[i])
+		{
+			EnergyChanged[i] = false;
+			return true;
+		}
+		return false;
+	}
+	void SetEnergyChangedAt(size_t i, bool v)
+	{
+		EnergyChanged[i] = v;
+	}
 	std::vector<unsigned int> GetAttackCombos(void) const
 	{
 		return AttackCombos;
@@ -155,6 +169,7 @@ public:
 		std::fill(EnergyCumulated.begin(),		 EnergyCumulated.end(),		  0.0f);
 		std::fill(EnergyDraw.begin(),			 EnergyDraw.end(),			  0.0f);
 		std::fill(EnergyFull.begin(),			 EnergyFull.end(),			  false);
+		std::fill(EnergyChanged.begin(),		 EnergyChanged.end(),		  false);
 		std::fill(AttackCombos.begin(),			 AttackCombos.end(),		  0u);
 		std::fill(AttackComboCountdowns.begin(), AttackComboCountdowns.end(), 0.0f);
 	}
@@ -166,6 +181,7 @@ private:
 	std::vector<float> EnergyCumulated;
 	std::vector<float> EnergyDraw;
 	std::vector<bool> EnergyFull;
+	std::vector<bool> EnergyChanged;
 	std::vector<unsigned int> AttackCombos;
 	std::vector<float> AttackComboCountdowns;
 };

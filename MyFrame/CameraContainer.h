@@ -20,6 +20,7 @@ public:
 	~CameraContainer();
 	void Update(float dt, DirectX::XMFLOAT3 pos, Window* wnd) noexcept;
 	void Submit(size_t channels) const;
+	void Reset();
 	void SpawnWindow(Graphics& gfx);
 	void LinkTechniques(Rgph::RenderGraph& rg);
 	Camera& GetActiveCamera();

@@ -205,6 +205,9 @@
     <Filter Include="Source Files\Tool">
       <UniqueIdentifier>{cdc9966f-a965-4341-b93a-08314f78cea9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Object\Effects">
+      <UniqueIdentifier>{9ed97cac-c70d-457f-acac-3e50d4a93acd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui_widgets.cpp">
@@ -527,6 +530,9 @@
     </ClCompile>
     <ClCompile Include="Gamepad.cpp">
       <Filter>Source Files\Framework\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect_Player_EnergyAbsorb.cpp">
+      <Filter>Source Files\Object\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1021,6 +1027,9 @@
     </ClInclude>
     <ClInclude Include="GameStatsCodex.h">
       <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect_Player_EnergyAbsorb.h">
+      <Filter>Header Files\Object\Effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

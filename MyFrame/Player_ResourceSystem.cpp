@@ -225,7 +225,7 @@ void ResourceBars::AttackSettlement(int enemyType, bool isFever)
 	if (!isFever)
 	{
 		// add the same amount of energy as the number of combos
-		EnergyCumulated[enemyType - 1] += (AttackCombos[enemyType - 1] > 10 ? 10 : AttackCombos[enemyType - 1]) * 5;
+		EnergyCumulated[enemyType - 1] += (AttackCombos[enemyType - 1] > 10 ? 10 : AttackCombos[enemyType - 1]) * 2;
 		if (EnergyCumulated[enemyType - 1] > 100.0f) EnergyCumulated[enemyType - 1] = 100.0f;
 
 		// when the number of combos is a multiple of 5, add energy

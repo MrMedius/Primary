@@ -84,7 +84,7 @@ public:
 		auto EnergyFull = player->GetResourceBars()->GetEnergyFull();
 		for (size_t i = 0; i < slotNum; i++)
 		{
-			pResourceSlot[i]->Update(dt, EnergyDrawParameters[i], EnergyFull[i]);
+			pResourceSlot[i]->Update(dt, EnergyDrawParameters[i], EnergyFull[i], player->GetResourceBars()->GetEnergyChangedAt(i));
 			if (EnergyFull[i]) player->GetResourceBars()->SetEnergyFullAt(i, false);
 		}
 		// WeaponSlot

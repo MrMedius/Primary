@@ -12,22 +12,20 @@ public:
 		count = cnt;
 		float posX = SCREEN_WIDTH - 360.0f + static_cast<float>(count) * 140.0f;
 		float posY = 550.0f;
-		float size = 150.0f;
 
 		// ResourceSlot_Bg
 		{
 			Bg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Bg.png" });
 			Bg->SetPosition(posX, posY);
-			Bg->SetScale(size, size);
+			Bg->SetScale(baseSize, baseSize);
 			Bg->SetFrameAuto(10, 10, 1, 100, 0, 20.0f, false, true);
 			Bg->LinkTechniques(rg);
 		}
 		// ResourceSlot_Icon_Bg
 		{
-			float scale = 0.9f;
 			IconBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Icon_Bg.png" });
 			IconBg->SetPosition(posX, posY);
-			IconBg->SetScale(size * scale, size * scale);
+			IconBg->SetScale(iconBgSize, iconBgSize);
 			IconBg->SetFrame(3, 1, count + 1, 1, 1, 0, false);
 			IconBg->LinkTechniques(rg);
 		}
@@ -35,7 +33,7 @@ public:
 		{
 			Icon = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Icon.png" });
 			Icon->SetPosition(posX, posY);
-			Icon->SetScale(size / 2.2f, size / 2.2f);
+			Icon->SetScale(baseSize / 2.2f, baseSize / 2.2f);
 			Icon->SetFrame(3, 1, count + 1, 1, 1, 0, false);
 			Icon->LinkTechniques(rg);
 		}
@@ -43,7 +41,7 @@ public:
 		{
 			Bar = std::make_unique<Sprite2DPolygon>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Resource_Slot_Bar.png" });
 			Bar->SetPosition(posX, posY);
-			Bar->SetScale(size, size);
+			Bar->SetScale(baseSize, baseSize);
 			Bar->SetFrameAuto(8, 3, 17 - count * 8, 2, 0, 20.0f, false, true);
 			Bar->SetRingRange(30.0f, 330.0f);
 			Bar->LinkTechniques(rg);
@@ -52,30 +50,53 @@ public:
 	}
 	~UI_ResourceSlot() = default;
 
-	void Update(float dt, float ratio, bool full)
+	void Update(float dt, float ratio, bool full, bool changed)
 	{
 		// ResourceSlot_Bg
 		Bg->Update(dt);
-		// ResourceSlot_Bar
-		Bar->Update(dt);
-		switch (barState)
+		// ResourceSlot_Icon_Bg
 		{
-		case IDLE:
-			Bar->SetRingRatio(ratio);
-			if (full)
+			const float minSize = baseSize * scaleIconBg;
+
+			if (changed)
 			{
-				barState = FULL;
-				Bar->SetFrameAuto(8, 3, 17 - count * 8, 7, 0, 20.0f, false, false);
+				iconBgSize = baseSize * 1.1f;
+				IconBg->SetScale(iconBgSize, iconBgSize);
 			}
-			break;
-		case FULL:
-			if (Bar->ClipFinished())
+			else if (iconBgSize > minSize)
 			{
-				barState = IDLE;
-				Bar->SetFrameAuto(8, 3, 17 - count * 8, 2, 0, 20.0f, false, true);
+				iconBgSize -= dt * 100.0f;
+				if (iconBgSize < minSize) iconBgSize = minSize;
+				IconBg->SetScale(iconBgSize, iconBgSize);
+			}
+			else if (iconBgSize != minSize)
+			{
+				iconBgSize = minSize;
+				IconBg->SetScale(iconBgSize, iconBgSize);
+			}
+		}
+		// ResourceSlot_Bar
+		{
+			Bar->Update(dt);
+			switch (barState)
+			{
+			case IDLE:
 				Bar->SetRingRatio(ratio);
+				if (full)
+				{
+					barState = FULL;
+					Bar->SetFrameAuto(8, 3, 17 - count * 8, 7, 0, 20.0f, false, false);
+				}
+				break;
+			case FULL:
+				if (Bar->ClipFinished())
+				{
+					barState = IDLE;
+					Bar->SetFrameAuto(8, 3, 17 - count * 8, 2, 0, 20.0f, false, true);
+					Bar->SetRingRatio(ratio);
+				}
+				break;
 			}
-			break;
 		}
 	}
 	void Submit(void)
@@ -90,9 +111,12 @@ public:
 		Bar->Submit(Chan::ui);
 	}
 private:
+	float baseSize = 150.0f;
 	// ResourceSlot_Bg
 	std::unique_ptr<Sprite2D> Bg;
 	// ResourceSlot_Icon_Bg
+	float scaleIconBg = 0.9f;
+	float iconBgSize = baseSize * scaleIconBg;
 	std::unique_ptr<Sprite2D> IconBg;
 	// ResourceSlot_Icon
 	std::unique_ptr<Sprite2D> Icon;

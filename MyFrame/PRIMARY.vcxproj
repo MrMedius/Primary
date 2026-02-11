@@ -190,6 +190,7 @@
     <ClCompile Include="DynamicTexture.cpp" />
     <ClCompile Include="DynamicTexture.h" />
     <ClCompile Include="EffectManager.cpp" />
+    <ClCompile Include="Effect_Player_EnergyAbsorb.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Enemy_Blue_1.cpp" />
     <ClCompile Include="Enemy_Green_1.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="CubeWireframe.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />
+    <ClInclude Include="Effect_Player_EnergyAbsorb.h" />
     <ClInclude Include="Effect_Player_Hit.h" />
     <ClInclude Include="Effect_Player_Remote_2.h" />
     <ClInclude Include="Effect_Player_Remote_3.h" />

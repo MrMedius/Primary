@@ -133,6 +133,7 @@ public:
 	{
 		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
 		SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
+		MoveVelocity = { 0.0f,0.0f,0.0f };
 		ResetHpCurrent();
 		SetIsDeath(false);
 		SetIsGameOver(false);

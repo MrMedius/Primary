@@ -17,6 +17,7 @@ private:
 	Rgph::RenderGraph& rg;
 
 	std::vector<Effect*> effects;
+	int playerRemote{ 0 };
 
 	Player* pPlayer;
 	Attack_Type_Tag playerAttackType{ Attack_Type_None };

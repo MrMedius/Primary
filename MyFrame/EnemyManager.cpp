@@ -142,7 +142,9 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 			case ENEMY_TYPE_BLUE:	GameStatsCodex::AddBlueDefeat();	break;
 			}
 			GameStatsCodex::AddScore(enemies[i]->GetKillScore());
+
 			enemies.erase(enemies.begin() + i);
+			--i;
 		}
 	}
 	//if (pEnemyBoss->IsActive()) pEnemyBoss->Update();

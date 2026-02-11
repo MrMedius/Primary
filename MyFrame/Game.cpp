@@ -173,6 +173,7 @@ void Game::Update(float dt)
 			SetScene(SCENE_TITLE);
 
 			pPlayer->OnEnable();
+			cameras.Reset();
 			pEnemyManager->Reset();
 			pEnvironmentManager->Reset();
 			pEffectManager->Reset();
