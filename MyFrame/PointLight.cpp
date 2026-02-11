@@ -12,7 +12,7 @@ PointLight::PointLight(Graphics& gfx, DirectX::XMFLOAT3 pos, float radius)
 		pos,
 		{ 1.0f,1.0f,1.0f },
 		{ 1.0f,1.0f,1.0f },
-		0.5f,
+		0.75f,
 		0.3f,
 		0.03f,
 		0.00001f,

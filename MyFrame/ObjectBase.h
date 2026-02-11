@@ -16,6 +16,7 @@ enum Object_Type_Tag
 	environment_Block = 0x101,
 	environment_BlockTiled = 0x102,
 	environment_BlockInvisible = 0x103,
+	environment_BlockFog = 0x104,
 	// Character
 	character_Player = 0x999,
 	character_Enemy_Red_0  = 0x010,

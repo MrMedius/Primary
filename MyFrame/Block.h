@@ -3,7 +3,6 @@
 #include "RenderGraph.h"
 #include "CubeBlock.h"
 #include "Channels.h"
-#include "Surface.h"
 
 class Block : public Environment
 {
