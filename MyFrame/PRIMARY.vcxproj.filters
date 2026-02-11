@@ -393,9 +393,6 @@
     <ClCompile Include="CameraContainer.cpp">
       <Filter>Source Files\Framework\Graphics\Drawable\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="SolidSphere.cpp">
-      <Filter>Source Files\Framework\Graphics\Drawable\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteUVCbuf.cpp">
       <Filter>Source Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
     </ClCompile>
@@ -533,6 +530,9 @@
     </ClCompile>
     <ClCompile Include="Effect_Player_EnergyAbsorb.cpp">
       <Filter>Source Files\Object\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidSphere.cpp">
+      <Filter>Source Files\Framework\Graphics\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -803,9 +803,6 @@
     <ClInclude Include="TexturePreprocessor.h">
       <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
     </ClInclude>
-    <ClInclude Include="SolidSphere.h">
-      <Filter>Header Files\Framework\Graphics\Drawable\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="ModelWindow.h">
       <Filter>Header Files\Framework\Graphics\Drawable\Model</Filter>
     </ClInclude>
@@ -1030,6 +1027,12 @@
     </ClInclude>
     <ClInclude Include="Effect_Player_EnergyAbsorb.h">
       <Filter>Header Files\Object\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidSphere.h">
+      <Filter>Header Files\Framework\Graphics\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="LambertianTransparentPass.h">
+      <Filter>Header Files\Framework\Graphics\GraphPass\PassLib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

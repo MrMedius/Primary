@@ -14,6 +14,7 @@ namespace Bind
 			Write,
 			Mask,
 			DepthOff,
+			DepthOnly,
 			DepthReversed,
 			DepthFirst, // for skybox render
 		};
@@ -45,6 +46,13 @@ namespace Bind
 			{
 				dsDesc.DepthEnable = FALSE;
 				dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			}
+			else if (mode == Mode::DepthOnly)
+			{
+				dsDesc.DepthEnable = TRUE;
+				dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+				dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+				dsDesc.StencilEnable = FALSE;
 			}
 			else if( mode == Mode::DepthReversed )
 			{

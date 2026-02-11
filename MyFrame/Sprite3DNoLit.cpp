@@ -24,7 +24,7 @@ Sprite3DNoLit::Sprite3DNoLit(Graphics& gfx, std::vector<std::string> paths)
 
     {
         Technique shade("Shade", Chan::main);
-        Step only("lambertian");
+        Step only("lambertianTrans");
 
         only.AddBindable(dynTex);
         only.AddBindable(Sampler::Resolve(gfx));

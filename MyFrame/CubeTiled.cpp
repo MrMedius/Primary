@@ -82,7 +82,7 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 	{
 		Technique shade("Shade", Chan::main);
 		{
-			Step top("lambertian");
+			Step top("lambertianTrans");
 
 			top.AddBindable(Sampler::Resolve(gfx));
 

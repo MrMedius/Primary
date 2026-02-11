@@ -341,6 +341,7 @@
     <ClInclude Include="InputCodex.h" />
     <ClInclude Include="InUserInterfaceRenderGraph.h" />
     <ClInclude Include="Effect_Player_Remote_1.h" />
+    <ClInclude Include="LambertianTransparentPass.h" />
     <ClInclude Include="Provides.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="ObjectBase.h" />

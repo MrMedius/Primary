@@ -11,6 +11,7 @@
 #include "ShadowMappingPass.h"
 #include "LambertianPass.h"
 #include "SkyboxPass.h"
+#include "LambertianTransparentPass.h"
 #include "OutlineMaskGenerationPass.h"
 #include "BlurOutlineDrawingPass.h"
 #include "HorizontalBlurPass.h"
@@ -52,8 +53,15 @@ namespace Rgph
 			AppendPass( std::move( pass ) );
 		}
 		{
-			auto pass = std::make_unique<OutlineMaskGenerationPass>(gfx, "outlineMask");
+			auto pass = std::make_unique<LambertianTransparentPass>(gfx, "lambertianTrans");
+			pass->SetSinkLinkage("shadowMap", "shadowMap.map");
+			pass->SetSinkLinkage("renderTarget", "skybox.renderTarget");
 			pass->SetSinkLinkage("depthStencil", "skybox.depthStencil");
+			AppendPass(std::move(pass));
+		}
+		{
+			auto pass = std::make_unique<OutlineMaskGenerationPass>(gfx, "outlineMask");
+			pass->SetSinkLinkage("depthStencil", "lambertianTrans.depthStencil");
 			AppendPass(std::move(pass));
 		}
 		// setup blur constant buffers
@@ -100,7 +108,7 @@ namespace Rgph
 		}
 		{
 			auto pass = std::make_unique<VerticalBlurPass>( "vertical",gfx );
-			pass->SetSinkLinkage( "renderTarget","skybox.renderTarget" );
+			pass->SetSinkLinkage( "renderTarget","lambertianTrans.renderTarget" );
 			pass->SetSinkLinkage( "depthStencil","outlineMask.depthStencil" );
 			pass->SetSinkLinkage( "scratchIn","horizontal.scratchOut" );
 			pass->SetSinkLinkage( "kernel","$.blurKernel" );
@@ -233,11 +241,13 @@ namespace Rgph
 	{
 		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindMainCamera(cam);
 		dynamic_cast<SkyboxPass&>(FindPassByName("skybox")).BindMainCamera(cam);
+		dynamic_cast<LambertianTransparentPass&>(FindPassByName("lambertianTrans")).BindMainCamera(cam);
 	}
 	void Rgph::InGameRenderGraph::BindShadowCamera(Camera& cam)
 	{
 		dynamic_cast<ShadowMappingPass&>(FindPassByName("shadowMap")).BindShadowCamera(cam);
 		dynamic_cast<LambertianPass&>(FindPassByName( "lambertian")).BindShadowCamera(cam);
+		dynamic_cast<LambertianTransparentPass&>(FindPassByName("lambertianTrans")).BindShadowCamera(cam);
 	}
 	void Rgph::InGameRenderGraph::DumpShadowMap(Graphics& gfx, const std::string& path)
 	{
