@@ -18,7 +18,6 @@
 #include "UI_Title.h"
 #include "UI_Result.h"
 
-
 class Game
 {
 private:

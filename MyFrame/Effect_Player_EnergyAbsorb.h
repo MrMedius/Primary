@@ -11,8 +11,7 @@
 class Effect_Player_EnergyAbsorb : public Effect
 {
 public:
-    Effect_Player_EnergyAbsorb(Graphics& gfxIn, Rgph::RenderGraph& rg, XMFLOAT3 position, int type,
-        Object_Type_Tag tag = effect_Player_EnergyAbsorb)
+    Effect_Player_EnergyAbsorb(Graphics& gfxIn, Rgph::RenderGraph& rg, XMFLOAT3 position, int type, Object_Type_Tag tag = effect_Player_EnergyAbsorb)
         :
         Effect(tag),
         gfx(gfxIn)

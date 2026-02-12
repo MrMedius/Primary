@@ -219,6 +219,7 @@ void Game::Draw()
 		// imgui windows
 		cameras.SpawnWindow(wnd.Gfx());
 		light.SpawnControlWindow();
+		pEnvironmentManager->SpawnWindow();
 		SoundCodex::Get().SpawnWindow();
 		GameStatsCodex::SpawnWindow();
 

@@ -5,6 +5,7 @@
 #include "BlockTiled.h"
 #include "BlockInvisible.h"
 #include "BlockFog.h"
+#include "FireflyField.h"
 
 EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	:
@@ -27,6 +28,8 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 		XMFLOAT3{ 0.0f, 0.0f, -fieldSize.z / 2.0f - shortSide / 2.0f }, XMFLOAT3{ longSide, 100.0f, shortSide }, true));
 
 	environments.push_back(ObjectCodex::Acquire<BlockFog>(environment_BlockFog, gfx, rg, XMFLOAT3(0.0f, -300.0f, 0.0f), XMFLOAT3(3000.0f, 500.0f, 3000.0f)));
+
+	environments.push_back(ObjectCodex::Acquire<FireflyField>(environment_FireflyField, gfx, rg));
 }
 
 void EnvironmentManager::Update(float dt)
@@ -50,5 +53,16 @@ void EnvironmentManager::Reset(void)
 	for (int i = 0;i < environments.size();i++)
 	{
 		environments[i]->OnEnable();
+	}
+}
+
+void EnvironmentManager::SpawnWindow()
+{
+	for (int i = 0;i < environments.size();i++)
+	{
+		if (auto* a = dynamic_cast<FireflyField*>(environments[i]))
+		{
+			a->SpawnWindow();
+		}
 	}
 }
