@@ -199,7 +199,7 @@ public:
 			inputNum[i]->LinkTechniques(rg);
 		}
 		// Button
-		backButton = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH - 100.0f, SCREEN_HEIGHT - 100.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Result\\UI_Result_Back.png");
+		backButton = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH - 100.0f, SCREEN_HEIGHT - 100.0f), XMFLOAT2(100.0f, 50.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Result\\UI_Result_Back.png");
 	}
 	~UI_Result() = default;
 

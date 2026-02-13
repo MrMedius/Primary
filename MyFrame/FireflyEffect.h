@@ -25,8 +25,8 @@ public:
         DirectX::XMFLOAT3 rangeMin = { -500.f, -200.f, -500.f };
         DirectX::XMFLOAT3 rangeMax = { 500.f,  200.f,  500.f };
 
-        float sizeMin = 2.0f;
-        float sizeMax = 6.0f;
+        float sizeMin = 1.0f;
+        float sizeMax = 3.0f;
 
         // wiggle
         float ampMin = 10.0f;
@@ -40,7 +40,7 @@ public:
         float blinkMin = 0.25f;
         float blinkPow = 1.6f;
 
-        DirectX::XMFLOAT4 color = { 0.1f, 0.1f, 0.1f, 1.0f };
+        DirectX::XMFLOAT4 color = { 0.1f, 0.1f, 0.1f, 0.5f };
     };
 
 public:

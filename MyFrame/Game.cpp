@@ -98,15 +98,17 @@ int Game::RunGame()
 
 void Game::Update(float dt)
 {
+#ifdef _DEBUG
 	if( InputCodex::Get().KeyTriggered( VK_F11 ) )
 	{
 		wnd.ToggleFullscreen();
 	}
+#endif
 
 	switch (Scene)
 	{
 	case SCENE_TITLE:
-		pUI_Title->Update();
+		pUI_Title->Update(dt);
 
 		if (pUI_Title->GetIsStart())
 		{

@@ -72,6 +72,6 @@ public:
 private:
 	std::unique_ptr<FireflyEffect> visualPre;
 	Player* pPlayer;
-	static constexpr XMFLOAT4 base = { 0.1f,0.1f,0.1f,1.0f };
+	static constexpr XMFLOAT4 base = { 0.1f,0.1f,0.1f,0.5f };
 	XMFLOAT4 input{ base };
 };

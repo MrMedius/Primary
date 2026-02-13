@@ -7,8 +7,9 @@
 class Button
 {
 public:
-	Button(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT2 pos, XMFLOAT2 size, int numU, int numV, int idleNum, int chooseNum, int clickNum, std::string path)
+	Button(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT2 pos, XMFLOAT2 size, XMFLOAT2 check, int numU, int numV, int idleNum, int chooseNum, int clickNum, std::string path)
 		:
+		checkField(check),
 		NumU{ numU },
 		NumV{ numV },
 		IdleNum{ idleNum },
@@ -37,12 +38,12 @@ public:
 	bool MouseEnterCheck(XMFLOAT2 mousePos)
 	{
 		auto pos = visualPre->GetPosition();
-		auto size = visualPre->GetScale();
+		auto size = XMFLOAT2{ checkField.x / 2.0f, checkField.y / 2.0f };
 
-		float right = pos.x + size.x / 2;	// âE
-		float left =  pos.x - size.x / 2;	// ç∂
-		float down =  pos.y + size.y / 2;	// â∫
-		float up =	  pos.y - size.y / 2;	// è„
+		float right = pos.x + size.x; // âE
+		float left =  pos.x - size.x; // ç∂
+		float down =  pos.y + size.y; // â∫
+		float up =	  pos.y - size.y; // è„
 
 		bool onEnter = false;
 		if (mousePos.x < right && mousePos.x > left && mousePos.y > up && mousePos.y < down)
@@ -69,8 +70,14 @@ public:
 		OnClick = false;
 		OnExecute = false;
 	}
+	XMFLOAT2 GetPosition()
+	{
+		auto pos = visualPre->GetPosition();
+		return { pos.x ,pos.y };
+	}
 private:
 	std::unique_ptr<Sprite2D> visualPre;
+	XMFLOAT2 checkField{ 0.0f,0.0f };
 	int NumU{ 0 };
 	int NumV{ 0 };
 	int IdleNum{ 0 };
