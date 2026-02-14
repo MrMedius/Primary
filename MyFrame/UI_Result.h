@@ -39,7 +39,7 @@ public:
 		// Score
 		for (int i = 0; i < scoreDigitsNum; i++)
 		{
-			scoreNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+			scoreNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 			scoreNum[i]->SetPosition(800.0f - 30.0f * i, 120.0f);
 			scoreNum[i]->SetScale(50.0f, 50.0f);
 			scoreNum[i]->LinkTechniques(rg);
@@ -53,7 +53,7 @@ public:
 			pColon->LinkTechniques(rg);
 			for (int i = 0; i < timeDigitsNum; i++)
 			{
-				timeNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+				timeNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 				float x = 1100.0f - 30.0f * (i >= 2 ? (i + 1) : i);
 				float y = 120.0f;
 				timeNum[i]->SetPosition(x, y);
@@ -168,15 +168,15 @@ public:
 			comboB->LinkTechniques(rg);
 			for (int i = 0; i < comboDigitsNum; i++)
 			{
-				comboRNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+				comboRNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 				comboRNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY);
 				comboRNum[i]->SetScale(50.0f, 50.0f);
 				comboRNum[i]->LinkTechniques(rg);
-				comboGNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+				comboGNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 				comboGNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY + offset);
 				comboGNum[i]->SetScale(50.0f, 50.0f);
 				comboGNum[i]->LinkTechniques(rg);
-				comboBNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+				comboBNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 				comboBNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY + offset * 2.0f);
 				comboBNum[i]->SetScale(50.0f, 50.0f);
 				comboBNum[i]->LinkTechniques(rg);
@@ -185,7 +185,7 @@ public:
 		// Output
 		for (int i = 0; i < outputDigitsNum; i++)
 		{
-			outputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+			outputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 			outputNum[i]->SetPosition(1100.0f - 50.0f * i, 300.0f);
 			outputNum[i]->SetScale(80.0f, 80.0f);
 			outputNum[i]->LinkTechniques(rg);
@@ -193,7 +193,7 @@ public:
 		// Input
 		for (int i = 0; i < inputDigitsNum; i++)
 		{
-			inputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" }));
+			inputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
 			inputNum[i]->SetPosition(1100.0f - 50.0f * i, 400.0f);
 			inputNum[i]->SetScale(80.0f, 80.0f);
 			inputNum[i]->LinkTechniques(rg);
@@ -233,7 +233,7 @@ public:
 			for (int i = 0; i < scoreDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
-				scoreNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+				scoreNum[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
 			}
 
 			// Next Phase
@@ -259,7 +259,7 @@ public:
 			int digits[4] = { s0, s1, m0, m1 };
 			for (int i = 0; i < timeDigitsNum; i++)
 			{
-				timeNum[i]->SetFrame(5, 5, digits[i] + 1, 1, 1, 0, false);
+				timeNum[i]->SetFrame(5, 2, digits[i] + 1, 1, 1, 0, false);
 			}
 
 			// Next Phase
@@ -372,7 +372,7 @@ public:
 					{
 						const int d = value % 10;
 						value /= 10;
-						digits[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+						digits[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
 					}
 				};
 
@@ -398,7 +398,7 @@ public:
 			for (int i = 0; i < outputDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
-				outputNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+				outputNum[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
 			}
 
 			// Next Phase
@@ -416,7 +416,7 @@ public:
 			for (int i = 0; i < inputDigitsNum; i++)
 			{
 				const int d = v % 10; v /= 10;
-				inputNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+				inputNum[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
 			}
 
 			// Next Phase
@@ -436,7 +436,7 @@ public:
 			for (size_t i = 0; i < totalNum.size(); i++)
 			{
 				const int d = v % 10; v /= 10;
-				totalNum[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+				totalNum[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
 			}
 
 			// Next Phase
@@ -654,7 +654,7 @@ public:
 			const float x = baseX + sx * t;
 			const float y = baseY + sy * t;
 
-			auto sp = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number.png" });
+			auto sp = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" });
 
 			sp->SetPosition(x, y);
 			sp->SetRotation(angleDeg);

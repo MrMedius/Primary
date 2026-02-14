@@ -17,7 +17,7 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 	layout.Append(dvL::Position3D).
 		   Append(dvL::Normal).
 		   Append(dvL::Texture2D);
-
+	
 	Dvtx::VertexBuffer vertices{ std::move(layout) };
 
 	vertices.Resize(24u);
@@ -102,7 +102,7 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 			top.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 1u));
 
 			top.AddBindable(Rasterizer::Resolve(gfx, false));
-			top.AddBindable(Bind::Blender::Resolve(gfx, true));
+			top.AddBindable(Blender::Resolve(gfx, true));
 
 			top.AddBindable(tcb);
 			top.AddBindable(ftcb);
@@ -156,23 +156,23 @@ CubeTiled::CubeTiled(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numTiled)
 		}
 		AddTechnique(std::move(outline));
 		// shadow map technique
-		{
-			Technique map{ "ShadowMap",Chan::shadow,true };
-			{
-				Step draw("shadowMap");
+		//{
+		//	Technique map{ "ShadowMap",Chan::shadow,true };
+		//	{
+		//		Step draw("shadowMap");
 
-				auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
-				draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
-				draw.AddBindable(std::move(pvs));
+		//		auto pvs = VertexShader::Resolve(gfx, "Solid_VS.cso");
+		//		draw.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
+		//		draw.AddBindable(std::move(pvs));
 
-				draw.AddBindable(NullPixelShader::Resolve(gfx));
+		//		draw.AddBindable(NullPixelShader::Resolve(gfx));
 
-				draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
+		//		draw.AddBindable(std::make_shared<TransformCbuf>(gfx));
 
-				map.AddStep(std::move(draw));
-			}
-			AddTechnique(std::move(map));
-		}
+		//		map.AddStep(std::move(draw));
+		//	}
+		//	AddTechnique(std::move(map));
+		//}
 	}
 }
 
@@ -213,7 +213,7 @@ void CubeTiled::Update(float dt, const XMFLOAT3& centerWorld)
 
 		if (FT.t >= 1.0f)
 		{
-			// start Recover automaticly after Expend
+			// start Recover automatically after Expend
 			StartRecover(FT.mode);
 		}
 		break;

@@ -385,9 +385,9 @@ void Player::BuildInputSnapshot()
 
 	// -----------------------
 	// Dash / Attack / Skill / SlotL / SlotR
-	// dash: Space || Pad B
+	// dash: Space || Shift || Pad B
 	inputSnap.dash =
-		input.KeyTriggered(KK_SPACE) ||
+		input.KeyTriggered(KK_SPACE) || input.KeyTriggered(KK_LEFTSHIFT) ||
 		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && input.GP_Triggered(boundPadIndex, Gamepad::GP_B));
 	// attack: MouseLeft || J || Pad X
 	inputSnap.attack =

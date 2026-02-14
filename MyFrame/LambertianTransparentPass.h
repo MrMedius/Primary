@@ -8,7 +8,6 @@
 #include "ShadowCameraCbuf.h"
 #include "ShadowSampler.h"
 #include "Sampler.h"
-#include "Channels.h"
 
 namespace Rgph
 {

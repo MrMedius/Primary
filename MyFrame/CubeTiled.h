@@ -46,7 +46,7 @@ private:
         int mode = 0;
         // animation control
         XMFLOAT3 center = { 0,0,0 };
-        float duration = 2.00f;           // total transition time (second)
+        float duration = 2.0f;           // total transition time (second)
         float interval = 1.0f / duration; // every step of transition progress
         float t = 0.0f;                   // transition progress
         float maxRadius = 20.0f;          // each increase in radius
@@ -58,7 +58,7 @@ private:
         XMFLOAT3 colorBase = { 1.0f,1.0f,1.0f };
         XMFLOAT3 colorFrom = colorBase;
         XMFLOAT3 colorTo = colorBase;
-        // mode 1
+        // noise
         float noiseScale = 0.1f;
         float noiseAmp = 200.0f;
     } FT;

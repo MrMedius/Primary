@@ -12,7 +12,7 @@ public:
 	{
 		for (int i = 0; i < digitsNum; i++)
 		{
-			num.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number.png" }));
+			num.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number_No_2.png" }));
 			num[i]->SetPosition(250.0f - 30.0f * i, 50.0f);
 			num[i]->SetScale(50.0f, 50.0f);
 			num[i]->LinkTechniques(rg);
@@ -43,7 +43,7 @@ public:
 		for (int i = 0; i < digitsNum; i++)
 		{
 			const int d = v % 10; v /= 10;
-			num[i]->SetFrame(5, 5, d + 1, 1, 1, 0, false);
+			num[i]->SetFrame(5, 2, d, 1, 1, 0, false);
 		}
 	}
 

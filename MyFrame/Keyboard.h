@@ -204,8 +204,8 @@ typedef enum Keyboard_Keys_tag
     KK_NUMLOCK = 0x90,
     KK_SCROLL = 0x91,
 
-    KK_LEFTSHIFT = 0xa0,
-    KK_RIGHTSHIFT = 0xa1,
+    KK_LEFTSHIFT = 0x10,
+    KK_RIGHTSHIFT = 0x10,
     KK_LEFTCONTROL = 0xa2,
     KK_RIGHTCONTROL = 0xa3,
     KK_LEFTALT = 0xa4,

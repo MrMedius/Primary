@@ -49,7 +49,7 @@ public:
 			comboNum[i].resize(maxDigit, 0);
 			for (size_t j = 0;j < maxDigit;j++)
 			{
-				pCombo[i].push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number.png" }));
+				pCombo[i].push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number_No_2.png" }));
 				pCombo[i][j]->LinkTechniques(rg);
 			}
 		}
@@ -126,7 +126,7 @@ public:
 						posX = 200.0f + countdown * (20.0f - j * 5.0f);
 						pCombo[i][j]->SetPosition(posX, posY);
 						pCombo[i][j]->SetScale(size, size);
-						pCombo[i][j]->SetFrame(5, 5, comboNum[i][j] + 1, 1, 1, 0, false);
+						pCombo[i][j]->SetFrame(5, 2, comboNum[i][j] + 1, 1, 1, 0, false);
 					}
 				}
 			}

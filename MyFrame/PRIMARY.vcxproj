@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="DynamicCubeTexture.cpp" />
     <ClCompile Include="DynamicVertexBuffer.cpp" />
     <ClCompile Include="FireflyEffect.cpp" />
     <ClCompile Include="FogVolume.cpp" />
@@ -218,6 +219,9 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Player_ResourceSystem.cpp" />
     <ClCompile Include="RingParamsCbuf.cpp" />
+    <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SkyboxObj.h" />
+    <ClCompile Include="SkyboxTransitionCbuf.cpp" />
     <ClCompile Include="SoundCodex.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Sprite2D.cpp" />
@@ -304,6 +308,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="DynamicCubeTexture.h" />
     <ClInclude Include="DynamicVertexBuffer.h" />
     <ClInclude Include="FireflyEffect.h" />
     <ClInclude Include="FireflyField.h" />
@@ -357,6 +362,8 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Player_ResourceSystem.h" />
     <ClInclude Include="RingParamsCbuf.h" />
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SkyboxTransitionCbuf.h" />
     <ClInclude Include="UI_Score.h" />
     <ClInclude Include="SoundCodex.h" />
     <ClInclude Include="SoundPaths.h" />

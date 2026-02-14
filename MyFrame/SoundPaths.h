@@ -21,9 +21,9 @@ namespace SndPath
     inline constexpr const char* SE_Enemy_Attack_Red_0   = "asset\\Sounds\\SE\\Enemy_Attack_Red_0.wav";
     inline constexpr const char* SE_Enemy_Attack_Green_0 = "asset\\Sounds\\SE\\Enemy_Attack_Green_0.wav";
     inline constexpr const char* SE_Enemy_Attack_Blue_0  = "asset\\Sounds\\SE\\Enemy_Attack_Blue_0.wav";
-    inline constexpr const char* SE_Enemy_Dead_Red_0    = "asset\\Sounds\\SE\\Enemy_Dead_Red_0.mp3";
-    inline constexpr const char* SE_Enemy_Dead_Green_0  = "asset\\Sounds\\SE\\Enemy_Dead_Green_0.mp3";
-    inline constexpr const char* SE_Enemy_Dead_Blue_0   = "asset\\Sounds\\SE\\Enemy_Dead_Blue_0.mp3";
+    inline constexpr const char* SE_Enemy_Dead_Red_0    = "asset\\Sounds\\SE\\Enemy_Dead_Red_0.wav";
+    inline constexpr const char* SE_Enemy_Dead_Green_0  = "asset\\Sounds\\SE\\Enemy_Dead_Green_0.wav";
+    inline constexpr const char* SE_Enemy_Dead_Blue_0   = "asset\\Sounds\\SE\\Enemy_Dead_Blue_0.wav";
 
     inline constexpr const char* SE_Button_Click = "asset\\Sounds\\SE\\Button_Click.wav";
     inline constexpr const char* SE_Score_Roll   = "asset\\Sounds\\SE\\Score_Roll.wav";

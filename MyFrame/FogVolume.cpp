@@ -54,6 +54,7 @@ FogVolume::FogVolume(Graphics& gfx, DirectX::XMFLOAT3 size)
 			only.AddBindable(std::make_shared<Bind::CachingPixelConstantBufferEX>(gfx, buf, 2u));
 
 			only.AddBindable(Rasterizer::Resolve(gfx, false));
+			only.AddBindable(Blender::Resolve(gfx, true));
 
 			only.AddBindable(tcb);
 

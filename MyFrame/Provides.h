@@ -9,6 +9,12 @@ struct DynamicTextureTag
     static constexpr value_type Default() noexcept { return 0; }
 };
 
+struct DynamicCubeTextureTag
+{
+    using value_type = int;
+    static constexpr value_type Default() noexcept { return 0; }
+};
+
 struct SpriteUVTag
 {
     struct value_type
@@ -36,34 +42,47 @@ struct FieldTransitionTag
     struct value_type
     {
         // core
-        int trState;    // 0 - none, 1 - expand, 2 - recover
-        int trMode;     // 0 - normal, 1 - burning, 2 - purifying, 3 - digital
+        int trState = 0;    // 0 - none, 1 - expand, 2 - recover
+        int trMode = 0;     // 0 - normal, 1 - burning, 2 - purifying, 3 - digital
         // parameters
-        float trRadius;
-        float trSoftness;
-        XMFLOAT3 trCenter;
-        float opacity;
+        float trRadius{ 0.0f };
+        float trSoftness{ 40.0f };
+        XMFLOAT3 trCenter{ 0.0f,0.0f,0.0f };
+        float opacity{ 1.0f };
         // RGB
-        XMFLOAT3 colorFrom;
-        float pad0;
-        XMFLOAT3 colorTo;
-        float pad1;
+        XMFLOAT3 colorFrom{ 1.0f,1.0f,1.0f };
+        float pad0{ 0.0f };
+        XMFLOAT3 colorTo{ 1.0f,1.0f,1.0f };
+        float pad1{ 0.0f };
         // noise
-        float noiseScale;
-        float noiseAmp;
-        XMFLOAT2 pad2;
+        float noiseScale{ 0.02f };
+        float noiseAmp{ 200.0f };
+        XMFLOAT2 pad2{ 0.0f,0.0f };
     };
 
-    static constexpr value_type Default() noexcept
+    static constexpr value_type Default() noexcept { return {}; }
+};
+
+struct SkyboxTransitionTag
+{
+    struct value_type
     {
-        return {
-            0, 0,
-            0, 40.0f, {0.0f,0.0f,0.0f}, 1.0f,
-            {1.0f,1.0f,1.0f}, 0.0f,
-            {1.0f,1.0f,1.0f}, 0.0f,
-            0.02f, 200.0f, {0.0f,0.0f}
-        };
-    }
+        // core
+        int trState{ 0 };
+        int trMode{ 0 };
+        // parameters
+        int fromIdx{ 0 };
+        int toIdx{ 0 };
+        float t{ 0.0f };
+        // radial transition
+        XMFLOAT3 trCenter{ 0.0f, 0.0f, 0.0f };
+        float trRadius{ 0.0f };
+        float trSoftness{ 40.0f };
+        // noise
+        float noiseScale{ 0.02f };
+        float noiseAmp{ 200.0f };
+    };
+    static constexpr value_type Default() noexcept { return {}; }
 };
 
 

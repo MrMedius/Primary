@@ -36,7 +36,7 @@ Sprite3DNoLit::Sprite3DNoLit(Graphics& gfx, std::vector<std::string> paths)
         only.AddBindable(PixelShader::Resolve(gfx, "Sprite3DNoLit_PS.cso"));
 
         only.AddBindable(Rasterizer::Resolve(gfx, true));
-        only.AddBindable(Bind::Blender::Resolve(gfx, true));
+        only.AddBindable(Blender::Resolve(gfx, true));
 
         only.AddBindable(tcb);
         only.AddBindable(uvcb);
