@@ -37,6 +37,8 @@ Game::Game(const std::string& commandLine)
 	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG);
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG);
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
+	pUI_Loading = std::make_unique<UI_Loading>(wnd.Gfx(), UIRG);
+
 	// Objects
 	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
@@ -113,7 +115,9 @@ void Game::Update(float dt)
 		if (pUI_Title->GetIsStart())
 		{
 			pUI_Title->Reset();
-			SetScene(SCENE_GAME);
+			SetScene(SCENE_LOADING);
+			pUI_Loading->StartLoading(SCENE_GAME);
+
 			SoundCodex::Get().PlayBGM(SndPath::BGM_Game, -1);
 		}
 		if (pUI_Title->GetIsFullscreen())
@@ -122,7 +126,9 @@ void Game::Update(float dt)
 			pUI_Title->ResetFullscreen();
 		}
 		if (pUI_Title->GetIsEnd())
+		{
 			PostQuitMessage(0);
+		}
 		break;
 	case SCENE_GAME:
 		if (!Pause)
@@ -140,11 +146,13 @@ void Game::Update(float dt)
 					SoundCodex::Get().PlaySE(SndPath::SE_Game_Over);
 				}
 				pUI_Result->Reset();
-				SetScene(SCENE_RESULT);
+				SetScene(SCENE_LOADING);
+				pUI_Loading->StartLoading(SCENE_RESULT);
+
 				SoundCodex::Get().PlayBGM(SndPath::BGM_Result, -1);
 			}
 
-			// true loop
+			// Game Loop
 			auto playerPos = pPlayer->GetPosition();
 			cameras.Update(dt, playerPos, &wnd);
 			if (!cameras.GetScreenFroze())
@@ -172,7 +180,8 @@ void Game::Update(float dt)
 
 		if (pUI_Result->GetToTitle())
 		{
-			SetScene(SCENE_TITLE);
+			SetScene(SCENE_LOADING);
+			pUI_Loading->StartLoading(SCENE_TITLE);
 
 			pPlayer->OnEnable();
 			cameras.Reset();
@@ -183,6 +192,15 @@ void Game::Update(float dt)
 			GameStatsCodex::Reset();
 			SoundCodex::Get().PlayBGM(SndPath::BGM_Title, -1);
 		}
+		break;
+	case SCENE_LOADING:
+		pUI_Loading->Update(dt);
+
+		if (pUI_Loading->FinishLoading())
+		{
+			SetScene(static_cast<SCENE>(pUI_Loading->SceneLoading()));
+		}
+
 		break;
 	}	
 }
@@ -232,6 +250,13 @@ void Game::Draw()
 	case SCENE_RESULT:
 	{
 		pUI_Result->Submit();
+
+		UIRG.Execute(wnd.Gfx());
+		break;
+	}
+	case SCENE_LOADING:
+	{
+		pUI_Loading->Submit();
 
 		UIRG.Execute(wnd.Gfx());
 		break;

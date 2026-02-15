@@ -205,7 +205,7 @@ private:
 	// Score
 	std::unique_ptr<UI_Score> pScore;
 	// CountDown
-	static constexpr float cdTotal = 120.0f;
+	static constexpr float cdTotal = 2.0f;
 	float cdRemain{ 0.0f };
 	bool isTimeUp{ false };
 	std::unique_ptr<Sprite2D> pCd_Frame;

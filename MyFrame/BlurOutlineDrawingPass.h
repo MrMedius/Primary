@@ -30,7 +30,7 @@ namespace Rgph
 			AddBindSink<Bind::CachingPixelConstantBufferEX>("blending");
 
 			AddBind( Stencil::Resolve( gfx,Stencil::Mode::Mask ) );
-			AddBind( Blender::Resolve( gfx,false ) );
+			AddBind( Blender::Resolve( gfx,true ) );
 			RegisterSource( DirectBindableSource<Bind::RenderTarget>::Make( "scratchOut",renderTarget ) );
 
 		}

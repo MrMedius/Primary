@@ -14,7 +14,7 @@ public:
 	{
 		// parameters init
 		SetPosition(position);
-		SetSize({ 5.0f,5.0f,0.0f });
+		SetSize({ 8.0f,8.0f,0.0f });
 		SetCollisionOnOff(false);
 
 		// graphics init

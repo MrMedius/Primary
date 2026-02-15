@@ -17,14 +17,17 @@
 #include "UI_Game.h"
 #include "UI_Title.h"
 #include "UI_Result.h"
+#include "UI_Loading.h"
 
 class Game
 {
 private:
-	enum SCENE {
+	enum SCENE : int
+	{
 		SCENE_TITLE,
 		SCENE_GAME,
-		SCENE_RESULT
+		SCENE_RESULT,
+		SCENE_LOADING,
 	}Scene{ SCENE_TITLE };
 public:
 	Game( const std::string& commandLine = "" );
@@ -67,4 +70,5 @@ private:
 	std::unique_ptr<UI_Title> pUI_Title;
 	std::unique_ptr<UI_Game> pUI_Game;
 	std::unique_ptr<UI_Result> pUI_Result;
+	std::unique_ptr<UI_Loading> pUI_Loading;
 };
