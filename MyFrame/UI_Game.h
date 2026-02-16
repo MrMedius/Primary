@@ -14,21 +14,45 @@ class UI_Game
 public:
 	UI_Game(Graphics& gfx, Rgph::RenderGraph& rg)
 	{
+		// Bg
+		{
+			pBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Hp_Low.png" });
+			pBg->SetPosition(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
+			pBg->SetScale(SCREEN_WIDTH, SCREEN_HEIGHT);
+			pBg->SetFrame(1, 1, 1, 1, 1, 0, false);
+			pBg->LinkTechniques(rg);
+		}
 		// PlayerHpBar_Frame
 		{
 			pPlayerHpBar_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Bar.png" });
-			pPlayerHpBar_Frame->SetPosition(210.0f, SCREEN_HEIGHT - 120.0f);
-			pPlayerHpBar_Frame->SetScale(400.0f, 200.0f);
-			pPlayerHpBar_Frame->SetFrame(2, 1, 1, 1, 1, 0, false);
+			pPlayerHpBar_Frame->SetPosition(200.0f, SCREEN_HEIGHT - 150.0f);
+			pPlayerHpBar_Frame->SetScale(500.0f, 500.0f);
+			pPlayerHpBar_Frame->SetFrame(12, 16, 12 * 16 - 1, 1, 1, 0, false);
 			pPlayerHpBar_Frame->LinkTechniques(rg);
 		}
 		// PlayerHpBar_Bar
 		{
-			pPlayerHpBar_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Bar.png" });
-			pPlayerHpBar_Bar->SetPosition(210.0f, SCREEN_HEIGHT - 120.0f);
-			pPlayerHpBar_Bar->SetScale(400.0f, 200.0f);
-			pPlayerHpBar_Bar->SetFrame(2, 1, 2, 1, 1, 0, false);
+			pPlayerHpBar_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Fill.png",
+																						 "asset\\Images\\UI_Game\\Player_HP_Fever.png" });
+			pPlayerHpBar_Bar->SetPosition(200.0f, SCREEN_HEIGHT - 68.0f);
+			pPlayerHpBar_Bar->SetScale(300.0f, 40.0f);
+			pPlayerHpBar_Bar->SetFrameAuto(8, 6, 1, 48, 0, 20.0f);
 			pPlayerHpBar_Bar->LinkTechniques(rg);
+		}
+		// PlayerHpBar_Fire
+		{
+			pPlayerHpBar_Fire = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Bar.png" });
+			pPlayerHpBar_Fire->SetPosition(200.0f, SCREEN_HEIGHT - 150.0f);
+			pPlayerHpBar_Fire->SetScale(500.0f, 500.0f);
+			pPlayerHpBar_Fire->SetFrameAuto(12, 16, 145, 46, 0, 20.0f);
+			pPlayerHpBar_Fire->LinkTechniques(rg);
+		}
+		// PlayerHpBar_Side
+		{
+			pPlayerHpBar_Side = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Side.png" });
+			pPlayerHpBar_Side->SetScale(25.0f, 50.0f);
+			pPlayerHpBar_Side->SetFrameAuto(8, 6, 1, 48, 0, 30.0f);
+			pPlayerHpBar_Side->LinkTechniques(rg);
 		}
 		// ResourceSlot
 		for (size_t i = 0; i < slotNum; i++)
@@ -76,19 +100,53 @@ public:
 	void Update(float dt)
 	{
 		auto* player = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
+		bool fever = player->GetIsFever();
 
-		// PlayerHpBar
-		pPlayerHpBar_Bar->SetRatioOffset(player->GetHpDrawParameter(), 1.0f);
-		// ResourceSlot
-		auto EnergyDrawParameters = player->GetResourceBars()->GetEnergyDrawParameters();
-		auto EnergyFull = player->GetResourceBars()->GetEnergyFull();
-		for (size_t i = 0; i < slotNum; i++)
+		// PlayerHpBar_Fire
+		if (player->GetHpDrawParameter() < 0.5)
 		{
-			pResourceSlot[i]->Update(dt, EnergyDrawParameters[i], EnergyFull[i], player->GetResourceBars()->GetEnergyChangedAt(i));
-			if (EnergyFull[i]) player->GetResourceBars()->SetEnergyFullAt(i, false);
+			pPlayerHpBar_Fire->Update(dt);
 		}
-		// WeaponSlot
-		pWeaponSlot->Update(dt, player->GetWeaponSlots());
+
+		if(!fever)
+		{
+			// PlayerHpBar_Frame
+			pPlayerHpBar_Frame->SetFrame(12, 16, 12 * 16 - 1, 1, 1, 0, false);
+			// PlayerHpBar_Bar
+			pPlayerHpBar_Bar->SetTextureFrameIndex(0);
+			pPlayerHpBar_Bar->Update(dt);
+			pPlayerHpBar_Bar->SetRatioOffset(player->GetHpDrawParameter(), 1.0f);
+			// PlayerHpBar_Side
+			auto pos = pPlayerHpBar_Bar->GetPosition();
+			auto size = pPlayerHpBar_Bar->GetScale();
+			pPlayerHpBar_Side->SetPosition(pos.x + size.x / 2.0f, pos.y);
+			pPlayerHpBar_Side->Update(dt);
+			// ResourceSlot
+			auto EnergyDrawParameters = player->GetResourceBars()->GetEnergyDrawParameters();
+			auto EnergyFull = player->GetResourceBars()->GetEnergyFull();
+			for (size_t i = 0; i < slotNum; i++)
+			{
+				pResourceSlot[i]->Update(dt, EnergyDrawParameters[i], EnergyFull[i], player->GetResourceBars()->GetEnergyChangedAt(i));
+				if (EnergyFull[i]) player->GetResourceBars()->SetEnergyFullAt(i, false);
+			}
+			// WeaponSlot
+			pWeaponSlot->Update(dt, player->GetWeaponSlots());
+		}
+		else
+		{
+			// PlayerHpBar_Frame
+			pPlayerHpBar_Frame->SetFrame(12, 16, 12 * 16, 1, 1, 0, false);
+			// PlayerHpBar_Bar
+			pPlayerHpBar_Bar->SetTextureFrameIndex(1);
+			pPlayerHpBar_Bar->Update(dt);
+			pPlayerHpBar_Bar->SetRatioOffset(player->GetWeaponSlots()->GetFeverTimeDraw(), 1.0f);
+			// PlayerHpBar_Side
+			auto pos = pPlayerHpBar_Bar->GetPosition();
+			auto size = pPlayerHpBar_Bar->GetScale();
+			pPlayerHpBar_Side->SetPosition(pos.x + size.x / 2.0f, pos.y);
+			pPlayerHpBar_Side->Update(dt);
+		}
+
 		// Combo
 		{
 			auto combos = player->GetResourceBars()->GetAttackCombos();
@@ -143,17 +201,33 @@ public:
 
 	void Submit(void)
 	{
+		auto* player = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
+		bool fever = player->GetIsFever();
+
+		if (player->GetHpDrawParameter() < 0.5)
+		{
+			// Bg
+			pBg->Submit(Chan::ui);
+			// PlayerHpBar_Fire
+			pPlayerHpBar_Fire->Submit(Chan::ui);
+		}
 		// PlayerHpBar_Frame
 		pPlayerHpBar_Frame->Submit(Chan::ui);
 		// PlayerHpBar_HP
 		pPlayerHpBar_Bar->Submit(Chan::ui);
-		// ResourceSlot
-		for (size_t i = 0; i < slotNum; i++)
+		// PlayerHpBar_Side
+		pPlayerHpBar_Side->Submit(Chan::ui);
+		if (!fever)
 		{
-			pResourceSlot[i]->Submit();
+			// ResourceSlot
+			for (size_t i = 0; i < slotNum; i++)
+			{
+				pResourceSlot[i]->Submit();
+			}
+			// WeaponSlot
+			pWeaponSlot->Submit();
 		}
-		// WeaponSlot
-		pWeaponSlot->Submit();
+
 		// Combo
 		for (size_t i = 0; i < slotNum; i++)
 		{
@@ -188,10 +262,16 @@ public:
 	}
 
 private:
+	// Bg
+	std::unique_ptr<Sprite2D> pBg;
 	// PlayerHpBar_Frame
 	std::unique_ptr<Sprite2D> pPlayerHpBar_Frame;
 	// PlayerHpBar_HP
 	std::unique_ptr<Sprite2D> pPlayerHpBar_Bar;
+	// PlayerHpBar_Fire
+	std::unique_ptr<Sprite2D> pPlayerHpBar_Fire;
+	// PlayerHpBar_Side
+	std::unique_ptr<Sprite2D> pPlayerHpBar_Side;
 	// ResourceSlot
 	static constexpr int slotNum = 3;
 	std::unique_ptr<UI_ResourceSlot> pResourceSlot[slotNum];
@@ -205,7 +285,7 @@ private:
 	// Score
 	std::unique_ptr<UI_Score> pScore;
 	// CountDown
-	static constexpr float cdTotal = 2.0f;
+	static constexpr float cdTotal = 300.0f;
 	float cdRemain{ 0.0f };
 	bool isTimeUp{ false };
 	std::unique_ptr<Sprite2D> pCd_Frame;

@@ -56,7 +56,7 @@ public:
 		SetSize({ 5.0f, 5.0f, 0.0f });
 		SetCollisionSize({ 1.5f, 4.0f, 2.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(10.0f);
+		SetHpMax(30.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.035f);
 		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
@@ -88,7 +88,8 @@ public:
 					"asset\\Images\\Player\\Player_Blue_Effect_Bg.png",
 					"asset\\Images\\Player\\Player_Red_Effect.png",
 					"asset\\Images\\Player\\Player_Green_Effect.png",
-					"asset\\Images\\Player\\Player_Blue_Effect.png"});
+					"asset\\Images\\Player\\Player_Blue_Effect.png",
+					"asset\\Images\\Player\\Player_Fever_Bg_Back.png"});
 			visualPre_Effect_Bg->SetPosition(transInfo.position);
 			visualPre_Effect_Bg->SetScale(GetEffectSize());
 			visualPre_Effect_Bg->SetFrameAuto(12, 10, 1, 120, 0, 20.0f, false, true);
@@ -100,9 +101,18 @@ public:
 					"asset\\Images\\Player\\Player_Usual_Effect.png",
 					"asset\\Images\\Player\\Player_Red_Effect.png",
 					"asset\\Images\\Player\\Player_Green_Effect.png",
-					"asset\\Images\\Player\\Player_Blue_Effect.png"});
+					"asset\\Images\\Player\\Player_Blue_Effect.png",
+					"asset\\Images\\Player\\Player_Fever_Bg_Front.png"});
 			visualPre_Effect->SetScale(GetEffectSize());
 			visualPre_Effect->LinkTechniques(rg);
+		}
+		// visualPre_Fever
+		for (int i = 0;i < 6;i++)
+		{
+			auto scale = 5.0f;
+			visualPre_Fever.push_back(std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\Player\\Player_Fever_Attack.png"}));
+			visualPre_Fever[i]->SetScale(transInfo.scale.x * scale, transInfo.scale.y * scale);
+			visualPre_Fever[i]->LinkTechniques(rg);
 		}
 
 		// FSM state init
@@ -180,12 +190,21 @@ public:
 	Sprite3D* GetVisualPre(void) { return visualPre.get(); }
 	Sprite3DNoLit* GetVisualPreEffectBg(void) { return visualPre_Effect_Bg.get(); }
 	Sprite3DNoLit* GetVisualPreEffect(void) { return visualPre_Effect.get(); }
+	std::vector<Sprite3DNoLit*> GetVisualPreFever(void) 
+	{ 
+		std::vector<Sprite3DNoLit*> vpf;
+		for (int i = 0;i < visualPre_Fever.size();i++)
+			vpf.push_back(visualPre_Fever[i].get());
+		return vpf;
+	}
+	void SetBackground(void);
 private:
 	void SetupTransitions(void) override;
 private:
 	std::unique_ptr<Sprite3D> visualPre;
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Bg;
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect;
+	std::vector<std::unique_ptr<Sprite3DNoLit>> visualPre_Fever;
 	Graphics& Gfx;
 	Rgph::RenderGraph& Rg;
 	CameraContainer* pCamera;
@@ -298,7 +317,9 @@ public:
 private:
 	std::vector<SpriteAnimeInfo> packs;
 	std::vector<SpriteAnimeInfo> ePacks;
+	std::vector<SpriteAnimeInfo> fPacks;
 	SpriteAnimeManualAssistant assist;
+	XMFLOAT3 baseAttackCollisionSize{ 0.0f,0.0f, 0.0f };
 	unsigned int mode{ 0 };
 	bool isCombo{ false };
 	int oldFrame{ 0 };

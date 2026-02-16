@@ -5,7 +5,7 @@
 /*------------------------------------------------------------------------------
    Weapon
 ------------------------------------------------------------------------------*/
-void Weapon::Update()
+void Weapon::Update(float dt)
 {
 	if (EnergyDraw != Energy)
 		EnergyDraw += (Energy - EnergyDraw) * 0.1f;
@@ -18,7 +18,7 @@ void Weapon::Update()
 /*------------------------------------------------------------------------------
    WeaponSlots
 ------------------------------------------------------------------------------*/
-void WeaponSlots::Update()
+void WeaponSlots::Update(float dt)
 {
 	if (!IsFever)
 	{
@@ -31,7 +31,7 @@ void WeaponSlots::Update()
 			if (Slots[i].GetType() == WEAPON_TYPE_NONE)
 				break;
 
-			Slots[i].Update();
+			Slots[i].Update(dt);
 
 			if (Slots[i].GetWaitToDiscard())
 			{
@@ -64,7 +64,7 @@ void WeaponSlots::Update()
 			if (Slots[i].GetType() == WEAPON_TYPE_NONE)
 				break;
 
-			Slots[i].Update();
+			Slots[i].Update(dt);
 
 			if (Slots[i].GetWaitToDiscard())
 			{
@@ -75,7 +75,7 @@ void WeaponSlots::Update()
 	}
 	else
 	{
-		FeverTime -= 0.05f;
+		FeverTime -= dt;
 
 		if (FeverTimeDraw != FeverTime)
 			FeverTimeDraw += (FeverTime - FeverTimeDraw) * 0.1f;
@@ -183,7 +183,7 @@ void WeaponSlots::DiscardWeapon(int num)
 /*------------------------------------------------------------------------------
    ResourceBars
 ------------------------------------------------------------------------------*/
-void ResourceBars::Update()
+void ResourceBars::Update(float dt)
 {
 	if (!Slots->GetIsFever())
 	{

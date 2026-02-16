@@ -22,7 +22,7 @@ class Weapon
 public:
 	Weapon() {};
 	~Weapon() = default;
-	void Update(void);
+	void Update(float dt);
 	void SetWeapon(WEAPON_TYPE_ID type, float energy)
 	{
 		SetType(type);
@@ -58,7 +58,7 @@ public:
 		Slots[0].SetWeapon(WEAPON_TYPE_0, 100.0f);
 	}
 	~WeaponSlots() = default;
-	void Update(void);
+	void Update(float dt);
 	void SwitchSlot(bool RightOrLeft);
 	void UseWeapon(float offset);
 	void SetNewWeapon(WEAPON_TYPE_ID type);
@@ -121,7 +121,7 @@ public:
 		}
 	};
 	~ResourceBars() = default;
-	void Update();
+	void Update(float dt);
 	void AttackSettlement(int enemyType, bool isFever);
 	int GetTotalWeaponTypes(void) const { return TotalWeaponTypes; }
 	std::vector<float> GetEnergyDrawParameters(void) const

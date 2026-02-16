@@ -13,7 +13,6 @@ public:
 		// Loading_Bg
 		{
 			pBg = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Loading\\Loading_Bg.png" });
-			pBg->SetPosition(0.0f, SCREEN_HEIGHT / 2);
 			pBg->SetScale(SCREEN_WIDTH * 2.0f, SCREEN_HEIGHT);
 			pBg->SetFrame(1, 1, 1, 1, 1, 0, false);
 			pBg->LinkTechniques(rg);
@@ -28,9 +27,9 @@ public:
 				pCut[i]->SetFrameAuto(12, 14, 1 + i * 24, 24, 0, 20.0f);
 				pCut[i]->LinkTechniques(rg);
 			}
-			speedCut.push_back(4.0f);
-			speedCut.push_back(2.5f); speedCut.push_back(1.5f); speedCut.push_back(3.0f);
-			speedCut.push_back(2.0f); speedCut.push_back(1.0f); speedCut.push_back(3.5f);
+			speedCut.push_back(3.5f);
+			speedCut.push_back(2.0f); speedCut.push_back(1.0f); speedCut.push_back(3.0f);
+			speedCut.push_back(1.5f); speedCut.push_back(0.5f); speedCut.push_back(2.5f);
 		}
 		// Loading_Octo
 		{
@@ -79,7 +78,7 @@ public:
 		// Loading_Bg
 		{
 			auto pos = pBg->GetPosition();
-			pBg->SetPosition(pos.x + 1.0f, pos.y);
+			pBg->SetPosition(pos.x + speedBg, pos.y);
 		}
 		// Loading_Cut
 		for (int i = 0;i < cutCount;i++)
@@ -123,6 +122,11 @@ public:
 		toScene = scene;
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> speed(-1.0f, 1.0f);
+		// Loading
+		{
+			speedBg = speed(rng) > 0.0f ? 1.0f : -1.0f;
+			pBg->SetPosition(speedBg > 0.0f ? 0.0f : SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+		}
 		// Loading_Cut
 		{
 			std::vector<int> pool = { 0,1,2,3,4,5,6 };
@@ -202,6 +206,7 @@ private:
 	float counter{ 0.0f };
 	int toScene{ 0 };
 	// Loading_Bg
+	float speedBg{ 1.0f };
 	std::unique_ptr<Sprite2D> pBg;
 	// Loading_Cut
 	static constexpr int TotalCutCount = 7;
