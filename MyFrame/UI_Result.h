@@ -6,7 +6,7 @@
 #include "Sprite2D.h"
 #include "Sprite2DPolygon.h"
 #include "Channels.h"
-
+#include "SoundCodex.h"
 #include "GameStatsCodex.h"
 
 class UI_Result
@@ -147,38 +147,39 @@ public:
 		}
 		// Combo
 		{
-			float size = 120.0f;
-			float posX = 650.0f;
-			float posY = 300.0f;
+			float sizeX = 400.0f;
+			float sizeY = 100.0f;
+			float posX = 720.0f;
+			float posY = 330.0f;
 			float offset = 150.0f;
-			comboR = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\combo.png" });
+			comboR = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Bg.png" });
 			comboR->SetPosition(posX, posY);
-			comboR->SetScale(size, size);
+			comboR->SetScale(sizeX, sizeY);
 			comboR->SetFrame(3, 1, 1, 1, 1, 0);
 			comboR->LinkTechniques(rg);
-			comboG = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\combo.png" });
+			comboG = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Bg.png" });
 			comboG->SetPosition(posX, posY + offset);
-			comboG->SetScale(size, size);
+			comboG->SetScale(sizeX, sizeY);
 			comboG->SetFrame(3, 1, 2, 1, 1, 0);
 			comboG->LinkTechniques(rg);
-			comboB = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\combo.png" });
+			comboB = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Bg.png" });
 			comboB->SetPosition(posX, posY + offset * 2.0f);
-			comboB->SetScale(size, size);
+			comboB->SetScale(sizeX, sizeY);
 			comboB->SetFrame(3, 1, 3, 1, 1, 0);
 			comboB->LinkTechniques(rg);
 			for (int i = 0; i < comboDigitsNum; i++)
 			{
-				comboRNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-				comboRNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY);
-				comboRNum[i]->SetScale(50.0f, 50.0f);
+				comboRNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Number.png" }));
+				comboRNum[i]->SetPosition(posX - 30.0f * i - 90.0f, posY - 25.0f);
+				comboRNum[i]->SetScale(45.0f, 45.0f);
 				comboRNum[i]->LinkTechniques(rg);
-				comboGNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-				comboGNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY + offset);
-				comboGNum[i]->SetScale(50.0f, 50.0f);
+				comboGNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Number.png" }));
+				comboGNum[i]->SetPosition(posX - 30.0f * i - 90.0f, posY - 25.0f + offset);
+				comboGNum[i]->SetScale(45.0f, 45.0f);
 				comboGNum[i]->LinkTechniques(rg);
-				comboBNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-				comboBNum[i]->SetPosition(posX + 90.0f - 30.0f * i, posY + offset * 2.0f);
-				comboBNum[i]->SetScale(50.0f, 50.0f);
+				comboBNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Number.png" }));
+				comboBNum[i]->SetPosition(posX - 30.0f * i - 90.0f, posY - 25.0f + offset * 2.0f);
+				comboBNum[i]->SetScale(45.0f, 45.0f);
 				comboBNum[i]->LinkTechniques(rg);
 			}
 		}
@@ -238,7 +239,10 @@ public:
 
 			// Next Phase
 			if (Reached(scoreDraw, (float)data.score) && showPhase == 0)
+			{
+				SoundCodex::Get().PlaySE(SndPath::SE_Score_Roll);
 				showPhase = 1;
+			}
 		}
 		// Time
 		if (showPhase >= 1)
@@ -362,23 +366,23 @@ public:
 			int r = (int)(comboRDraw + 0.5f);
 			int g = (int)(comboGDraw + 0.5f);
 			int b = (int)(comboBDraw + 0.5f);
-			r = std::clamp(r, 0, 99);
-			g = std::clamp(g, 0, 99);
-			b = std::clamp(b, 0, 99);
+			r = std::clamp(r, 0, 999);
+			g = std::clamp(g, 0, 999);
+			b = std::clamp(b, 0, 999);
 
-			auto SetDigits2 = [](std::vector<std::unique_ptr<Sprite2D>>& digits, int value)
+			auto SetDigits2 = [](std::vector<std::unique_ptr<Sprite2D>>& digits, int value, int startDigit)
 				{
-					for (int i = 0; i < 2; i++)
+					for (int i = 0; i < comboDigitsNum; i++)
 					{
 						const int d = value % 10;
 						value /= 10;
-						digits[i]->SetFrame(5, 2, d + 1, 1, 1, 0, false);
+						digits[i]->SetFrame(5, 6, d + startDigit, 1, 1, 0, false);
 					}
 				};
 
-			SetDigits2(comboRNum, r);
-			SetDigits2(comboGNum, g);
-			SetDigits2(comboBNum, b);
+			SetDigits2(comboRNum, r, 1);
+			SetDigits2(comboGNum, g, 11);
+			SetDigits2(comboBNum, b, 21);
 
 			// Next Phase
 			if (Reached(comboRDraw, (float)data.rHighestCombo) &&
@@ -606,16 +610,17 @@ public:
 		inputDraw = 0.0f;
 		// Total
 		totalDraw = 0.0f;
+		totalScore = 0.0f;
 		totalScore += data.gameClear ? 3000.0f : 0.0f;
 		totalScore += (float)data.score;
-		totalScore += data.lifeTime * 10.0f;
+		totalScore += ((data.lifeTime > 180.0f) ? 180.0f : data.lifeTime) * 10.0f;
 		totalScore += (float)data.totalWeapon * 10.0f;
 		totalScore += std::max(std::max(data.rHighestCombo, data.gHighestCombo), data.bHighestCombo) * 100.0f;
 		totalScore += data.outputDamage * 5.0f;
 		totalScore += data.inputDamage * 10.0f;
 		int totalInt = (int)(totalScore + 0.5f);
 		if (totalInt < 0) totalInt = 0;
-		RebuildTotalDigits(totalScore);
+		RebuildTotalDigits(totalInt);
 		// Button
 		backButton->Reset();
 		toTitle = false;
@@ -651,8 +656,8 @@ public:
 		for (int i = 0; i < digits; ++i)
 		{
 			const float t = (float)i - center;
-			const float x = baseX + sx * t;
-			const float y = baseY + sy * t;
+			const float x = baseX - sx * t;
+			const float y = baseY - sy * t;
 
 			auto sp = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" });
 
@@ -717,7 +722,7 @@ private:
 	std::unique_ptr<Sprite2D> comboR;
 	std::unique_ptr<Sprite2D> comboG;
 	std::unique_ptr<Sprite2D> comboB;
-	static constexpr int comboDigitsNum = 2;
+	static constexpr int comboDigitsNum = 3;
 	float comboRDraw{ 0.0f };
 	float comboGDraw{ 0.0f };
 	float comboBDraw{ 0.0f };

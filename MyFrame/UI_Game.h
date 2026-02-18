@@ -7,6 +7,9 @@
 #include "UI_ResourceSlot.h"
 #include "UI_WeaponSlot.h"
 #include "UI_Score.h"
+#include "UI_Combo.h"
+#include "UI_Boss.h"
+
 #include "Channels.h"
 
 class UI_Game
@@ -60,40 +63,13 @@ public:
 			pResourceSlot[i] = std::make_unique<UI_ResourceSlot>(gfx, rg, static_cast<int>(i));
 		}
 		// WeaponSlot
-		{
-			pWeaponSlot = std::make_unique<UI_WeaponSlot>(gfx, rg);
-		}
+		pWeaponSlot = std::make_unique<UI_WeaponSlot>(gfx, rg);
 		// Combo
-		comboNum.resize(slotNum);
-		comboActive.resize(slotNum);
-		pCombo.resize(slotNum);
-		for (size_t i = 0; i < slotNum; i++)
-		{
-			pCombo[i].reserve(maxDigit);
-			comboNum[i].resize(maxDigit, 0);
-			for (size_t j = 0;j < maxDigit;j++)
-			{
-				pCombo[i].push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Number_No_2.png" }));
-				pCombo[i][j]->LinkTechniques(rg);
-			}
-		}
+		pCombo = std::make_unique<UI_Combo>(gfx, rg);
 		// Score
 		pScore = std::make_unique<UI_Score>(gfx, rg);
-		// CountDown
-		{
-			cdRemain = cdTotal;
-			pCd_Frame = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Bars.png" });
-			pCd_Frame->SetPosition(50.0f, 300.0f);
-			pCd_Frame->SetScale(50.0f, 200.0f);
-			pCd_Frame->SetFrame(2, 1, 1, 1, 1, 0, false);
-			pCd_Frame->LinkTechniques(rg);
-			pCd_Bar = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Bars.png" });
-			pCd_Bar->SetPosition(50.0f, 300.0f);
-			pCd_Bar->SetRotation(180.0f);
-			pCd_Bar->SetScale(50.0f, 200.0f);
-			pCd_Bar->SetFrame(2, 1, 2, 1, 1, 0, false);
-			pCd_Bar->LinkTechniques(rg);
-		}
+		// Boss
+		pBoss = std::make_unique<UI_Boss>(gfx, rg);
 	}
 	~UI_Game() = default;
 
@@ -146,57 +122,16 @@ public:
 			pPlayerHpBar_Side->SetPosition(pos.x + size.x / 2.0f, pos.y);
 			pPlayerHpBar_Side->Update(dt);
 		}
-
 		// Combo
 		{
-			auto combos = player->GetResourceBars()->GetAttackCombos();
-			auto countdowns = player->GetResourceBars()->GetAttackComboCountdowns();
-			for (size_t i = 0; i < slotNum; i++)
-			{
-				comboActive[i] = false;
-				std::fill(comboNum[i].begin(), comboNum[i].end(), 0);
-
-				int combo = combos[i];
-				float countdown = countdowns[i];
-
-				if (combo == 0) continue;
-				else
-				{
-					comboActive[i] = true;
-
-					int maxCombo = 1;
-					for (int t = 0; t < maxDigit; ++t) maxCombo *= 10;
-					if (combo >= maxCombo) combo = maxCombo - 1;
-
-					size_t k = 0;
-					while (combo > 0 && k < maxDigit)
-					{
-						comboNum[i][k] = combo % 10;
-						combo /= 10;
-						++k;
-					}
-
-					float posX;
-					float posY = 300.0f + static_cast<float>(i) * 50.0f;
-					float size = countdown * 10.0f;
-					for (size_t j = 0; j < maxDigit; j++)
-					{
-						posX = 200.0f + countdown * (20.0f - j * 5.0f);
-						pCombo[i][j]->SetPosition(posX, posY);
-						pCombo[i][j]->SetScale(size, size);
-						pCombo[i][j]->SetFrame(5, 2, comboNum[i][j] + 1, 1, 1, 0, false);
-					}
-				}
-			}
+			std::vector<unsigned int> combos = player->GetResourceBars()->GetAttackCombos();
+			std::vector<float> countdowns = player->GetResourceBars()->GetAttackComboCountdownRates();
+			pCombo->Update(dt, combos, countdowns);
 		}
 		// Score
 		pScore->Update(dt);
-		// CountDown
-		{
-			cdRemain -= dt;
-			if (cdRemain <= 0.0f) isTimeUp = true;
-			pCd_Bar->SetRatioOffset(1.0f, cdRemain / cdTotal);
-		}
+		// Boss
+		pBoss->Update(dt);
 	}
 
 	void Submit(void)
@@ -227,38 +162,25 @@ public:
 			// WeaponSlot
 			pWeaponSlot->Submit();
 		}
-
 		// Combo
-		for (size_t i = 0; i < slotNum; i++)
-		{
-			if (!comboActive[i]) continue;
-
-			int highest = maxDigit - 1;
-			while (highest > 0 && comboNum[i][highest] == 0) --highest;
-
-			for (int j = 0; j <= highest; ++j)
-				pCombo[i][j]->Submit(Chan::ui);
-		}
+		pCombo->Submit();
 		// Score
 		pScore->Submit();
-		// CountDown
-		pCd_Frame->Submit(Chan::ui);
-		pCd_Bar->Submit(Chan::ui);
+		// Boss
+		pBoss->Submit();
 	}
 
 	void Reset(void)
 	{
 		// Score
 		pScore->Reset();
-		// CountDown
-		cdRemain = cdTotal;
-		isTimeUp = false;
-		pCd_Bar->SetRatioOffset(1.0f, 1.0f);
+		// Boss
+		pBoss->Reset();
 	}
 
 	bool GetIsTimeUp() const 
 	{
-		return isTimeUp;
+		return pBoss->GetIsTimeUp();
 	}
 
 private:
@@ -278,16 +200,9 @@ private:
 	// WeaponSlot
 	std::unique_ptr<UI_WeaponSlot> pWeaponSlot;
 	// Combo
-	static constexpr int maxDigit = 3;
-	std::vector<std::vector<int>> comboNum;
-	std::vector<bool> comboActive;
-	std::vector<std::vector<std::unique_ptr<Sprite2D>>> pCombo;
+	std::unique_ptr<UI_Combo> pCombo;
 	// Score
 	std::unique_ptr<UI_Score> pScore;
-	// CountDown
-	static constexpr float cdTotal = 300.0f;
-	float cdRemain{ 0.0f };
-	bool isTimeUp{ false };
-	std::unique_ptr<Sprite2D> pCd_Frame;
-	std::unique_ptr<Sprite2D> pCd_Bar;
+	// Boss
+	std::unique_ptr<UI_Boss> pBoss;
 };

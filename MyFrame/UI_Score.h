@@ -3,7 +3,6 @@
 #include "Sprite2D.h"
 #include "Channels.h"
 #include "GameStatsCodex.h"
-#include "SoundCodex.h"
 
 class UI_Score
 {
@@ -35,7 +34,6 @@ public:
 		const int sd = (int)(scoreDraw + 0.5f);
 		if (sd != prevScoreDraw) 
 		{
-			SoundCodex::Get().PlaySE(SndPath::SE_Score_Roll);
 			prevScoreDraw = sd;
 		}
 

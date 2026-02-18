@@ -159,6 +159,13 @@ public:
 	{
 		return AttackComboCountdowns;
 	}
+	std::vector<float> GetAttackComboCountdownRates(void) const
+	{
+		std::vector<float> rates;
+		for (auto cd : AttackComboCountdowns)
+			rates.push_back(cd / ComboCountdown);
+		return rates;
+	}
 	void ResetCombo(void)
 	{
 		std::fill(AttackCombos.begin(),			 AttackCombos.end(),		  0u);
@@ -177,7 +184,7 @@ private:
 	WeaponSlots* Slots;
 	static constexpr int TotalWeaponTypes = 3;
 	static constexpr float EnergyLimit = 100.0f;
-	static constexpr float ComboCountdown = 10.0f;
+	static constexpr float ComboCountdown = 2.0f;
 	std::vector<float> EnergyCumulated;
 	std::vector<float> EnergyDraw;
 	std::vector<bool> EnergyFull;

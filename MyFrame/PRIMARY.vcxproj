@@ -364,6 +364,8 @@
     <ClInclude Include="RingParamsCbuf.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="SkyboxTransitionCbuf.h" />
+    <ClInclude Include="UI_Boss.h" />
+    <ClInclude Include="UI_Combo.h" />
     <ClInclude Include="UI_Loading.h" />
     <ClInclude Include="UI_Score.h" />
     <ClInclude Include="SoundCodex.h" />

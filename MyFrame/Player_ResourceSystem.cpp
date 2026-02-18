@@ -205,7 +205,7 @@ void ResourceBars::Update(float dt)
 	// countdown and reset of combo time
 	for (int i = 0;i < TotalWeaponTypes;i++)
 	{
-		if (AttackComboCountdowns[i] > 0.0f)	AttackComboCountdowns[i] -= 0.1f;
+		if (AttackComboCountdowns[i] > 0.0f)	AttackComboCountdowns[i] -= dt;
 		if (AttackComboCountdowns[i] <= 0.0f)	AttackCombos[i] = 0;
 	}
 }
