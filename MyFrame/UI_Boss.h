@@ -54,11 +54,11 @@ public:
 			{
 				// Boss_CD
 				cdRemain += dt;
-				if (cdRemain >= cdTotal && !isTimeUp) isTimeUp = true;
+				if (cdRemain >= cdTotal && isInCD) isInCD = false;
 				pCD->SetRatioOffset(cdRemain / cdTotal, 1.0f);
 			}
 
-			if (isTimeUp)
+			if (!isInCD)
 			{
 				state = Appear;
 				pCD->SetFrameAuto(3, 4, 1, 12, 1, 20.0f);
@@ -108,12 +108,17 @@ public:
 		state = Countdown;
 		// Boss_CD
 		cdRemain = 0.0f;
-		isTimeUp = false;
+		isInCD = true;
 		pCD->SetRatioOffset(0.0f, 1.0f);
 		pCD->SetFrameAuto(3, 16, 1, 48, 0, 20.0f);
 	}
 
-	bool GetIsTimeUp() const
+	bool GetIsInCD() const
+	{
+		return isInCD;
+	}
+
+	bool GetIsVictory() const
 	{
 		return state == Fight&& cdRemain <= 0.0f;
 	}
@@ -127,9 +132,9 @@ private:
 	// Boss_HP_Frame
 	std::unique_ptr<Sprite2D> pFrame;
 	// Boss_CD
-	static constexpr float cdTotal = 10.0f;
+	static constexpr float cdTotal = 60.0f;
 	float cdRemain{ 0.0f };
-	bool isTimeUp{ false };
+	bool isInCD{ true };
 	std::unique_ptr<Sprite2D> pCD;
 	// Boss_Side
 	std::unique_ptr<Sprite2D> pSide;

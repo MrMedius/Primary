@@ -41,13 +41,44 @@ void Player::Update(float dt)
 	FSM->Update(dt);
 	visualPre_Effect_Bg->Update(dt);
 	if(IsFever) visualPre_Effect->Update(dt);
+	if (isSwitch)
+	{
+		visualPre_Switch[0]->Update(dt);
+		visualPre_Switch[1]->Update(dt);
+	}
 
 	// Weapon ralated update
 	{
 		if (!FSM->IsInState("PLAYER_ATTACK") && !FSM->IsInState("PLAYER_SKILL") && !IsFever)
 		{
-			if (inputSnap.slotL) pWeapon->SwitchSlot(true);
-			if (inputSnap.slotR) pWeapon->SwitchSlot(false);
+			bool switched = false;
+			if (inputSnap.slotL)
+			{
+				switched = true;
+				pWeapon->SwitchSlot(true);
+			}
+			if (inputSnap.slotR) 
+			{
+				switched = true;
+				pWeapon->SwitchSlot(false);
+			}
+
+			// visualPre_Switch
+			if (switched)
+			{
+				auto type = pWeapon->GetCurrentSlot().GetType();
+				if (type != WEAPON_TYPE_0)
+				{
+					isSwitch = true;
+
+					switch (type)
+					{
+					case WEAPON_TYPE_1: visualPre_Switch[0]->SetFrameAuto(8, 6, 17, 8, 0, 20.0f, IsFlip, false); visualPre_Switch[1]->SetFrameAuto(8, 6, 41, 8, 0, 20.0f, IsFlip, false); break;
+					case WEAPON_TYPE_2: visualPre_Switch[0]->SetFrameAuto(8, 6,  9, 8, 0, 20.0f, IsFlip, false); visualPre_Switch[1]->SetFrameAuto(8, 6, 33, 8, 0, 20.0f, IsFlip, false); break;
+					case WEAPON_TYPE_3: visualPre_Switch[0]->SetFrameAuto(8, 6,  1, 8, 0, 20.0f, IsFlip, false); visualPre_Switch[1]->SetFrameAuto(8, 6, 25, 8, 0, 20.0f, IsFlip, false); break;
+					}
+				}
+			}
 		}
 		if ((currentWeaponType != pWeapon->GetCurrentSlot().GetType() && !FSM->IsInState("PLAYER_SKILL")) || // Not in Skill
 			GetWasSkill()) // after Skill
@@ -69,12 +100,12 @@ void Player::Update(float dt)
 	{
 		Transform(MoveVelocity.x, MoveVelocity.y, MoveVelocity.z);
 		visualPre->SetPosition(transInfo.position);
-		if(!FSM->IsInState("PLAYER_SKILL") && !IsFever)
+		if(!FSM->IsInState("PLAYER_SKILL") && !IsFever && !IsChange)
 		{
 			visualPre_Effect_Bg->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
 			visualPre_Effect->SetPosition(attackCollider.center.x - (IsFlip ? -0.5f : 0.5f), attackCollider.center.y + 0.5f, attackCollider.center.z - 0.1f);
 		}
-		if (IsFever)
+		if (IsFever || IsChange)
 		{
 			visualPre_Effect_Bg->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
 			visualPre_Effect->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z - 0.1f);
@@ -96,6 +127,13 @@ void Player::Update(float dt)
 				break;
 			}
 		}
+		if (isSwitch)
+		{
+			visualPre_Switch[0]->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z - 0.1f);
+			visualPre_Switch[1]->SetPosition(transInfo.position.x, transInfo.position.y, transInfo.position.z + 0.1f);
+
+			if (visualPre_Switch[0]->ClipFinished()) isSwitch = false;
+		}
 	}
 
 	// ƒ}ƒbƒv—v‘f‚Æ‚Ì“–‚½‚è”»’è
@@ -113,9 +151,16 @@ void Player::Submit(void)
 	visualPre_Effect_Bg->Submit(Chan::main);
 	// visualPre_Effect
 	if ((FSM->IsInState("PLAYER_ATTACK") && pWeapon->GetCurrentSlot().GetType() != WEAPON_TYPE_2) // attack state
-		|| FSM->IsInState("PLAYER_SKILL") // skill state
+		|| FSM->IsInState("PLAYER_SKILL")	// skill state
+		|| FSM->IsInState("PLAYER_CHANGE")	// change state
 		|| IsFever) // is in fever
 		visualPre_Effect->Submit(Chan::main);
+	// visualPre_Switch
+	if (isSwitch)
+	{
+		visualPre_Switch[0]->Submit(Chan::main);
+		visualPre_Switch[1]->Submit(Chan::main);
+	}
 	//  visualPre_Fever
 	if (IsFever)
 	{
@@ -1209,27 +1254,20 @@ void Player_ChangeState::OnEnter(Player* owner)
 	if (owner->GetIsFever())
 	{
 		owner->SetFeverType(WEAPON_TYPE_0);
-		pack.FrameTotalCount = 48;
+
+		owner->GetVisualPre()->SetFrameAuto(packIn.numU, packIn.numV, packIn.FrameStart, packIn.FrameTotalCount, 4, packIn.FPS, !owner->GetIsFlip(), false);
 	}
 	else
 	{
 		owner->SetFeverType(owner->GetWeaponSlots()->GetCanChange().second);
 		owner->GetWeaponSlots()->DoChange();
-		pack.FrameTotalCount = 48;
+
+		auto size = owner->GetSize();
+		owner->GetVisualPreEffect()->SetScale(size.x * 4.0f, size.y * 4.0f);
+		owner->GetVisualPreEffect()->SetFrameAuto(packOut.numU, packOut.numV, packOut.FrameStart, packOut.FrameTotalCount, 5, packOut.FPS, false, true);
 	}
-	owner->GetVisualPre()->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 4, pack.FPS, !owner->GetIsFlip(), false);
 
 	owner->SetIsFever(!owner->GetIsFever());
-
-	if (owner->GetIsFever())
-	{
-		owner->GetVisualPreEffectBg()->SetFrameAuto(12, 12, 1, 144, 7, 20.0f, false, true);
-		owner->GetVisualPreEffect()->SetFrameAuto(12, 12, 1, 144, 4, 20.0f, false, true);
-	}
-	else
-	{
-		owner->SetBackground();
-	}
 }
 
 void Player_ChangeState::OnExit(Player* owner)
@@ -1239,14 +1277,37 @@ void Player_ChangeState::OnExit(Player* owner)
 	owner->SetIsSkill(false);
 	owner->SetIsHurt(false);
 
+	if (owner->GetIsFever())
+	{
+		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
+		owner->GetVisualPreEffectBg()->SetFrameAuto(12, 12, 1, 144, 7, 20.0f, false, true);
+		owner->GetVisualPreEffect()->SetFrameAuto(12, 12, 1, 144, 4, 20.0f, false, true);
+	}
+	else
+	{
+		owner->SetBackground();
+	}
+
 	owner->GetWeaponSlots()->FinishChange();
 }
 
 void Player_ChangeState::Update(Player* owner, float dt)
 {
-	owner->GetVisualPre()->Update(dt);
+	// anime set
+	if (owner->GetIsFever())
+	{
+		owner->GetVisualPreEffect()->Update(dt);
 
-	//•ÏgŠ®—¹‚Ì”»’f
-	if (owner->GetVisualPre()->ClipFinished())	
-		owner->SetIsChange(false);
+		//•ÏgŠ®—¹‚Ì”»’f
+		if (owner->GetVisualPreEffect()->ClipFinished())
+			owner->SetIsChange(false);
+	}
+	else
+	{
+		owner->GetVisualPre()->Update(dt);
+
+		//•ÏgŠ®—¹‚Ì”»’f
+		if (owner->GetVisualPre()->ClipFinished())
+			owner->SetIsChange(false);
+	}
 }

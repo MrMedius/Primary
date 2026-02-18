@@ -134,9 +134,9 @@ void Game::Update(float dt)
 		if (!Pause)
 		{
 			// Check If Game Over
-			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsTimeUp())
+			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsVictory())
 			{
-				if (pUI_Game->GetIsTimeUp()) 
+				if (pUI_Game->GetIsVictory())
 				{
 					SoundCodex::Get().PlaySE(SndPath::SE_Game_Victory);
 					GameStatsCodex::SetGameClear();
@@ -167,7 +167,7 @@ void Game::Update(float dt)
 					pUI_Game->Update(dt);
 
 					pEnvironmentManager->Update(dt);
-					pEnemyManager->Update(dt, pPlayer->GetPosition());
+					pEnemyManager->Update(dt, pPlayer->GetPosition(), pUI_Game->GetIsInCD());
 					pEffectManager->Update(dt);
 				}
 			}

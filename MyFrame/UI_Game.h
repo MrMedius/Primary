@@ -178,9 +178,14 @@ public:
 		pBoss->Reset();
 	}
 
-	bool GetIsTimeUp() const 
+	bool GetIsInCD() const
 	{
-		return pBoss->GetIsTimeUp();
+		return pBoss->GetIsInCD();
+	}
+
+	bool GetIsVictory() const
+	{
+		return pBoss->GetIsVictory();
 	}
 
 private:

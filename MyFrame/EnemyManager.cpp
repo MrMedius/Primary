@@ -42,7 +42,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	}
 }
 
-void EnemyManager::Update(float dt, XMFLOAT3 position)
+void EnemyManager::Update(float dt, XMFLOAT3 position, bool isInCD)
 {
 
 #ifdef _DEBUG
@@ -111,12 +111,12 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 		NewEnemy = false;
 
 		// êVÇµEnemyTestÇê∂ê¨Ç∑ÇÈ
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD1) || type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));	  Created = true; }
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD4) || type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));	  Created = true; }
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD2) || type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD5) || type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD3) || type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	  Created = true; }
-		if (InputCodex::Get().KeyTriggered(KK_NUMPAD6) || type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	  Created = true; }
+		if (type == 1) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_0>(character_Enemy_Red_0, gfx, rg, pos));	  Created = true; }
+		if (type == 4) { enemies.push_back(ObjectCodex::Acquire<Enemy_Red_1>(character_Enemy_Red_1, gfx, rg, pos));	  Created = true; }
+		if (type == 2) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_0>(character_Enemy_Green_0, gfx, rg, pos)); Created = true; }
+		if (type == 5) { enemies.push_back(ObjectCodex::Acquire<Enemy_Green_1>(character_Enemy_Green_1, gfx, rg, pos)); Created = true; }
+		if (type == 3) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_0>(character_Enemy_Blue_0, gfx, rg, pos));	  Created = true; }
+		if (type == 6) { enemies.push_back(ObjectCodex::Acquire<Enemy_Blue_1>(character_Enemy_Blue_1, gfx, rg, pos));	  Created = true; }
 
 		if (Created)
 		{
@@ -141,7 +141,7 @@ void EnemyManager::Update(float dt, XMFLOAT3 position)
 			case ENEMY_TYPE_GREEN:	GameStatsCodex::AddGreenDefeat();	break;
 			case ENEMY_TYPE_BLUE:	GameStatsCodex::AddBlueDefeat();	break;
 			}
-			GameStatsCodex::AddScore(enemies[i]->GetKillScore());
+			GameStatsCodex::AddScore((isInCD ? 1.0f : 0.1f) * enemies[i]->GetKillScore());
 
 			enemies.erase(enemies.begin() + i);
 			--i;

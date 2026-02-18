@@ -102,9 +102,17 @@ public:
 					"asset\\Images\\Player\\Player_Red_Effect.png",
 					"asset\\Images\\Player\\Player_Green_Effect.png",
 					"asset\\Images\\Player\\Player_Blue_Effect.png",
-					"asset\\Images\\Player\\Player_Fever_Bg_Front.png"});
+					"asset\\Images\\Player\\Player_Fever_Bg_Front.png",
+					"asset\\Images\\Player\\Player_Transform_Fever.png"});
 			visualPre_Effect->SetScale(GetEffectSize());
 			visualPre_Effect->LinkTechniques(rg);
+		}
+		// visualPre_Switch
+		for (int i = 0;i < 2;i++)
+		{
+			visualPre_Switch.push_back(std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\Player\\Player_Transform.png"}));
+			visualPre_Switch[i]->SetScale(GetEffectSize());
+			visualPre_Switch[i]->LinkTechniques(rg);
 		}
 		// visualPre_Fever
 		for (int i = 0;i < 6;i++)
@@ -149,6 +157,7 @@ public:
 		SetIsGameOver(false);
 		pResource->Reset();
 		pWeapon->Reset();
+		isSwitch = false;
 	}
 	void Update(float dt) override;
 	void Submit(void) override;
@@ -204,6 +213,7 @@ private:
 	std::unique_ptr<Sprite3D> visualPre;
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect_Bg;
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect;
+	std::vector<std::unique_ptr<Sprite3DNoLit>> visualPre_Switch;
 	std::vector<std::unique_ptr<Sprite3DNoLit>> visualPre_Fever;
 	Graphics& Gfx;
 	Rgph::RenderGraph& Rg;
@@ -212,6 +222,7 @@ private:
 	std::unique_ptr<ResourceBars> pResource;
 	std::unique_ptr<WeaponSlots> pWeapon;
 	WEAPON_TYPE_ID currentWeaponType{ WEAPON_TYPE_NONE };
+	bool isSwitch{ false };
 	float HpDraw{ 0.0f };
 	bool IsDash{ false };
 	bool IsSkill{ false };
@@ -384,5 +395,6 @@ public:
 	void Update(Player* owner, float dt) override;
 	std::string GetName() const override { return PLAYER_STATE[PLAYER_CHANGE]; }
 private:
-	SpriteAnimeInfo pack{ 12, 10, 49, 48 };
+	SpriteAnimeInfo packIn { 12, 10, 49, 48 };
+	SpriteAnimeInfo packOut{  4,  5,  1, 20 };
 };

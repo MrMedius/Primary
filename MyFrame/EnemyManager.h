@@ -9,7 +9,7 @@ class EnemyManager
 public:
 	EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg);
 	~EnemyManager() = default;
-	void Update(float dt, XMFLOAT3 position);
+	void Update(float dt, XMFLOAT3 position, bool isInCD);
 	void Submit(void);
 	void Reset(void);
 private:
