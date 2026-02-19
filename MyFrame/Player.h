@@ -89,7 +89,8 @@ public:
 					"asset\\Images\\Player\\Player_Red_Effect.png",
 					"asset\\Images\\Player\\Player_Green_Effect.png",
 					"asset\\Images\\Player\\Player_Blue_Effect.png",
-					"asset\\Images\\Player\\Player_Fever_Bg_Back.png"});
+					"asset\\Images\\Player\\Player_Fever_Bg_Back.png",
+					"asset\\Images\\Player\\Player_Transform_Fever.png"});
 			visualPre_Effect_Bg->SetPosition(transInfo.position);
 			visualPre_Effect_Bg->SetScale(GetEffectSize());
 			visualPre_Effect_Bg->SetFrameAuto(12, 10, 1, 120, 0, 20.0f, false, true);
@@ -120,6 +121,7 @@ public:
 			auto scale = 5.0f;
 			visualPre_Fever.push_back(std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\Player\\Player_Fever_Attack.png"}));
 			visualPre_Fever[i]->SetScale(transInfo.scale.x * scale, transInfo.scale.y * scale);
+			visualPre_Fever[i]->SetFrame(9, 8, 49, 24, 1, 0, (i < 3) ? true : false);
 			visualPre_Fever[i]->LinkTechniques(rg);
 		}
 
@@ -395,6 +397,6 @@ public:
 	void Update(Player* owner, float dt) override;
 	std::string GetName() const override { return PLAYER_STATE[PLAYER_CHANGE]; }
 private:
-	SpriteAnimeInfo packIn { 12, 10, 49, 48 };
-	SpriteAnimeInfo packOut{  4,  5,  1, 20 };
+	SpriteAnimeInfo packOut{ 12, 10, 49, 48 };
+	SpriteAnimeInfo packIn{ 7,  7,  0, 24, 10.0f };
 };

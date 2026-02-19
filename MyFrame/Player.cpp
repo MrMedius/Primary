@@ -28,9 +28,9 @@ void Player::Update(float dt)
 
 	// ó‘Ô‘JˆÚ
 	// Fever related
-	if (GetWeaponSlots()->GetCanChange().first && !IsDeath)
+	if (!IsChange && !IsDeath)
 	{
-		if (inputSnap.change || // Get into Fever
+		if ((inputSnap.change && GetWeaponSlots()->GetCanChange().first) || // Get into Fever
 			(IsFever && !GetWeaponSlots()->GetIsFever())) // Exit Fever
 		{
 			SetIsChange(true);	// Fever‚É“ü‚é
@@ -1255,16 +1255,15 @@ void Player_ChangeState::OnEnter(Player* owner)
 	{
 		owner->SetFeverType(WEAPON_TYPE_0);
 
-		owner->GetVisualPre()->SetFrameAuto(packIn.numU, packIn.numV, packIn.FrameStart, packIn.FrameTotalCount, 4, packIn.FPS, !owner->GetIsFlip(), false);
+		owner->GetVisualPre()->SetFrameAuto(packOut.numU, packOut.numV, packOut.FrameStart, packOut.FrameTotalCount, 4, packOut.FPS, !owner->GetIsFlip(), false);
 	}
 	else
 	{
 		owner->SetFeverType(owner->GetWeaponSlots()->GetCanChange().second);
 		owner->GetWeaponSlots()->DoChange();
 
-		auto size = owner->GetSize();
-		owner->GetVisualPreEffect()->SetScale(size.x * 4.0f, size.y * 4.0f);
-		owner->GetVisualPreEffect()->SetFrameAuto(packOut.numU, packOut.numV, packOut.FrameStart, packOut.FrameTotalCount, 5, packOut.FPS, false, true);
+		owner->GetVisualPreEffect()->SetFrameAuto(packIn.numU, packIn.numV, 1, 25, 5, packIn.FPS, false, true);
+		owner->GetVisualPreEffectBg()->SetFrameAuto(packIn.numU, packIn.numV, 24, 23, 8, packIn.FPS, false, true);
 	}
 
 	owner->SetIsFever(!owner->GetIsFever());
@@ -1279,7 +1278,6 @@ void Player_ChangeState::OnExit(Player* owner)
 
 	if (owner->GetIsFever())
 	{
-		owner->GetVisualPreEffect()->SetScale(owner->GetEffectSize());
 		owner->GetVisualPreEffectBg()->SetFrameAuto(12, 12, 1, 144, 7, 20.0f, false, true);
 		owner->GetVisualPreEffect()->SetFrameAuto(12, 12, 1, 144, 4, 20.0f, false, true);
 	}
@@ -1299,7 +1297,7 @@ void Player_ChangeState::Update(Player* owner, float dt)
 		owner->GetVisualPreEffect()->Update(dt);
 
 		//•ÏgŠ®—¹‚Ì”»’f
-		if (owner->GetVisualPreEffect()->ClipFinished())
+		if (owner->GetVisualPreEffectBg()->ClipFinished())
 			owner->SetIsChange(false);
 	}
 	else

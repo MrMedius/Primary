@@ -53,7 +53,7 @@ public:
 		// PlayerHpBar_Side
 		{
 			pPlayerHpBar_Side = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Game\\Player_HP_Side.png" });
-			pPlayerHpBar_Side->SetScale(25.0f, 50.0f);
+			pPlayerHpBar_Side->SetScale(15.0f, 50.0f);
 			pPlayerHpBar_Side->SetFrameAuto(8, 6, 1, 48, 0, 30.0f);
 			pPlayerHpBar_Side->LinkTechniques(rg);
 		}
@@ -154,13 +154,16 @@ public:
 		pPlayerHpBar_Side->Submit(Chan::ui);
 		if (!fever)
 		{
-			// ResourceSlot
-			for (size_t i = 0; i < slotNum; i++)
+			if(!player->GetIsChange())
 			{
-				pResourceSlot[i]->Submit();
+				// ResourceSlot
+				for (size_t i = 0; i < slotNum; i++)
+				{
+					pResourceSlot[i]->Submit();
+				}
+				// WeaponSlot
+				pWeaponSlot->Submit();
 			}
-			// WeaponSlot
-			pWeaponSlot->Submit();
 		}
 		// Combo
 		pCombo->Submit();

@@ -8,7 +8,7 @@
 class Effect_Player_Hit : public Effect
 {
 public:
-	Effect_Player_Hit(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT3 position, bool flip, Object_Type_Tag tag = effect_Player_Hit)
+	Effect_Player_Hit(Graphics& gfx, Rgph::RenderGraph& rg, XMFLOAT3 position, bool flip, int type, Object_Type_Tag tag = effect_Player_Hit)
 		:
 		Effect(tag)
 	{
@@ -16,13 +16,27 @@ public:
 		SetPosition(position);
 		SetSize({ 8.0f,8.0f,0.0f });
 		SetCollisionOnOff(false);
+		pack[0] = { 5,2,1,10,20.0f };
+		pack[1] = { 0,0,0, 0, 0.0f };
+		pack[2] = { 3,2,1, 6,20.0f };
 
 		// graphics init
-		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{"asset\\Images\\\Player\\Player_Blue_Effect.png"});
-		visualPre->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, flip, false);
+		int t = type - 1;
+		visualPre = std::make_unique<Sprite3DNoLit>(gfx, std::vector<std::string>{
+			"asset\\Images\\\Player\\Effect_Red_Hit.png", 
+			"asset\\Images\\\Player\\Player_Green_Effect.png", 
+			"asset\\Images\\\Player\\Effect_Blue_Hit.png"});
+		visualPre->SetFrameAuto(pack[t].numU, pack[t].numV, pack[t].FrameStart, pack[t].FrameTotalCount, t, pack[t].FPS, flip, false);
 		visualPre->SetPosition(transInfo.position);
 		visualPre->SetScale(transInfo.scale);
 		visualPre->LinkTechniques(rg);
+	}
+	void SpawnWithType(XMFLOAT3 pos, bool flip, int type)
+	{
+		SpawnAt(pos, flip);
+
+		int t = type - 1;
+		visualPre->SetFrameAuto(pack[t].numU, pack[t].numV, pack[t].FrameStart, pack[t].FrameTotalCount, t, pack[t].FPS, flip, false);
 	}
 	void SpawnAt(XMFLOAT3 pos, bool flip) override
 	{	
@@ -30,7 +44,6 @@ public:
 		SetPosition(pos);
 
 		// reset animation
-		visualPre->SetFrameAuto(pack.numU, pack.numV, pack.FrameStart, pack.FrameTotalCount, 0, pack.FPS, flip, false);
 		visualPre->SetPosition(transInfo.position);
 	}
 	void OnEnable(void) override {}
@@ -51,5 +64,5 @@ public:
 	void OnCollide(Character* other) override {}
 private:
 	std::unique_ptr<Sprite3DNoLit> visualPre;
-	SpriteAnimeInfo pack{ 12,13,145,5 };
+	SpriteAnimeInfo pack[3];
 };

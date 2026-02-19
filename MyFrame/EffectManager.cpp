@@ -22,7 +22,7 @@ EffectManager::EffectManager(Graphics& gfx, Rgph::RenderGraph& rg)
 		ObjectCodex::Acquire<Effect_Player_Remote_1>(effect_Player_Remote_Attack_1, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, false);
 		ObjectCodex::Acquire<Effect_Player_Remote_2>(effect_Player_Remote_Attack_2, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, false);
 		ObjectCodex::Acquire<Effect_Player_Remote_3>(effect_Player_Remote_Attack_3, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, false);
-		ObjectCodex::Acquire<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, false);
+		ObjectCodex::Acquire<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, false, 0);
 		ObjectCodex::Acquire<Effect_Player_EnergyAbsorb>(effect_Player_EnergyAbsorb, gfx, rg, XMFLOAT3{ 0.0f,0.0f,0.0f }, 1);
 	}
 	for (int i = 0;i < 30;i++)
@@ -99,8 +99,15 @@ void EffectManager::Update(float dt)
 				effects.push_back(ea);
 				ea->SpawnWithType(pos, type, count);
 
-				effects.push_back(ObjectCodex::Acquire<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, pos, flip));
-				effects.back()->SpawnAt(pos, flip);
+				type = 0;
+				if (pPlayer->GetWeaponSlots()->GetCurrentSlot().GetType() == WEAPON_TYPE_1) type = 1;
+				else if (pPlayer->GetWeaponSlots()->GetCurrentSlot().GetType() == WEAPON_TYPE_3) type = 3;
+				if (type == 1 || type == 3)
+				{
+					auto* eh = ObjectCodex::Acquire<Effect_Player_Hit>(effect_Player_Hit, gfx, rg, pos, flip, type);
+					effects.push_back(eh);
+					eh->SpawnWithType(pos, flip, type);
+				}
 			}
 		}
 	}

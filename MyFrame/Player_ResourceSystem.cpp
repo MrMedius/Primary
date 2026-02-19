@@ -155,6 +155,7 @@ void WeaponSlots::DoChange(void)
 
 	IsChange = true;
 	IsFever = true;
+	CanChange = { false,WEAPON_TYPE_NONE };
 }
 
 void WeaponSlots::FinishChange(void)
