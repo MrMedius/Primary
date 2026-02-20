@@ -24,7 +24,7 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,25.0f,0.0f })
+	light(wnd.Gfx(), { 0.0f,40.0f,0.0f })
 {
 #ifdef _DEBUG
 	cameras.AddCamera(light.ShareCamera());
@@ -33,17 +33,17 @@ Game::Game(const std::string& commandLine)
 	light.LinkTechniques(gameRG);
 	cameras.LinkTechniques(gameRG);
 
+	// Objects
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,15.0f,0.0f });
+	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
+	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG);
+	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
+
 	// UI
 	pUI_Title = std::make_unique<UI_Title>(wnd.Gfx(), UIRG);
 	pUI_Game = std::make_unique<UI_Game>(wnd.Gfx(), gameRG);
 	pUI_Result = std::make_unique<UI_Result>(wnd.Gfx(), UIRG);
 	pUI_Loading = std::make_unique<UI_Loading>(wnd.Gfx(), UIRG);
-
-	// Objects
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,5.0f,0.0f });
-	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
-	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG);
-	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);
 
 	// Sound Base Setting
 	SoundCodex::Get().PlayBGM(SndPath::BGM_Title, -1);
@@ -133,7 +133,7 @@ void Game::Update(float dt)
 	case SCENE_GAME:
 		if (!Pause)
 		{
-			// Check If Game Over
+			// Check If Game Finished
 			if (pPlayer->GetIsGameOver() || pUI_Game->GetIsVictory())
 			{
 				if (pUI_Game->GetIsVictory())
@@ -163,7 +163,7 @@ void Game::Update(float dt)
 
 				if (!pPlayer->GetIsChange())
 				{
-					GameStatsCodex::Update(dt);
+					GameStatsCodex::UpdateLifeTime(dt);
 					pUI_Game->Update(dt);
 
 					pEnvironmentManager->Update(dt);

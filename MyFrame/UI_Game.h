@@ -1,6 +1,8 @@
 #pragma once
 #include "Graphics.h"
+#include "GameStatsCodex.h"
 #include "ObjectCodex.h"
+
 #include "Player.h"
 #include "Sprite2D.h"
 #include "Sprite2DPolygon.h"
@@ -9,6 +11,7 @@
 #include "UI_Score.h"
 #include "UI_Combo.h"
 #include "UI_Boss.h"
+#include "UI_Tutorial.h"
 
 #include "Channels.h"
 
@@ -70,6 +73,8 @@ public:
 		pScore = std::make_unique<UI_Score>(gfx, rg);
 		// Boss
 		pBoss = std::make_unique<UI_Boss>(gfx, rg);
+		// Tutorial
+		pTutorial = std::make_unique<UI_Tutorial>(gfx, rg);
 	}
 	~UI_Game() = default;
 
@@ -128,10 +133,19 @@ public:
 			std::vector<float> countdowns = player->GetResourceBars()->GetAttackComboCountdownRates();
 			pCombo->Update(dt, combos, countdowns);
 		}
-		// Score
-		pScore->Update(dt);
-		// Boss
-		pBoss->Update(dt);
+
+		if(!GameStatsCodex::GetIsTutorial())
+		{
+			// Score
+			pScore->Update(dt);
+			// Boss
+			pBoss->Update(dt);
+		}
+		else
+		{
+			// Tutorial
+			pTutorial->Update(dt);
+		}
 	}
 
 	void Submit(void)
@@ -167,10 +181,19 @@ public:
 		}
 		// Combo
 		pCombo->Submit();
-		// Score
-		pScore->Submit();
-		// Boss
-		pBoss->Submit();
+
+		if (!GameStatsCodex::GetIsTutorial())
+		{
+			// Score
+			pScore->Submit();
+			// Boss
+			pBoss->Submit();
+		}
+		else
+		{
+			// Tutorial
+			pTutorial->Submit();
+		}
 	}
 
 	void Reset(void)
@@ -179,6 +202,8 @@ public:
 		pScore->Reset();
 		// Boss
 		pBoss->Reset();
+		// Tutorial
+		pTutorial->Reset();
 	}
 
 	bool GetIsInCD() const
@@ -213,4 +238,6 @@ private:
 	std::unique_ptr<UI_Score> pScore;
 	// Boss
 	std::unique_ptr<UI_Boss> pBoss;
+	// Tutorial
+	std::unique_ptr<UI_Tutorial> pTutorial;
 };

@@ -29,6 +29,7 @@ void PointLight::Update(float dt, DirectX::XMFLOAT3 pos) noexcept
 
 	// always bigger than player's Z
 	const float targetX = pos.x;
+	const float targetY = pos.y;
 	const float targetZ = pos.z + zBias;
 
 	const float dx = targetX - cbData.pos.x;
@@ -44,6 +45,11 @@ void PointLight::Update(float dt, DirectX::XMFLOAT3 pos) noexcept
 	{
 		if (cbData.pos.z <= targetZ)
 			cbData.pos.z = targetZ;
+	}
+
+	if (cbData.pos.y - targetY > 25.0f)
+	{
+		cbData.pos.y = targetY + 25.0f;
 	}
 
 	pCamera->SetPos(cbData.pos);

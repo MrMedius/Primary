@@ -17,5 +17,8 @@ private:
 	Graphics& gfx;
 	Rgph::RenderGraph& rg;
 
-	std::vector<Environment*> environments;
+	std::vector<Environment*> eT;
+	std::vector<Environment*> eG;
+
+	bool isTutorial{ true };
 };

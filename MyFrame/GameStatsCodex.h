@@ -44,48 +44,102 @@ struct PerformanceData
     }
 };
 
+struct TutorialData
+{
+    bool isTutorial{ true };
+
+    bool isMoved{ false };
+    bool isDashed{ false };
+    bool isAttacked{ false };
+    bool isSwitched{ false };
+    bool isSkilled{ false };
+
+    void Reset() noexcept
+    {
+        isTutorial = true;
+
+        isMoved = false;
+        isDashed = false;
+        isAttacked = false;
+        isSwitched = false;
+        isSkilled = false;
+    }
+};
+
+
 class GameStatsCodex
 {
 public:
     // read only
-    static const PerformanceData& Get() noexcept { return Get_().data; }
+    static const PerformanceData& Get() noexcept { return Get_().pData; }
 
     // write
-    static void Reset() noexcept { Get_().data.Reset(); }
-
-    static void Update(float dt) noexcept
-    {
-        if (dt > 0.0f) Get_().data.lifeTime += dt;
+    static void Reset() noexcept 
+    { 
+        Get_().pData.Reset(); 
+        Get_().tData.Reset();
     }
 
-    static void AddScore(int s) noexcept { Get_().data.score += s; }
-    static void SetGameClear() noexcept  { Get_().data.gameClear = true; }
+    /////////////////////////////////////////////////////////
+    // PerformanceData
+    /////////////////////////////////////////////////////////
+    static bool GetIsTutorial(void) noexcept     { return Get_().tData.isTutorial; }
+    static void SetFinishTutorial(void) noexcept { Get_().tData.isTutorial = false; }
 
-    static void AddTotalDefeat(int c = 1) noexcept { Get_().data.totalDefeat += c; }
-    static void AddRedDefeat(int c = 1) noexcept   { Get_().data.rDefeat += c; }
-    static void AddGreenDefeat(int c = 1) noexcept { Get_().data.gDefeat += c; }
-    static void AddBlueDefeat(int c = 1) noexcept  { Get_().data.bDefeat += c; }
+    static bool GetIsMoved(void) noexcept { return Get_().tData.isMoved; }
+    static void SetMoved(void) noexcept   { Get_().tData.isMoved = true; }
+
+    static bool GetIsDashed(void) noexcept { return Get_().tData.isDashed; }
+    static void SetDashed(void) noexcept   { Get_().tData.isDashed = true; }
+
+    static bool GetIsAttacked(void) noexcept { return Get_().tData.isAttacked; }
+    static void SetAttacked(void) noexcept   { Get_().tData.isAttacked = true; }
+
+    static bool GetIsSwitched(void) noexcept { return Get_().tData.isSwitched; }
+    static void SetSwitched(void) noexcept   { Get_().tData.isSwitched = true; }
+
+    static bool GetIsSkilled(void) noexcept { return Get_().tData.isSkilled; }
+    static void SetSkilled(void) noexcept   { Get_().tData.isSkilled = true; }
+
+
+
+    /////////////////////////////////////////////////////////
+    // PerformanceData
+    /////////////////////////////////////////////////////////
+    static void UpdateLifeTime(float dt) noexcept
+    {
+        if (dt > 0.0f && !Get_().tData.isTutorial)
+            Get_().pData.lifeTime += dt;
+    }
+
+    static void AddScore(int s) noexcept { if (Get_().tData.isTutorial) Get_().pData.score += s; }
+    static void SetGameClear() noexcept  { if (Get_().tData.isTutorial) Get_().pData.gameClear = true; }
+
+    static void AddTotalDefeat(int c = 1) noexcept { if (Get_().tData.isTutorial) Get_().pData.totalDefeat += c; }
+    static void AddRedDefeat(int c = 1) noexcept   { if (Get_().tData.isTutorial) Get_().pData.rDefeat += c; }
+    static void AddGreenDefeat(int c = 1) noexcept { if (Get_().tData.isTutorial) Get_().pData.gDefeat += c; }
+    static void AddBlueDefeat(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.bDefeat += c; }
 
     static void ReportRedCombo(int v) noexcept
     {
-        if (v >= 0) Get_().data.rHighestCombo = std::max(Get_().data.rHighestCombo, v);
+        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.rHighestCombo = std::max(Get_().pData.rHighestCombo, v);
     }
     static void ReportGreenCombo(int v) noexcept
     {
-        if (v >= 0) Get_().data.gHighestCombo = std::max(Get_().data.gHighestCombo, v);
+        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.gHighestCombo = std::max(Get_().pData.gHighestCombo, v);
     }
     static void ReportBlueCombo(int v) noexcept
     {
-        if (v >= 0) Get_().data.bHighestCombo = std::max(Get_().data.bHighestCombo, v);
+        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.bHighestCombo = std::max(Get_().pData.bHighestCombo, v);
     }
 
-    static void AddTotalWeapon(int c = 1) noexcept  { Get_().data.totalWeapon += c; }
-    static void AddRedWeapon(int c = 1) noexcept    { Get_().data.rWeapon += c; }
-    static void AddGreenWeapon(int c = 1) noexcept  { Get_().data.gWeapon += c; }
-    static void AddBlueWeapon(int c = 1) noexcept   { Get_().data.bWeapon += c; }
+    static void AddTotalWeapon(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.totalWeapon += c; }
+    static void AddRedWeapon(int c = 1) noexcept    { if (Get_().tData.isTutorial) Get_().pData.rWeapon += c; }
+    static void AddGreenWeapon(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.gWeapon += c; }
+    static void AddBlueWeapon(int c = 1) noexcept   { if (Get_().tData.isTutorial) Get_().pData.bWeapon += c; }
 
-    static void AddOutputDamage(float d) noexcept { if (d > 0) Get_().data.outputDamage += d; }
-    static void AddInputDamage(float d) noexcept  { if (d > 0) Get_().data.inputDamage += d; }
+    static void AddOutputDamage(float d) noexcept { if (Get_().tData.isTutorial) if (d > 0) Get_().pData.outputDamage += d; }
+    static void AddInputDamage(float d) noexcept  { if (Get_().tData.isTutorial) if (d > 0) Get_().pData.inputDamage += d; }
 
     static void SpawnWindow()
     {
@@ -121,7 +175,7 @@ public:
             ImGui::Text("Green: %d", s.gHighestCombo);
             ImGui::Text("Blue:  %d", s.bHighestCombo);
         }
-
+            
         if (ImGui::CollapsingHeader("Weapon", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::Text("Total: %d", s.totalWeapon);
@@ -154,5 +208,6 @@ private:
     }
 
 private:
-    PerformanceData data;
+    PerformanceData pData;
+    TutorialData tData;
 };

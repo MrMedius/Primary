@@ -98,3 +98,15 @@ constexpr T ease_in_back(T t, T backPortion, T sharpness = (T)0) noexcept
         return +hump(u);           // plus accel
     }
 }
+
+template<typename T>
+constexpr T ease_in_pow(T t, T exponent) noexcept
+{
+    return (T)pow((double)t, (double)exponent);
+}
+
+template<typename T> 
+constexpr T ease_out_pow(T t, T exponent) noexcept
+{
+    return (T)1 - (T)pow((double)(1 - t), (double)exponent);
+}
