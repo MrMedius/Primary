@@ -65,6 +65,7 @@ public:
 	void EnableAutorepeat() noexcept;
 	void DisableAutorepeat() noexcept;
 	bool AutorepeatIsEnabled() const noexcept;
+	bool AnyKeyPressed() const noexcept { return keystates.any(); }
 private:
 	void OnKeyPressed( unsigned char keycode ) noexcept;
 	void OnKeyReleased( unsigned char keycode ) noexcept;

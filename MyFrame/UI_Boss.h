@@ -119,7 +119,7 @@ public:
 
 	bool GetIsVictory() const
 	{
-		return state == Fight&& cdRemain <= 0.0f;
+		return state == Fight && cdRemain <= 0.0f;
 	}
 private:
 	enum State

@@ -1,6 +1,5 @@
 #pragma once
 #include "Enemy.h"
-#include <random>
 
 class Enemy_Red_0_IdleState;
 class Enemy_Red_0_ChaseState;

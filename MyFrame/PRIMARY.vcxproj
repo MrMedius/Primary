@@ -187,6 +187,9 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DynamicCubeTexture.cpp" />
     <ClCompile Include="DynamicVertexBuffer.cpp" />
+    <ClCompile Include="Enemy_Blue_T.cpp" />
+    <ClCompile Include="Enemy_Green_T.cpp" />
+    <ClCompile Include="Enemy_Red_T.cpp" />
     <ClCompile Include="FireflyEffect.cpp" />
     <ClCompile Include="FogVolume.cpp" />
     <ClCompile Include="CubeTiled.cpp" />
@@ -310,6 +313,9 @@
     <ClInclude Include="Collision.h" />
     <ClInclude Include="DynamicCubeTexture.h" />
     <ClInclude Include="DynamicVertexBuffer.h" />
+    <ClInclude Include="Enemy_Blue_T.h" />
+    <ClInclude Include="Enemy_Green_T.h" />
+    <ClInclude Include="Enemy_Red_T.h" />
     <ClInclude Include="FireflyEffect.h" />
     <ClInclude Include="FireflyField.h" />
     <ClInclude Include="FogVolume.h" />

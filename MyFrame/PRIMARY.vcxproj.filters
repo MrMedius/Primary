@@ -555,6 +555,15 @@
     <ClCompile Include="SkyboxTransitionCbuf.cpp">
       <Filter>Source Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy_Red_T.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Green_T.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy_Blue_T.cpp">
+      <Filter>Source Files\Object\Character\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -1090,6 +1099,15 @@
     </ClInclude>
     <ClInclude Include="UI_Tutorial.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Red_T.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Green_T.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy_Blue_T.h">
+      <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

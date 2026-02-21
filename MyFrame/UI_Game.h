@@ -133,7 +133,6 @@ public:
 			std::vector<float> countdowns = player->GetResourceBars()->GetAttackComboCountdownRates();
 			pCombo->Update(dt, combos, countdowns);
 		}
-
 		if(!GameStatsCodex::GetIsTutorial())
 		{
 			// Score
@@ -141,11 +140,8 @@ public:
 			// Boss
 			pBoss->Update(dt);
 		}
-		else
-		{
-			// Tutorial
-			pTutorial->Update(dt);
-		}
+		// Tutorial
+		pTutorial->Update(dt);
 	}
 
 	void Submit(void)
@@ -189,11 +185,8 @@ public:
 			// Boss
 			pBoss->Submit();
 		}
-		else
-		{
-			// Tutorial
-			pTutorial->Submit();
-		}
+		// Tutorial
+		pTutorial->Submit();
 	}
 
 	void Reset(void)

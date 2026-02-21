@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <XInput.h>
+#include <cmath>
 
 #pragma comment(lib, "xinput.lib")
 
@@ -44,6 +45,17 @@ public:
     bool RT_Pressed() const noexcept    { return rtDown; }
     bool RT_Triggered() const noexcept  { return rtDown && !rtDownOld; }
     bool RT_Released() const noexcept   { return !rtDown && rtDownOld; }
+
+    bool HasAnyInput() const noexcept
+    {
+        if (!connected) return false;
+        return state.Gamepad.wButtons != 0
+            || ltDown || rtDown   
+            || abs(leftX)  > 0.0f 
+            || abs(leftY)  > 0.0f 
+            || abs(rightX) > 0.0f 
+            || abs(rightY) > 0.0f;
+    }
 
     // ---- Common button constants
     static constexpr WORD GP_A          = XINPUT_GAMEPAD_A;

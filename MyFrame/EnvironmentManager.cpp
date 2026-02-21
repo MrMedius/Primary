@@ -61,8 +61,6 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 
 void EnvironmentManager::Update(float dt)
 {
-	bool tutor = GameStatsCodex::GetIsTutorial();
-
 	if (isTutorial)
 	{
 		for (int i = 0;i < eT.size();i++)
@@ -78,9 +76,9 @@ void EnvironmentManager::Update(float dt)
 		}
 	}
 
-	if (isTutorial && tutor != isTutorial)
+	if (isTutorial && isTutorial != GameStatsCodex::GetIsTutorial())
 	{
-		isTutorial = tutor;
+		isTutorial = GameStatsCodex::GetIsTutorial();
 		for (int i = 0;i < eT.size();i++) eT[i]->Deactivate();
 		for (int i = 0;i < eG.size();i++) eG[i]->Activate();
 	}

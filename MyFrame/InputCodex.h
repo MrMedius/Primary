@@ -38,13 +38,15 @@ public:
     void DisableKeyAutorepeat() noexcept        { keyboard.DisableAutorepeat(); }
     bool KeyAutorepeatEnabled() const noexcept  { return keyboard.AutorepeatIsEnabled(); }
 
+    bool KeyboardInput() noexcept { return keyboard.AnyKeyPressed(); }
+
 
     // -----------------------------------------------------------
     // Mouse query
     std::pair<int, int> MousePos() const noexcept   { return mouse.GetPos(); }
     int MouseX() const noexcept                     { return mouse.GetPosX(); }
     int MouseY() const noexcept                     { return mouse.GetPosY(); }
-    bool MouseMovedOrButtons() const noexcept       { return mouse.IsMove(); }
+    bool MouseMovedOrButtons() const noexcept       { return mouse.IsMove() || MouseLeftPressed() || MouseRightPressed(); }
     bool MouseInWindow() const noexcept             { return mouse.IsInWindow(); }
 
     bool MouseLeftPressed() const noexcept      { return mouse.LeftIsPressed(); }
@@ -62,6 +64,8 @@ public:
     void DisableRawMouse() noexcept { mouse.DisableRaw(); }
     bool RawMouseEnabled() const noexcept                   { return mouse.RawEnabled(); }
     std::optional<Mouse::RawDelta> ReadRawDelta() noexcept  { return mouse.ReadRawDelta(); }
+
+    bool MouseInput() noexcept { return MouseMovedOrButtons(); }
 
 
     // -----------------------------------------------------------
@@ -97,6 +101,15 @@ public:
     bool GP_LT_Triggered(int idx) const noexcept { return Pad(idx).LT_Triggered(); }
     bool GP_RT_Triggered(int idx) const noexcept { return Pad(idx).RT_Triggered(); }
 
+    bool GamepadInput(int idx) const noexcept { return Pad(idx).HasAnyInput(); }
+
+    bool AnyGamepadInput() const noexcept
+    {
+        for (int i = 0; i < kMaxPads; ++i)
+            if (pads[i].HasAnyInput()) return true;
+        return false;
+    }
+
     void GP_SetVibration(int idx, float leftMotor, float rightMotor) noexcept
     {
         Pad(idx).SetVibration(leftMotor, rightMotor);
@@ -117,6 +130,7 @@ public:
             if (pads[i].IsConnected())
                 pads[i].SetVibrationPulse(leftMotor, rightMotor, frames);
     }
+
 
 private:
     // Injection API (called from Window/WndProc)

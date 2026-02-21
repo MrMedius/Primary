@@ -167,7 +167,7 @@ void Game::Update(float dt)
 					pUI_Game->Update(dt);
 
 					pEnvironmentManager->Update(dt);
-					pEnemyManager->Update(dt, pPlayer->GetPosition(), pUI_Game->GetIsInCD());
+					pEnemyManager->Update(dt, pUI_Game->GetIsInCD());
 					pEffectManager->Update(dt);
 				}
 			}
@@ -185,6 +185,7 @@ void Game::Update(float dt)
 
 			pPlayer->OnEnable();
 			cameras.Reset();
+			light.Reset();
 			pEnemyManager->Reset();
 			pEnvironmentManager->Reset();
 			pEffectManager->Reset();

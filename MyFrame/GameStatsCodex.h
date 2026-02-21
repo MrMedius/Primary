@@ -53,6 +53,7 @@ struct TutorialData
     bool isAttacked{ false };
     bool isSwitched{ false };
     bool isSkilled{ false };
+    bool isFevered{ false };
 
     void Reset() noexcept
     {
@@ -63,6 +64,7 @@ struct TutorialData
         isAttacked = false;
         isSwitched = false;
         isSkilled = false;
+        isFevered = false;
     }
 };
 
@@ -101,6 +103,9 @@ public:
     static bool GetIsSkilled(void) noexcept { return Get_().tData.isSkilled; }
     static void SetSkilled(void) noexcept   { Get_().tData.isSkilled = true; }
 
+    static bool GetIsFevered(void) noexcept { return Get_().tData.isFevered; }
+    static void SetFevered(void) noexcept { Get_().tData.isFevered = true; }
+
 
 
     /////////////////////////////////////////////////////////
@@ -112,34 +117,34 @@ public:
             Get_().pData.lifeTime += dt;
     }
 
-    static void AddScore(int s) noexcept { if (Get_().tData.isTutorial) Get_().pData.score += s; }
-    static void SetGameClear() noexcept  { if (Get_().tData.isTutorial) Get_().pData.gameClear = true; }
+    static void AddScore(int s) noexcept { if (!Get_().tData.isTutorial) Get_().pData.score += s; }
+    static void SetGameClear() noexcept  { if (!Get_().tData.isTutorial) Get_().pData.gameClear = true; }
 
-    static void AddTotalDefeat(int c = 1) noexcept { if (Get_().tData.isTutorial) Get_().pData.totalDefeat += c; }
-    static void AddRedDefeat(int c = 1) noexcept   { if (Get_().tData.isTutorial) Get_().pData.rDefeat += c; }
-    static void AddGreenDefeat(int c = 1) noexcept { if (Get_().tData.isTutorial) Get_().pData.gDefeat += c; }
-    static void AddBlueDefeat(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.bDefeat += c; }
+    static void AddTotalDefeat(int c = 1) noexcept { if (!Get_().tData.isTutorial) Get_().pData.totalDefeat += c; }
+    static void AddRedDefeat(int c = 1) noexcept   { if (!Get_().tData.isTutorial) Get_().pData.rDefeat += c; }
+    static void AddGreenDefeat(int c = 1) noexcept { if (!Get_().tData.isTutorial) Get_().pData.gDefeat += c; }
+    static void AddBlueDefeat(int c = 1) noexcept  { if (!Get_().tData.isTutorial) Get_().pData.bDefeat += c; }
 
     static void ReportRedCombo(int v) noexcept
     {
-        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.rHighestCombo = std::max(Get_().pData.rHighestCombo, v);
+        if (!Get_().tData.isTutorial) if (v >= 0) Get_().pData.rHighestCombo = std::max(Get_().pData.rHighestCombo, v);
     }
     static void ReportGreenCombo(int v) noexcept
     {
-        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.gHighestCombo = std::max(Get_().pData.gHighestCombo, v);
+        if (!Get_().tData.isTutorial) if (v >= 0) Get_().pData.gHighestCombo = std::max(Get_().pData.gHighestCombo, v);
     }
     static void ReportBlueCombo(int v) noexcept
     {
-        if (Get_().tData.isTutorial) if (v >= 0) Get_().pData.bHighestCombo = std::max(Get_().pData.bHighestCombo, v);
+        if (!Get_().tData.isTutorial) if (v >= 0) Get_().pData.bHighestCombo = std::max(Get_().pData.bHighestCombo, v);
     }
 
-    static void AddTotalWeapon(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.totalWeapon += c; }
-    static void AddRedWeapon(int c = 1) noexcept    { if (Get_().tData.isTutorial) Get_().pData.rWeapon += c; }
-    static void AddGreenWeapon(int c = 1) noexcept  { if (Get_().tData.isTutorial) Get_().pData.gWeapon += c; }
-    static void AddBlueWeapon(int c = 1) noexcept   { if (Get_().tData.isTutorial) Get_().pData.bWeapon += c; }
+    static void AddTotalWeapon(int c = 1) noexcept  { if (!Get_().tData.isTutorial) Get_().pData.totalWeapon += c; }
+    static void AddRedWeapon(int c = 1) noexcept    { if (!Get_().tData.isTutorial) Get_().pData.rWeapon += c; }
+    static void AddGreenWeapon(int c = 1) noexcept  { if (!Get_().tData.isTutorial) Get_().pData.gWeapon += c; }
+    static void AddBlueWeapon(int c = 1) noexcept   { if (!Get_().tData.isTutorial) Get_().pData.bWeapon += c; }
 
-    static void AddOutputDamage(float d) noexcept { if (Get_().tData.isTutorial) if (d > 0) Get_().pData.outputDamage += d; }
-    static void AddInputDamage(float d) noexcept  { if (Get_().tData.isTutorial) if (d > 0) Get_().pData.inputDamage += d; }
+    static void AddOutputDamage(float d) noexcept { if (!Get_().tData.isTutorial) if (d > 0) Get_().pData.outputDamage += d; }
+    static void AddInputDamage(float d) noexcept  { if (!Get_().tData.isTutorial) if (d > 0) Get_().pData.inputDamage += d; }
 
     static void SpawnWindow()
     {

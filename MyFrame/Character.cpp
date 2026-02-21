@@ -119,10 +119,13 @@ void Character::MapItemCollide(void)
 	std::vector<Character*> mapCharacters;
 	for (auto tag : {
 		character_Player,
+		character_Enemy_Red_T,
 		character_Enemy_Red_0,
 		character_Enemy_Red_1,
+		character_Enemy_Green_T,
 		character_Enemy_Green_0,
 		character_Enemy_Green_1,
+		character_Enemy_Blue_T,
 		character_Enemy_Blue_0,
 		character_Enemy_Blue_1
 		}) {
