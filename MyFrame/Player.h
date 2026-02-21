@@ -5,6 +5,7 @@
 #include "CameraContainer.h"
 #include "Sprite3D.h"
 #include "Sprite3DNoLit.h"
+#include "Sprite2D.h"
 #include "Player_ResourceSystem.h"
 
 // ƒvƒŒƒCƒ„[ó‘Ô‚ÌID
@@ -124,6 +125,14 @@ public:
 			visualPre_Fever[i]->SetFrame(9, 8, 49, 24, 1, 0, (i < 3) ? true : false);
 			visualPre_Fever[i]->LinkTechniques(rg);
 		}
+		// visualPre_Fever_Mega
+		{
+			
+			visualPre_Fever_Mega = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{"asset\\Images\\Player\\Player_Fever_Blink.png", "asset\\Images\\Player\\Player_Fever_Mega.png" });
+			visualPre_Fever_Mega->SetPosition(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
+			visualPre_Fever_Mega->SetScale(SCREEN_WIDTH * 1.1f, SCREEN_HEIGHT * 1.1f);
+			visualPre_Fever_Mega->LinkTechniques(rg);
+		}
 
 		// FSM state init
 		FSM = std::make_unique<StateMachine<Player>>(this);
@@ -159,7 +168,15 @@ public:
 		SetIsGameOver(false);
 		pResource->Reset();
 		pWeapon->Reset();
+		IsChange = false;
+		IsFever = false;
 		isSwitch = false;
+		IsFeverMega = false;
+		SetBackground();
+		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
+		SetAttackCollisionOnOff(false);
+		SetDoAttackType(Attack_Type_None);
+		SetFeverType(WEAPON_TYPE_0);
 	}
 	void Update(float dt) override;
 	void Submit(void) override;
@@ -191,6 +208,8 @@ public:
 	bool GetIsChange(void) const { return IsChange; }
 	void SetIsFever(bool state)  { IsFever = state; }
 	bool GetIsFever(void) const  { return IsFever; }
+	void SetIsFeverMega(bool state) { IsFeverMega = state; }
+	bool GetIsFeverMega(void) const { return IsFeverMega; }
 	void SetFeverType(WEAPON_TYPE_ID type)	{ FeverType = type; }
 	WEAPON_TYPE_ID GetFeverType(void) const { return FeverType; }
 	void SetIsGameOver(bool state) { IsGameOver = state; }
@@ -208,6 +227,7 @@ public:
 			vpf.push_back(visualPre_Fever[i].get());
 		return vpf;
 	}
+	Sprite2D* GetVisualPreFeverMega(void) { return visualPre_Fever_Mega.get(); }
 	void SetBackground(void);
 private:
 	void SetupTransitions(void) override;
@@ -217,6 +237,7 @@ private:
 	std::unique_ptr<Sprite3DNoLit> visualPre_Effect;
 	std::vector<std::unique_ptr<Sprite3DNoLit>> visualPre_Switch;
 	std::vector<std::unique_ptr<Sprite3DNoLit>> visualPre_Fever;
+	std::unique_ptr<Sprite2D> visualPre_Fever_Mega;
 	Graphics& Gfx;
 	Rgph::RenderGraph& Rg;
 	CameraContainer* pCamera;
@@ -231,6 +252,7 @@ private:
 	bool WasSkill{ false };
 	bool IsChange{ false };
 	bool IsFever{ false };
+	bool IsFeverMega{ false };
 	WEAPON_TYPE_ID FeverType{ WEAPON_TYPE_0 };
 	bool IsGameOver{ false };
 
@@ -399,4 +421,5 @@ public:
 private:
 	SpriteAnimeInfo packOut{ 12, 10, 49, 48 };
 	SpriteAnimeInfo packIn{ 7,  7,  0, 24, 10.0f };
+	int oldFrame{ 0 };
 };

@@ -136,6 +136,12 @@ void Player::Update(float dt)
 		}
 	}
 
+	// Fever Mega
+	if (IsFeverMega)
+		visualPre_Fever_Mega->Update(dt);
+	if (IsFeverMega && visualPre_Fever_Mega->GetTexIndex() == 1 && visualPre_Fever_Mega->ClipFinished())
+		IsFeverMega = false;
+
 	// マップ要素との当たり判定
 	boxCollider.center = transInfo.position;
 	MapItemCollide();
@@ -161,7 +167,7 @@ void Player::Submit(void)
 		visualPre_Switch[0]->Submit(Chan::main);
 		visualPre_Switch[1]->Submit(Chan::main);
 	}
-	//  visualPre_Fever
+	// visualPre_Fever
 	if (IsFever)
 	{
 		switch (GetDoAttackType())
@@ -177,6 +183,8 @@ void Player::Submit(void)
 			break;
 		}
 	}
+	// visualPre_Fever_Mega
+	if(IsFeverMega) visualPre_Fever_Mega->Submit(Chan::ui);
 
 
 #ifdef _DEBUG
@@ -260,14 +268,15 @@ bool Player::AttackCollide(float damage, XMFLOAT3 repel)
 				// カメラ効果
 				switch (DoAttackType)
 				{
-				case Player_Attack_1: AttackCameraShake(4, 0.3f, 0.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.2f, 0.2f, 10); break;
-				case Player_Attack_2: AttackCameraShake(4, 0.5f, 1.0f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.3f, 0.3f, 20); break;
-				case Player_Attack_3: AttackCameraShake(6, 1.0f, 1.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 30); break;
-				case Player_Skill_1:  AttackCameraShake(8, 2.0f, 3.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.8f, 0.8f, 80); break;
-				case Player_Skill_3:  AttackCameraShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8);	 InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.4f, 0.4f, 40);  break;
-				case Player_Fever_1:  AttackCameraShake(8, 3.0f, 4.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 16); break;
-				case Player_Fever_2:  AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(8);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 8);  break;
-				case Player_Fever_3:  AttackCameraShake(2, 1.0f, 2.0f); pCamera->SetScreenFroze(4);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 4);  break;
+				case Player_Attack_1:	AttackCameraShake(4, 0.3f, 0.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.2f, 0.2f, 10); break;
+				case Player_Attack_2:	AttackCameraShake(4, 0.5f, 1.0f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.3f, 0.3f, 20); break;
+				case Player_Attack_3:	AttackCameraShake(6, 1.0f, 1.5f); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 30); break;
+				case Player_Skill_1:	AttackCameraShake(8, 2.0f, 3.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.8f, 0.8f, 80);  break;
+				case Player_Skill_3:	AttackCameraShake(2, 0.5f, 1.0f); pCamera->SetScreenFroze(8);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.4f, 0.4f, 40);  break;
+				case Player_Fever_1:	AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(4);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 16);  break;
+				case Player_Fever_2:	AttackCameraShake(4, 1.0f, 2.0f); pCamera->SetScreenFroze(8);  InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 8);   break;
+				case Player_Fever_3:	AttackCameraShake(6, 2.0f, 4.0f); pCamera->SetScreenFroze(12); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 0.5f, 0.5f, 4);   break;
+				case Player_Fever_Mega: AttackCameraShake(8, 3.0f, 5.0f); pCamera->SetScreenFroze(16); InputCodex::Get().GP_SetVibrationPulse(boundPadIndex, 1.0f, 1.0f, 100); break;
 				}
 			}
 		}
@@ -468,6 +477,11 @@ void Player::BuildInputSnapshot()
 		mx += input.GP_LeftX(boundPadIndex);
 		mz += input.GP_LeftY(boundPadIndex);
 	}
+	// gamepad cross key
+	if (input.GP_Pressed(boundPadIndex, Gamepad::GP_DPAD_LEFT))  mx -= 1.0f;
+	if (input.GP_Pressed(boundPadIndex, Gamepad::GP_DPAD_RIGHT)) mx += 1.0f;
+	if (input.GP_Pressed(boundPadIndex, Gamepad::GP_DPAD_UP))	 mz += 1.0f;
+	if (input.GP_Pressed(boundPadIndex, Gamepad::GP_DPAD_DOWN))  mz -= 1.0f;
 	// deadzone
 	const float moveEps = 0.15f;
 	if (fabsf(mx) < moveEps) mx = 0.0f;
@@ -479,10 +493,10 @@ void Player::BuildInputSnapshot()
 
 	// -----------------------
 	// Dash / Attack / Skill / SlotL / SlotR
-	// dash: Space || Shift || Pad Y
+	// dash: Space || Shift || Pad Y & B
 	inputSnap.dash =
 		input.KeyTriggered(KK_SPACE) || input.KeyTriggered(KK_LEFTSHIFT) ||
-		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && input.GP_Triggered(boundPadIndex, Gamepad::GP_Y));
+		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && (input.GP_Triggered(boundPadIndex, Gamepad::GP_Y) || input.GP_Triggered(boundPadIndex, Gamepad::GP_B)));
 	// attack: MouseLeft || J || Pad X
 	inputSnap.attack =
 		input.MouseLeftTriggered() ||
@@ -493,14 +507,14 @@ void Player::BuildInputSnapshot()
 		input.MouseRightTriggered() ||
 		input.KeyTriggered(KK_K) ||
 		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && input.GP_Triggered(boundPadIndex, Gamepad::GP_A));
-	// slotL: Q || Pad LB
+	// slotL: Q || Pad LB & LT
 	inputSnap.slotL =
 		input.KeyTriggered(KK_Q) ||
-		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && input.GP_Triggered(boundPadIndex, Gamepad::GP_LB));
-	// slotR: E || Pad RB
+		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && (input.GP_Triggered(boundPadIndex, Gamepad::GP_LB) || input.GP_LT_Triggered(boundPadIndex)));
+	// slotR: E || Pad RB & RT
 	inputSnap.slotR =
 		input.KeyTriggered(KK_E) ||
-		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && input.GP_Triggered(boundPadIndex, Gamepad::GP_RB));
+		(boundPadIndex >= 0 && input.PadConnected(boundPadIndex) && (input.GP_Triggered(boundPadIndex, Gamepad::GP_RB) || input.GP_RT_Triggered(boundPadIndex)));
 
 
 	// -----------------------
@@ -1259,6 +1273,13 @@ void Player_ChangeState::OnEnter(Player* owner)
 		owner->SetFeverType(WEAPON_TYPE_0);
 
 		owner->GetVisualPre()->SetFrameAuto(packOut.numU, packOut.numV, packOut.FrameStart, packOut.FrameTotalCount, 4, packOut.FPS, !owner->GetIsFlip(), false);
+
+		// Blink
+		owner->GetVisualPreFeverMega()->SetFrameAuto(5, 3, 1, 12, 0, packOut.FPS, !owner->GetIsFlip(), false);
+		float offset = owner->GetIsFlip() ? -100.0f : 100.0f;
+		owner->GetVisualPreFeverMega()->SetPosition(SCREEN_WIDTH / 2.0f + offset, SCREEN_HEIGHT / 2.0f);
+
+		oldFrame = 0;
 	}
 	else
 	{
@@ -1287,6 +1308,9 @@ void Player_ChangeState::OnExit(Player* owner)
 	else
 	{
 		owner->SetBackground();
+		owner->SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
+		owner->SetAttackCollisionOnOff(false);
+		owner->SetDoAttackType(Attack_Type_None);
 	}
 
 	owner->GetWeaponSlots()->FinishChange();
@@ -1305,10 +1329,27 @@ void Player_ChangeState::Update(Player* owner, float dt)
 	}
 	else
 	{
+		int currentFrame = owner->GetVisualPre()->GetCurrentFrame();
+
 		owner->GetVisualPre()->Update(dt);
+
+		if (currentFrame >= 24 && oldFrame != currentFrame) owner->SetIsFeverMega(true);
+		// Attack
+		if (owner->GetVisualPreFeverMega()->ClipFinished())
+		{
+			owner->SetAttackCollisionSize({ 500.0f, 500.0f, 500.0f });
+			owner->SetAttackCollisionOnOff(true);
+			owner->SetDoAttackType(Player_Fever_Mega);
+		}
+		if (owner->GetAttackCollisionOnOff()) owner->AttackCollide(-100.0f, { 1.0f,0.1f,1.0f });
+		// Mega
+		if (currentFrame >= 36 && oldFrame != currentFrame && owner->GetVisualPreFeverMega()->ClipFinished())
+			owner->GetVisualPreFeverMega()->SetFrameAuto(6, 3, 1, 18, 1, packOut.FPS, !owner->GetIsFlip(), false);
 
 		//変身完了の判断
 		if (owner->GetVisualPre()->ClipFinished())
 			owner->SetIsChange(false);
+
+		oldFrame = currentFrame;
 	}
 }

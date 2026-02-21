@@ -44,6 +44,7 @@ public:
     // getters
     bool ClipFinished() const noexcept { return frame >= totalTex; }
     int GetCurrentFrame() const noexcept { return frame; }
+    int GetTexIndex() const noexcept { return texIndex; }
     DynamicTextureTag::value_type Provide(DynamicTextureTag) const noexcept override { return texIndex; }
     SpriteUVTag::value_type Provide(SpriteUVTag) const noexcept override { return { uvOffset, uvScale }; }
 private:

@@ -95,7 +95,7 @@ private:
 	static constexpr int SlotNeeded = 3;
 	std::pair<bool, WEAPON_TYPE_ID> CanChange{ false,WEAPON_TYPE_NONE };
 	bool IsChange{ false };
-	static constexpr float FeverCountdown = 20.0f;
+	static constexpr float FeverCountdown = 15.0f;
 	bool IsFever{ false };
 	float FeverTime{ 0.0f };
 	float FeverTimeDraw{ 0.0f };

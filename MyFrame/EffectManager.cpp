@@ -56,7 +56,7 @@ void EffectManager::Update(float dt)
 				case Player_Attack_2: effects.push_back(ObjectCodex::Acquire<Effect_Player_Remote_2>(effect_Player_Remote_Attack_2, gfx, rg, pos, flip)); playerRemote++; break;
 				case Player_Attack_3: effects.push_back(ObjectCodex::Acquire<Effect_Player_Remote_3>(effect_Player_Remote_Attack_3, gfx, rg, pos, flip)); playerRemote++; break;
 				}
-				effects.back()->SpawnAt(pos, flip);
+				if (effects.size() > 0) effects.back()->SpawnAt(pos, flip);
 			}
 		}
 	}
