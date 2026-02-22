@@ -564,6 +564,9 @@
     <ClCompile Include="Enemy_Blue_T.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="SkyGridCylinder.cpp">
+      <Filter>Source Files\Framework\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -1109,6 +1112,12 @@
     <ClInclude Include="Enemy_Blue_T.h">
       <Filter>Header Files\Object\Character\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="SkyGridCylinder.h">
+      <Filter>Header Files\Framework\Graphics\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyGridField.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PRIMARY.rc">
@@ -1254,6 +1263,12 @@
       <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="Firefly_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyGrid_VS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyGrid_PS.hlsl">
       <Filter>Shader\3D</Filter>
     </FxCompile>
   </ItemGroup>

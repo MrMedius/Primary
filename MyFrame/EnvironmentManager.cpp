@@ -9,6 +9,7 @@
 #include "BlockInvisible.h"
 #include "BlockFog.h"
 #include "FireflyField.h"
+#include "SkyGridField.h"
 
 EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	:
@@ -30,6 +31,7 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 			XMFLOAT3{ 0.0f, 10.0f,  fieldSize.z / 2.0f + shortSide / 2.0f }, XMFLOAT3{ longSide, 100.0f, shortSide }, true));
 		eT.push_back(ObjectCodex::Acquire<BlockInvisible>(environment_BlockInvisible, gfx, rg,
 			XMFLOAT3{ 0.0f, 10.0f, -fieldSize.z / 2.0f - shortSide / 2.0f }, XMFLOAT3{ longSide, 100.0f, shortSide }, true));
+		eT.push_back(ObjectCodex::Acquire<SkyGridField>(environment_SkyGridField, gfx, rg));
 	}
 	// Environments Game
 	{

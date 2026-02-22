@@ -31,6 +31,7 @@ enum Object_Type_Tag
 	environment_BlockInvisible	  = 0x103,
 	environment_BlockFog		  = 0x104,
 	environment_FireflyField	  = 0x105,
+	environment_SkyGridField	  = 0x106,
 	// Effect
 	effect_Player_Remote_Attack_1 = 0x200,
 	effect_Player_Remote_Attack_2 = 0x201,
