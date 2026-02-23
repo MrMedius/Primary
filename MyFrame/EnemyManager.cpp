@@ -24,7 +24,7 @@ EnemyManager::EnemyManager(Graphics& gfx, Rgph::RenderGraph& rg)
 {
 	pPlayer = ObjectCodex::FindFirstActiveObjectByTag<Player>(character_Player);
 
-	auto mapSize = ObjectCodex::FindFirstActiveObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
+	auto mapSize = ObjectCodex::FindFirstObjectByTag<ObjectBase>(environment_BlockTiled)->GetSize();
 	MapEdgeLeftAndRight = mapSize.x / 2.0f;
 	MapEdgeFrontAndBack = mapSize.z / 2.0f;
 	for (int i = 0;i < 10;i++)

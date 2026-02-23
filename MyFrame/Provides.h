@@ -85,6 +85,38 @@ struct SkyboxTransitionTag
     static constexpr value_type Default() noexcept { return {}; }
 };
 
+struct TutorialTransitionTag
+{
+    struct value_type
+    {
+        // --- core (同 FieldTransitionTag) ---
+        int   trState;          // 0=None,1=Expand,2=Recover,3=Collapse
+        int   trMode;           // 0=Normal,1=Burning,2=Purifying,3=Digital
+        float trRadius;
+        float trSoftness;
+        XMFLOAT3 trCenter;
+        float opacity;
+        // --- RGB ---
+        XMFLOAT3 colorFrom;
+        float pad0;
+        XMFLOAT3 colorTo;
+        float pad1;
+        // --- noise ---
+        float noiseScale;
+        float noiseAmp;
+        XMFLOAT2 pad2;
+        // --- Tutorial ?属 ---
+        float collapseTime;      // 0~1 ?一化崩??度
+        float vortexStrength;    // ???度
+        float rippleCount;       // 波?数量
+        float rainbowIntensity;  // 彩虹亮度
+        XMFLOAT2 numTiles;       // 格子数量 (X, Z)
+        float totalTime;         // 累???（Grid Shader ?用）
+        float pad3;
+    };
+    static constexpr value_type Default() noexcept { return {}; }
+};
+
 
 
 template<class Tag>

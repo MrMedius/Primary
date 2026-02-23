@@ -567,6 +567,12 @@
     <ClCompile Include="SkyGridCylinder.cpp">
       <Filter>Source Files\Framework\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="TutorialTransitionCbuf.cpp">
+      <Filter>Source Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTiledTutorial.cpp">
+      <Filter>Source Files\Framework\Graphics\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imstb_truetype.h">
@@ -1118,6 +1124,15 @@
     <ClInclude Include="SkyGridField.h">
       <Filter>Header Files\Object\Environment</Filter>
     </ClInclude>
+    <ClInclude Include="TutorialTransitionCbuf.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTiledTutorial.h">
+      <Filter>Header Files\Framework\Graphics\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockTiledTutorial.h">
+      <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PRIMARY.rc">
@@ -1269,6 +1284,15 @@
       <Filter>Shader\3D</Filter>
     </FxCompile>
     <FxCompile Include="SkyGrid_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="CubeTiledTutorial_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="CubeTiledTutorial_Collapse_PS.hlsl">
+      <Filter>Shader\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="CubeTiledTutorial_Grid_PS.hlsl">
       <Filter>Shader\3D</Filter>
     </FxCompile>
   </ItemGroup>

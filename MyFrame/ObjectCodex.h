@@ -54,6 +54,20 @@ public:
         return Get_().FindFirstActiveObjectByTag_<T>(tag);
     }
 
+    template <typename T>
+    static std::vector<T*> FindObjectsByTag(Object_Type_Tag tag)
+    {
+        static_assert(std::is_base_of<ObjectBase, T>::value, "T must inherit from Object");
+        return Get_().FindObjectsByTag_<T>(tag);
+    }
+
+    template <typename T>
+    static T* FindFirstObjectByTag(Object_Type_Tag tag)
+    {
+        static_assert(std::is_base_of<ObjectBase, T>::value, "T must inherit from Object");
+        return Get_().FindFirstObjectByTag_<T>(tag);
+    }
+
     static void ClearTag(Object_Type_Tag tag)
     {
         Get_().objectPools.erase(tag);
@@ -137,6 +151,44 @@ private:
                 {
                     return typed;
                 }
+            }
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    std::vector<T*> FindObjectsByTag_(Object_Type_Tag tag)
+    {
+        std::vector<T*> result;
+
+        auto it = objectPools.find(tag);
+
+        if (it == objectPools.end())
+            return result;
+
+        for (auto& obj : it->second)
+        {
+            if (auto* typed = dynamic_cast<T*>(obj.get()))
+            {
+                result.push_back(typed);
+            }
+        }
+        return result;
+    }
+
+    template <typename T>
+    T* FindFirstObjectByTag_(Object_Type_Tag tag)
+    {
+        auto it = objectPools.find(tag);
+
+        if (it == objectPools.end())
+            return nullptr;
+
+        for (auto& obj : it->second)
+        {
+            if (auto* typed = dynamic_cast<T*>(obj.get()))
+            {
+                return typed;
             }
         }
         return nullptr;

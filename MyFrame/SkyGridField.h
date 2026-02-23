@@ -25,8 +25,7 @@ public:
     {
         m_cylinder->Update(dt);
 
-        a += dt;
-
+        //a += dt;
         //if (a >= 10.0f && !b)
         //{
         //    StartFadeOut();

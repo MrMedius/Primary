@@ -33,7 +33,8 @@ void Character::MapItemCollide(void)
 	for (auto tag : {
 		environment_Block,
 		environment_BlockTiled,
-		environment_BlockInvisible
+		environment_BlockInvisible,
+		environment_BlockTiledTutorial
 		}) {
 		// 全てのマップオブジェクトを探す
 		auto found = ObjectCodex::FindActiveObjectsByTag<Environment>(tag);

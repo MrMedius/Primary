@@ -202,7 +202,7 @@ public:
 
 private:
 	// Countdown
-	static constexpr float Countdown = 5.0f;
+	static constexpr float Countdown = 0.1f;
 	float counter{ 0.0f };
 	int toScene{ 0 };
 	// Loading_Bg
