@@ -22,7 +22,7 @@ namespace dx = DirectX;
 Game::Game(const std::string& commandLine)
 	:
 	commandLine(commandLine),
-	wnd(1280, 720, "Hello World"),
+	wnd(1280, 720, "PRIMARY"),
 	scriptCommander(TokenizeQuoted(commandLine)),
 	light(wnd.Gfx(), { 0.0f,70.0f,0.0f })
 {

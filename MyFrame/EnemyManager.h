@@ -20,8 +20,8 @@ private:
 
 	//EnemyBoss* pEnemyBoss;
 
-	int Interval{ 100 };
-	int CountDown{ 0 };
+	float Interval{ 1.5f };
+	float CountDown{ 0 };
 	bool NewEnemy{ false };
 	bool Created{ false };
 

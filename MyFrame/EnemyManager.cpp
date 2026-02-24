@@ -96,10 +96,13 @@ void EnemyManager::Update(float dt, bool isInCD)
 		auto position = pPlayer->GetPosition();
 
 #ifdef _DEBUG
-		if (CountDown < Interval) CountDown++;
+		if (CountDown < Interval)
+		{
+			CountDown += dt;
+		}
 		if (CountDown >= Interval)
 		{
-			CountDown = 0;
+			CountDown = 0.0f;
 			NewEnemy = true;
 		}
 		int type = 0;
@@ -135,10 +138,15 @@ void EnemyManager::Update(float dt, bool isInCD)
 			SoundCodex::Get().PlaySE3D(SndPath::SE_Enemy_Create, 0, 1.0f, pos.x, pos.y, pos.z);
 		}
 #else
-		if (CountDown < Interval) CountDown++;
+		if (CountDown < Interval) 
+		{
+			CountDown += dt;
+			if (pPlayer->GetIsFever())
+				CountDown += dt * 3.0f;
+		}
 		if (CountDown >= Interval)
 		{
-			CountDown = 0;
+			CountDown = 0.0f;
 			NewEnemy = true;
 		}
 		int type = 0;

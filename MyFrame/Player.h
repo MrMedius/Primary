@@ -168,10 +168,14 @@ public:
 		SetIsGameOver(false);
 		pResource->Reset();
 		pWeapon->Reset();
+		IsDash = false;
+		IsSkill = false;
+		WasSkill = false;
 		IsChange = false;
 		IsFever = false;
 		isSwitch = false;
 		IsFeverMega = false;
+		IsGameOver = false;
 		SetBackground();
 		SetAttackCollisionSize({ 4.0f,6.0f,2.5f });
 		SetAttackCollisionOnOff(false);

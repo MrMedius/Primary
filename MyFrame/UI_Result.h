@@ -28,34 +28,46 @@ public:
 		// Clear
 		{
 			pClear = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{
-				"asset\\Images\\UI_Result\\victory.png" ,
-				"asset\\Images\\UI_Result\\game_over.png"
+				"asset\\Images\\UI_Result\\Victory.png" ,
+				"asset\\Images\\UI_Result\\Game_Over.png"
 			});
-			pClear->SetPosition(300.0f, 120.0f);
+			pClear->SetPosition(250.0f, 120.0f);
 			pClear->SetRotation(-15.0f);
-			pClear->SetScale(200.0f, 100.0f);
+			pClear->SetScale(300.0f, 100.0f);
 			pClear->LinkTechniques(rg);
 		}
 		// Score
-		for (int i = 0; i < scoreDigitsNum; i++)
 		{
-			scoreNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-			scoreNum[i]->SetPosition(800.0f - 30.0f * i, 120.0f);
-			scoreNum[i]->SetScale(50.0f, 50.0f);
-			scoreNum[i]->LinkTechniques(rg);
+			score_Title = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Score.png" });
+			score_Title->SetPosition(650.0f, 70.0f);
+			score_Title->SetScale(125.0f, 50.0f);
+			score_Title->SetFrame(1, 1, 1, 1, 1, 0, false);
+			score_Title->LinkTechniques(rg);
+			for (int i = 0; i < scoreDigitsNum; i++)
+			{
+				scoreNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
+				scoreNum[i]->SetPosition(750.0f - 30.0f * i, 130.0f);
+				scoreNum[i]->SetScale(50.0f, 50.0f);
+				scoreNum[i]->LinkTechniques(rg);
+			}
 		}
 		// Time (mm : ss)
 		{
+			time_Title = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Time.png" });
+			time_Title->SetPosition(990.0f, 70.0f);
+			time_Title->SetScale(125.0f, 50.0f);
+			time_Title->SetFrame(1, 1, 1, 1, 1, 0, false);
+			time_Title->LinkTechniques(rg);
 			pColon = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Colon.png" });
-			pColon->SetPosition(1100.0f - 30.0f * 2, 120.0f);
-			pColon->SetScale(50.0f, 50.0f);
+			pColon->SetPosition(1050.0f - 30.0f * 2, 130.0f);
+			pColon->SetScale(15.0f, 30.0f);
 			pColon->SetFrame(1, 1, 1, 1, 1, 0, false);
 			pColon->LinkTechniques(rg);
 			for (int i = 0; i < timeDigitsNum; i++)
 			{
 				timeNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-				float x = 1100.0f - 30.0f * (i >= 2 ? (i + 1) : i);
-				float y = 120.0f;
+				float x = 1050.0f - 30.0f * (i >= 2 ? (i + 1) : i);
+				float y = 130.0f;
 				timeNum[i]->SetPosition(x, y);
 				timeNum[i]->SetScale(50.0f, 50.0f);
 				timeNum[i]->LinkTechniques(rg);
@@ -65,7 +77,7 @@ public:
 		{
 			float size = 120.0f;
 			float ringRate = 2.0f;
-			float posX = 250.0f;
+			float posX = 200.0f;
 			float posY = 300.0f;
 			float offset = 150.0f;
 			enemyR = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\enemy.png" });
@@ -107,7 +119,7 @@ public:
 		{
 			float size = 120.0f;
 			float ringRate = 2.0f;
-			float posX = 450.0f;
+			float posX = 400.0f;
 			float posY = 300.0f;
 			float offset = 150.0f;
 			weaponR = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\weapon.png" });
@@ -149,7 +161,7 @@ public:
 		{
 			float sizeX = 400.0f;
 			float sizeY = 100.0f;
-			float posX = 720.0f;
+			float posX = 670.0f;
 			float posY = 330.0f;
 			float offset = 150.0f;
 			comboR = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Combo_Bg.png" });
@@ -184,20 +196,43 @@ public:
 			}
 		}
 		// Output
-		for (int i = 0; i < outputDigitsNum; i++)
 		{
-			outputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-			outputNum[i]->SetPosition(1100.0f - 50.0f * i, 300.0f);
-			outputNum[i]->SetScale(80.0f, 80.0f);
-			outputNum[i]->LinkTechniques(rg);
+			damageDealt_Title = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Damage_ Dealt.png" });
+			damageDealt_Title->SetPosition(1170.0f, 320.0f);
+			damageDealt_Title->SetScale(120.0f, 30.0f);
+			damageDealt_Title->SetFrame(1, 1, 1, 1, 1, 0, false);
+			damageDealt_Title->LinkTechniques(rg);
+			for (int i = 0; i < outputDigitsNum; i++)
+			{
+				outputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
+				outputNum[i]->SetPosition(1080.0f - 50.0f * i, 300.0f);
+				outputNum[i]->SetScale(80.0f, 80.0f);
+				outputNum[i]->LinkTechniques(rg);
+			}
 		}
 		// Input
-		for (int i = 0; i < inputDigitsNum; i++)
 		{
-			inputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
-			inputNum[i]->SetPosition(1100.0f - 50.0f * i, 400.0f);
-			inputNum[i]->SetScale(80.0f, 80.0f);
-			inputNum[i]->LinkTechniques(rg);
+			damageTaken_Title = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Damage_Taken.png" });
+			damageTaken_Title->SetPosition(1170.0f, 420.0f);
+			damageTaken_Title->SetScale(120.0f, 30.0f);
+			damageTaken_Title->SetFrame(1, 1, 1, 1, 1, 0, false);
+			damageTaken_Title->LinkTechniques(rg);
+			for (int i = 0; i < inputDigitsNum; i++)
+			{
+				inputNum.push_back(std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Number_No_2.png" }));
+				inputNum[i]->SetPosition(1080.0f - 50.0f * i, 400.0f);
+				inputNum[i]->SetScale(80.0f, 80.0f);
+				inputNum[i]->LinkTechniques(rg);
+			}
+		}
+		// Total
+		{
+			total_Title = std::make_unique<Sprite2D>(gfx, std::vector<std::string>{ "asset\\Images\\UI_Result\\Total.png" });
+			total_Title->SetPosition(980.0f, 500.0f);
+			total_Title->SetScale(120.0f, 50.0f);
+			total_Title->SetRotation(-15);
+			total_Title->SetFrame(1, 1, 1, 1, 1, 0, false);
+			total_Title->LinkTechniques(rg);
 		}
 		// Button
 		backButton = std::make_unique<Button>(gfx, rg, XMFLOAT2(SCREEN_WIDTH - 100.0f, SCREEN_HEIGHT - 100.0f), XMFLOAT2(100.0f, 50.0f), XMFLOAT2(100.0f, 50.0f), 3, 1, 1, 3, 2, "asset\\Images\\UI_Result\\UI_Result_Back.png");
@@ -479,7 +514,7 @@ public:
 	void Submit(void)
 	{
 		// Background
-		//pBackground->Submit(Chan::ui);
+		pBackground->Submit(Chan::ui);
 		// Clear
 		if (showPhase >= 0)
 		{
@@ -488,6 +523,7 @@ public:
 		// Score
 		if (showPhase >= 0)
 		{
+			score_Title->Submit(Chan::ui);
 			for (auto& n : scoreNum)
 			{
 				n->Submit(Chan::ui);
@@ -496,6 +532,7 @@ public:
 		// Time
 		if (showPhase >= 1)
 		{
+			time_Title->Submit(Chan::ui);
 			pColon->Submit(Chan::ui);
 			for (auto& t : timeNum)
 			{
@@ -546,6 +583,7 @@ public:
 		// Output
 		if (showPhase >= 5)
 		{
+			damageDealt_Title->Submit(Chan::ui);
 			for (auto& n : outputNum)
 			{
 				n->Submit(Chan::ui);
@@ -554,6 +592,7 @@ public:
 		// Input
 		if (showPhase >= 6)
 		{
+			damageTaken_Title->Submit(Chan::ui);
 			for (auto& n : inputNum)
 			{
 				n->Submit(Chan::ui);
@@ -562,6 +601,7 @@ public:
 		// Total
 		if (showPhase >= 7)
 		{
+			total_Title->Submit(Chan::ui);
 			for (auto& n : totalNum)
 			{
 				n->Submit(Chan::ui);
@@ -580,6 +620,9 @@ public:
 		auto data = GameStatsCodex::Get();
 		// Clear
 		pClear->SetFrame(1, 1, 1, 1, 1, data.gameClear ? 0 : 1);
+		if (data.gameClear) pClear->SetScale(300.0f, 100.0f);
+		else pClear->SetScale(500.0f, 100.0f);
+
 		// Score
 		scoreDraw = 0.0f;
 		// Time
@@ -646,8 +689,8 @@ public:
 		const float sy = std::sin(angleRad) * step;
 
 		// center point
-		const float baseX = 1030.0f;
-		const float baseY = 550.0f;
+		const float baseX = 1000.0f;
+		const float baseY = 580.0f;
 
 		// center index -> integer for odd digits, 0.5 for even digits
 		const float center = (digits - 1) * 0.5f;
@@ -684,10 +727,12 @@ private:
 	// Clear
 	std::unique_ptr<Sprite2D> pClear;
 	// Score
+	std::unique_ptr<Sprite2D> score_Title;
 	static constexpr int scoreDigitsNum = 8;
 	float scoreDraw{ 0 };
 	std::vector<std::unique_ptr<Sprite2D>> scoreNum;
 	// Time
+	std::unique_ptr<Sprite2D> time_Title;
 	static constexpr int timeDigitsNum = 4;
 	float timeDraw{ 0.0f };
 	std::vector<std::unique_ptr<Sprite2D>> timeNum;
@@ -730,14 +775,17 @@ private:
 	std::vector<std::unique_ptr<Sprite2D>> comboGNum;
 	std::vector<std::unique_ptr<Sprite2D>> comboBNum;
 	// Output
+	std::unique_ptr<Sprite2D> damageDealt_Title;
 	static constexpr int outputDigitsNum = 4;
 	float outputDraw{ 0 };
 	std::vector<std::unique_ptr<Sprite2D>> outputNum;
 	// Input
+	std::unique_ptr<Sprite2D> damageTaken_Title;
 	static constexpr int inputDigitsNum = 4;
 	float inputDraw{ 0 };
 	std::vector<std::unique_ptr<Sprite2D>> inputNum;
 	// Total
+	std::unique_ptr<Sprite2D> total_Title;
 	float totalScore{ 0.0f };
 	float totalDraw{ 0.0f };
 	std::vector<std::unique_ptr<Sprite2D>> totalNum;

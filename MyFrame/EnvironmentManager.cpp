@@ -88,7 +88,7 @@ void EnvironmentManager::Update(float dt)
 			if (eT[i]->IsActive()) 
 				size++;
 		}
-		if (eT.size() - size >= 2)
+		if (eT.size() - size >= 1)
 		{
 			isLearnt = true;
 			GameStatsCodex::SetFinishPart();
