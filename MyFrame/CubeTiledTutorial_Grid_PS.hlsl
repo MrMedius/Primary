@@ -1,23 +1,17 @@
 cbuffer TransitionCBuf : register(b2)
 {
-    int    trState;
-    int    trMode;
-    float  trRadius;
-    float  trSoftness;
-    float3 trCenter;
-    float  opacity;
-    float3 colorFrom; float pad0;
-    float3 colorTo;   float pad1;
-    float  noiseScale;
-    float  noiseAmp;
-    float2 pad2;
-    float  collapseTime;
-    float  vortexStrength;
-    float  rippleCount;
-    float  rainbowIntensity;
+    // core
+    int isCollapsing; // 0 = normal, 1 = collapse
+    float trRadius;
+    float trSoftness;
+    // Tutorial
+    float collapseTime;
+    float vortexStrength;
+    float rippleCount;
+    float rainbowIntensity;
+    float totalTime;
     float2 numTiles;
-    float  totalTime;
-    float  pad3;
+    float2 pad;
 };
 
 Texture2D texNoise : register(t1);
@@ -112,6 +106,9 @@ float4 main(
 {
     float t = totalTime;
 
+    // Center
+    float3 center = (0.0, 0.0, 0.0);
+    
     // Grid UV
     float gridCountX = max(numTiles.x * 0.5, 8.0);
     float gridCountZ = max(numTiles.y * 0.5, 8.0);
@@ -134,7 +131,7 @@ float4 main(
     gridIntensity += max(gridX2, gridZ2) * 0.25;
 
     // Wave visibility masking (player position driven)
-    float waveVis = 0.6 + sin(length(worldPos.xz - trCenter.xz) * 0.3 - t * 2.0) * 0.4;
+    float waveVis = 0.6 + sin(length(worldPos.xz - center.xz) * 0.3 - t * 2.0) * 0.4;
     waveVis = saturate(waveVis);
     gridIntensity *= waveVis;
 
@@ -148,9 +145,9 @@ float4 main(
     gridIntensity *= edgeFade;
 
     // Mask When Collapse
-    if (trState == 3 && trRadius > 0.01)
+    if (isCollapsing == 1 && trRadius > 0.01)
     {
-        float3 dv   = worldPos - trCenter;
+        float3 dv = worldPos - center;
         float  dist = length(float2(dv.x, dv.z));
         float  collapseMask = smoothstep(trRadius - trSoftness, trRadius + trSoftness * 0.5, dist);
         gridIntensity *= collapseMask;
@@ -163,12 +160,12 @@ float4 main(
     // Additional effects: Nebula + Warp Lines + Central Glow
     float3 nebulaColor     = CalculateNebula(worldPos.xz, t);
     float3 warpLineColor   = CalculateWarpLines(worldPos.xz, t);
-    float3 centerGlowColor = CalculateCenterGlow(worldPos.xz, trCenter.xz, t);
+    float3 centerGlowColor = CalculateCenterGlow(worldPos.xz, center.xz, t);
 
     float effectMask = waveVis * edgeFade;
-    if (trState == 3 && trRadius > 0.01)
+    if (isCollapsing == 3 && trRadius > 0.01)
     {
-        float3 dv   = worldPos - trCenter;
+        float3 dv = worldPos - center;
         float  dist = length(float2(dv.x, dv.z));
         effectMask *= smoothstep(trRadius - trSoftness, trRadius + trSoftness * 0.5, dist);
     }
@@ -178,7 +175,7 @@ float4 main(
     // Final
     float3 gridColor      = float3(0.3, 0.7, 1.0);
     float3 gridFinalColor = gridColor * gridIntensity;
-    float3 finalColor     = gridFinalColor * opacity * 0.8 + additionalEffects * opacity * 0.5;
+    float3 finalColor = gridFinalColor * 0.5 + additionalEffects * 0.5;
 
     float finalIntensity = max(max(finalColor.r, finalColor.g), finalColor.b);
     if (finalIntensity < 0.005)

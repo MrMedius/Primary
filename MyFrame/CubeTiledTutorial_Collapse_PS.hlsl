@@ -1,30 +1,32 @@
+#include "ShaderOps.hlsli"
+#include "LightVectorData.hlsli"
+#include "PointLight.hlsli"
 #include "PShadow.hlsli"
+
+cbuffer ObjectCBuf : register(b1)
+{
+    float3 specularColor;
+    float specularWeight;
+    float specularGloss;
+};
 
 cbuffer TransitionCBuf : register(b2)
 {
-    int trState;
-    int trMode;
+    // core
+    int isCollapsing; // 0 = normal, 1 = collapse
     float trRadius;
     float trSoftness;
-    float3 trCenter;
-    float opacity;
-    float3 colorFrom;
-    float pad0;
-    float3 colorTo;
-    float pad1;
-    float noiseScale;
-    float noiseAmp;
-    float2 pad2;
+    // Tutorial
     float collapseTime;
     float vortexStrength;
     float rippleCount;
     float rainbowIntensity;
-    float2 numTiles;
     float totalTime;
-    float pad3;
+    float2 numTiles;
+    float2 pad;
 };
 
-Texture2D texCurrent : register(t0);
+
 Texture2D texNoise : register(t1);
 SamplerState splr : register(s0);
 
@@ -58,7 +60,7 @@ float4 main(
     float4 spos : ShadowPosition,
     float3 worldPos : WorldPos) : SV_Target
 {
-    float3 diff = worldPos - trCenter;
+    float3 diff = worldPos - float3(0.0, 0.0, 0.0); // Fixed origin of the collapse center
     float dist = length(float2(diff.x, diff.z));
     float angle = atan2(diff.z, diff.x);
 
@@ -86,10 +88,41 @@ float4 main(
     if (collapseMask < 0.01 && edgeProximity < 0.01)
         discard;
     
-    // Basic Textures
-    float4 baseColor = texCurrent.Sample(splr, tc);
-    baseColor.a *= opacity;
-
+    
+    // -------------------------
+    // lighting
+    // -------------------------
+    float3 diffuse;
+    float3 specular;
+    // shadow map test
+    const float shadowLevel = Shadow(spos);
+    if (shadowLevel != 0.0f)
+    {
+        // renormalize interpolated normal
+        viewNormal = normalize(viewNormal);
+	    // fragment to light vector data
+        const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
+	    // attenuation
+        const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
+	    // diffuse
+        diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, viewNormal);
+	    // specular
+        specular = Speculate(diffuseColor * diffuseIntensity * specularColor, specularWeight, viewNormal, lv.vToL, viewFragPos, att, specularGloss);
+        // scale by shadow level
+        diffuse *= shadowLevel;
+        specular *= shadowLevel;
+    }
+    else
+    {
+        diffuse = specular = 0.0f;
+    }
+    
+    // Basic Color
+    float3 base = float3(0.4, 0.4, 0.4);
+    float3 lit0 = saturate((diffuse + ambient) * base + specular);
+    float4 baseColor = float4(lit0, 1.0);
+    
+    
     // Rainbow Border
     float borderWidth = trSoftness * 0.5;
     float borderGlow = pow(1.0 - smoothstep(0.0, borderWidth, borderDist), 1.5);

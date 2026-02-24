@@ -161,7 +161,7 @@ public:
 	void OnEnable(void) override
 	{
 		FSM->ChangeState(PLAYER_STATE[PLAYER_IDLE]);
-		SetPosition(XMFLOAT3(0.0f, 15.0f, 0.0f));
+		SetPosition(XMFLOAT3(0.0f, 45.0f, 0.0f));
 		MoveVelocity = { 0.0f,0.0f,0.0f };
 		ResetHpCurrent();
 		SetIsDeath(false);

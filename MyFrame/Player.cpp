@@ -1156,7 +1156,7 @@ void Player_SkillState::Update(Player* owner, float dt)
 	case WEAPON_TYPE_2:
 		if (currentFrame == 45 && oldFrame != currentFrame) 
 		{
-			owner->CalculateHpCurrent(3.0f);
+			owner->CalculateHpCurrent(10.0f);
 			SoundCodex::Get().PlaySE(SndPath::SE_Player_Skill_Green);
 		}
 		// VisualPrePos

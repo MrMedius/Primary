@@ -13,29 +13,15 @@ public:
     void SetScale(XMFLOAT3 size) noexcept;
     XMMATRIX GetTransformXM() const noexcept override;
 
-    // State Control
-    void Update(float dt, const XMFLOAT3& centerWorld);
-    void StartExpand(const XMFLOAT3& center, int mode);
-    void StartRecover(int mode);
-    void FinishRecover();
-    void GameStartExpend();
-    int  GetPlayMode() { return FT.trMode; }
-
     // Collapse
-    void StartCollapse(XMFLOAT3 center);
+    void Update(float dt);
+    void StartCollapse(void);
     bool IsCollapseFinished() const { return m_collapseFinished; }
     bool IsCollapsing()       const { return m_isCollapsing; }
     bool IsInsideCollapseHole(XMFLOAT3 worldPos) const;
     float GetCurrentCollapseRadius() const { return m_currentCollapseRadiusWorld; }
-    XMFLOAT3 GetCollapseCenter() const { return FT.trCenter; }
 
-    // Grid Opacity
-    void  SetGridOpacity(float v) { m_gridOpacity = v; }
-    float GetGridOpacity()  const { return m_gridOpacity; }
-
-    void SetGridCenter(XMFLOAT3 playerPos);
-
-    void ResetState();
+    void Reset();
 
     TutorialTransitionTag::value_type Provide(TutorialTransitionTag) const noexcept override;
 
@@ -44,9 +30,8 @@ private:
 
     TutorialTransitionTag::value_type FT{};
 
-    // State Machine
+    // time count
     float m_gridTimeAccumulator = 0.0f;
-    float m_gridOpacity = 1.0f;
 
     // collapse
     bool  m_isCollapsing = false;
@@ -60,9 +45,4 @@ private:
     float m_currentCollapseRadiusWorld = 0.0f;
     XMFLOAT3 m_size{};
     XMFLOAT2 m_numTiled{};
-
-    // normal
-    float m_t = 0.0f;
-    float m_duration = 2.0f;
-    float m_maxRadius = 200.0f;
 };

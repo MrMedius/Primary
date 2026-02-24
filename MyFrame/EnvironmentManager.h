@@ -20,5 +20,6 @@ private:
 	std::vector<Environment*> eT;
 	std::vector<Environment*> eG;
 
+	bool isLearnt{ false };
 	bool isTutorial{ true };
 };

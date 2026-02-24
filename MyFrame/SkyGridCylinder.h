@@ -62,6 +62,8 @@ public:
     void SetParams(const SkyGridParams& p);
     const SkyGridParams& GetSkyParams() const { return m_skyParams; }
 
+    void Reset();
+
 private:
     // CPU RippleData
     struct RippleData

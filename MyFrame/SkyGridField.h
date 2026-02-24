@@ -13,40 +13,33 @@ public:
     {
         SetCollisionOnOff(false);
 
-        m_cylinder = std::make_unique<SkyGridCylinder>(gfx);
-        m_cylinder->LinkTechniques(rg);
+        visualPre = std::make_unique<SkyGridCylinder>(gfx);
+        visualPre->LinkTechniques(rg);
 
-        SetPosition(XMFLOAT3{ 0.0f, 0.0f, 0.0f });
+        SetPosition(XMFLOAT3{ 0.0f, 30.0f, 0.0f });
     }
 
-    void OnEnable(void) override {}
+    void OnEnable(void) override 
+    {
+        visualPre->Reset();
+    }
 
     void Update(float dt) override
     {
-        m_cylinder->Update(dt);
+        if (GameStatsCodex::GetIsLearnt()) visualPre->StartFadeOut();
 
-        //a += dt;
-        //if (a >= 10.0f && !b)
-        //{
-        //    StartFadeOut();
-        //    b = true;
-        //}
+        if (visualPre->IsFadeOutFinished()) Deactivate();
+
+        visualPre->Update(dt);
     }
 
     void Submit(void) override
     {
-        if (!m_cylinder->IsFadeOutFinished())
-            m_cylinder->Submit(Chan::main);
+        visualPre->Submit(Chan::main);
     }
 
     void OnCollide(Character* other) override {}
 
-    void StartFadeOut(float duration = 2.0f) { m_cylinder->StartFadeOut(duration); }
-    bool IsFadeOutFinished() const { return m_cylinder->IsFadeOutFinished(); }
-
 private:
-    std::unique_ptr<SkyGridCylinder> m_cylinder;
-
-    float a = 0.0f;
-    bool b = false;
+    std::unique_ptr<SkyGridCylinder> visualPre;
 };

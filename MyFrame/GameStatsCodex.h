@@ -55,6 +55,9 @@ struct TutorialData
     bool isSkilled{ false };
     bool isFevered{ false };
 
+    bool isLearnt{ false };
+    bool isFinishPart{ false };
+
     void Reset() noexcept
     {
         isTutorial = true;
@@ -65,6 +68,9 @@ struct TutorialData
         isSwitched = false;
         isSkilled = false;
         isFevered = false;
+
+        isLearnt = false;
+        isFinishPart = false;
     }
 };
 
@@ -105,6 +111,13 @@ public:
 
     static bool GetIsFevered(void) noexcept { return Get_().tData.isFevered; }
     static void SetFevered(void) noexcept { Get_().tData.isFevered = true; }
+
+    static bool GetIsLearnt(void) noexcept { return Get_().tData.isLearnt; }
+    static void SetLearnt(void) noexcept { Get_().tData.isLearnt = true; }
+
+    static bool GetIsFinishPart(void) noexcept { return Get_().tData.isFinishPart; }
+    static void SetFinishPart(void) noexcept { Get_().tData.isFinishPart = true; }
+
 
 
 

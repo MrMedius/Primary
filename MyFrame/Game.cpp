@@ -24,7 +24,7 @@ Game::Game(const std::string& commandLine)
 	commandLine(commandLine),
 	wnd(1280, 720, "Hello World"),
 	scriptCommander(TokenizeQuoted(commandLine)),
-	light(wnd.Gfx(), { 0.0f,40.0f,0.0f })
+	light(wnd.Gfx(), { 0.0f,70.0f,0.0f })
 {
 #ifdef _DEBUG
 	cameras.AddCamera(light.ShareCamera());
@@ -34,7 +34,7 @@ Game::Game(const std::string& commandLine)
 	cameras.LinkTechniques(gameRG);
 
 	// Objects
-	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,15.0f,0.0f });
+	pPlayer = ObjectCodex::Acquire<Player>(character_Player, wnd.Gfx(), gameRG, &cameras, XMFLOAT3{ 0.0f,45.0f,0.0f });
 	pEnvironmentManager = std::make_unique<EnvironmentManager>(wnd.Gfx(), gameRG);
 	pEnemyManager = std::make_unique<EnemyManager>(wnd.Gfx(), gameRG);
 	pEffectManager = std::make_unique<EffectManager>(wnd.Gfx(), gameRG);

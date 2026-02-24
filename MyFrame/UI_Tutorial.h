@@ -76,7 +76,7 @@ public:
 		// Tutorials && Checks && GameStart
 		if(GameStatsCodex::GetIsTutorial())
 		{
-			if (finished && finishedCnt > 0)
+			if (GameStatsCodex::GetIsFinishPart() && finishedCnt > 0)
 			{
 				// GameStart
 				if (gameStartRate < 1.0f)
@@ -117,7 +117,7 @@ public:
 
 				if (finishedCnt <= 0) GameStatsCodex::SetFinishTutorial();
 			}
-			else if (!finished)
+			else if (!GameStatsCodex::GetIsFinishPart())
 			{
 				auto in = pPlayer->Input();
 				// Move
@@ -173,7 +173,7 @@ public:
 						SoundCodex::Get().PlaySE(SndPath::SE_Button_Click);
 
 						finishedCnt++;
-						finished = true;
+						GameStatsCodex::SetLearnt();
 					}
 				}
 
@@ -261,7 +261,7 @@ public:
 			// Checks
 			for (int i = 0;i < finishedCnt;i++)	pChecks[i]->Submit(Chan::ui);
 			// GameStart
-			if (finished) pGameStart->Submit(Chan::ui);
+			if (GameStatsCodex::GetIsFinishPart()) pGameStart->Submit(Chan::ui);
 		}
 		// Fever
 		else if (!GameStatsCodex::GetIsFevered())
@@ -273,7 +273,6 @@ public:
 
 	void Reset(void)
 	{
-		finished = false;
 		// Tutorials
 		finishedCnt = 0;
 		float baseY = 50.0f;
@@ -297,7 +296,6 @@ public:
 
 private:
 	Player* pPlayer;
-	bool finished{ false };
 	bool isGamepad{ false };
 	// Tutorials
 	static constexpr float startX = SCREEN_WIDTH + 150.0f;

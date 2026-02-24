@@ -191,7 +191,7 @@ void Enemy_Green_1_AttackState::Update(Enemy_Green_1* owner, float dt)
 	if (currentFrame == 16 && FrameNoOld != currentFrame) owner->SetAttackCollisionOnOff(false);
 
 	// UŒ‚“–‚½‚é”»’è
-	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-2.0f, { 1.0f ,0.8f,0.8f });
+	if (owner->GetAttackCollisionOnOff() && !HaveHit) HaveHit = owner->AttackCollide(-2.0f, { 1.0f ,0.4f,0.8f });
 
 	// I‚í‚Á‚½‚çUŒ‚ƒtƒ‰ƒO‚ð•Â‚¶‚é
 	if (owner->GetVisualPre()->ClipFinished()) owner->SetIsAttack(false);

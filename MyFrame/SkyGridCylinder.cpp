@@ -117,7 +117,7 @@ void SkyGridCylinder::Update(float dt)
         m_fadeProgress += dt;
         float t = std::clamp(m_fadeProgress / m_fadeDuration, 0.0f, 1.0f);
         float eased = 1.0f - (1.0f - t) * (1.0f - t);
-        m_skyParams.fadeMultiplier = 1.0f - eased;   // 1.0 → 0.0 平滑渐出
+        m_skyParams.fadeMultiplier = 1.0f - eased;   // 1.0 → 0.0
         if (t >= 1.0f)
         {
             m_fadeFinished = true;
@@ -245,4 +245,43 @@ void SkyGridCylinder::SpawnRandomRipple()
             break;
         }
     }
+}
+
+void SkyGridCylinder::Reset()
+{
+    // Ripples
+    m_rippleTimer = 0.0f;
+    m_rippleInterval = m_params.rippleIntervalMin;
+    for (int i = 0; i < MAX_RIPPLES; i++)
+    {
+        m_ripples[i].active = false;
+        m_ripples[i].centerU = 0.0f;
+        m_ripples[i].centerV = 0.0f;
+        m_ripples[i].currentRadius = 0.0f;
+        m_ripples[i].maxRadius = 0.0f;
+        m_ripples[i].life = 0.0f;
+        m_ripples[i].speed = 0.0f;
+    }
+
+    // Time
+    m_totalTime = 0.0f;
+
+    // Fade Out
+    m_fadingOut = false;
+    m_fadeFinished = false;
+    m_fadeProgress = 0.0f;
+    m_fadeDuration = 2.0f;
+
+    // Sky Params
+    m_skyParams = SkyGridParams{};
+    for (int i = 0; i < 4; i++)
+    {
+        m_skyParams.rippleCenters[i] = dx::XMFLOAT4{ 0, 0, 0, 0 };
+    }
+
+    // Transformation
+    m_trans.SetRotationRad(0.0f, 0.0f, 0.0f);
+
+    // Constant Buffer
+    m_pParamCBuf->Update(gfx, m_skyParams);
 }

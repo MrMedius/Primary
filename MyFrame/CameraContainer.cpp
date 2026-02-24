@@ -9,7 +9,7 @@ namespace dx = DirectX;
 
 CameraContainer::CameraContainer(Graphics& gfx)
 {
-	AddCamera(std::make_unique<Camera>(gfx, "Main Camera", dx::XMFLOAT3{ 0.0f,0.0f,0.0f }, PI / 6.0f, 0.0f));
+	AddCamera(std::make_unique<Camera>(gfx, "Main Camera", dx::XMFLOAT3{ 0.0f,40.0f,0.0f }, PI / 6.0f, 0.0f));
 	AddCamera(std::make_unique<Camera>(gfx, "Observer", dx::XMFLOAT3{ 0.0f,10.0f,0.0f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
 }
 
@@ -113,7 +113,7 @@ void CameraContainer::Submit(size_t channels) const
 
 void CameraContainer::Reset()
 {
-	FollowTarget = { 0.0f, 0.0f, 0.0f };
+	FollowTarget = { 0.0f, 40.0f, 0.0f };
 	cameras[0]->SetPos(FollowTarget);
 }
 

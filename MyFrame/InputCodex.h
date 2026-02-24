@@ -112,11 +112,11 @@ public:
 
     void GP_SetVibration(int idx, float leftMotor, float rightMotor) noexcept
     {
-        Pad(idx).SetVibration(leftMotor, rightMotor);
+        if(GamepadInput(idx)) Pad(idx).SetVibration(leftMotor, rightMotor);
     }
     void GP_SetVibrationPulse(int idx, float leftMotor, float rightMotor, int frames) noexcept
     {
-        Pad(idx).SetVibrationPulse(leftMotor, rightMotor, frames);
+        if (GamepadInput(idx)) Pad(idx).SetVibrationPulse(leftMotor, rightMotor, frames);
     }
     void GP_SetVibrationAll(float leftMotor, float rightMotor) noexcept
     {

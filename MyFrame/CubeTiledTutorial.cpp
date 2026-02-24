@@ -18,13 +18,8 @@ CubeTiledTutorial::CubeTiledTutorial(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numT
     m_numTiled = numTiled;
 
     FT = TutorialTransitionTag::value_type{};
-    FT.opacity = 0.5f;
     FT.trSoftness = 40.0f;
-    FT.noiseScale = 0.02f;
-    FT.noiseAmp = 200.0f;
     FT.numTiles = numTiled;
-    FT.colorFrom = { 1.0f, 1.0f, 1.0f };
-    FT.colorTo = { 1.0f, 1.0f, 1.0f };
 
     const auto geometryTag = "$cubeTut." + std::to_string(numTiled.x) + "x" + std::to_string(numTiled.y);
 
@@ -109,9 +104,8 @@ CubeTiledTutorial::CubeTiledTutorial(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numT
             top.AddBindable(Rasterizer::Resolve(gfx, false));
             top.AddBindable(Blender::Resolve(gfx, true));
             top.AddBindable(tcb);
-            top.AddBindable(ttcb);   // Å© Tutorial cbuf at b2
+            top.AddBindable(ttcb);
             top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_noise_cloud.png", 1u));
-            top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_field.png"));
 
             shade.AddStep(std::move(top));
         }
@@ -146,13 +140,11 @@ CubeTiledTutorial::CubeTiledTutorial(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numT
             top.AddBindable(tcb);
             top.AddBindable(ttcb);
             top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_noise_cloud.png", 1u));
-            top.AddBindable(Texture::Resolve(gfx, "asset\\Images\\Environment\\block_field.png"));
 
             collapse.AddStep(std::move(top));
         }
         AddTechnique(std::move(collapse));
     }
-
     // Grid
     {
         Technique grid("Grid", Chan::main);
@@ -176,20 +168,47 @@ CubeTiledTutorial::CubeTiledTutorial(Graphics& gfx, XMFLOAT3 size, XMFLOAT2 numT
         }
         AddTechnique(std::move(grid));
     }
+    // Outline Mask
+    {
+        Technique outline("Outline", Chan::main);
+        {
+            Step mask("outlineMask");
+
+            mask.AddBindable(InputLayout::Resolve(gfx, model.vertices.GetLayout(), *VertexShader::Resolve(gfx, "Solid_VS.cso")));
+            mask.AddBindable(NullPixelShader::Resolve(gfx));
+
+            mask.AddBindable(std::move(tcb));
+
+            outline.AddStep(std::move(mask));
+        }
+        AddTechnique(std::move(outline));
+    }
 }
 
 // ----------------------------------------------------------------
 // Transform
 // ----------------------------------------------------------------
-void CubeTiledTutorial::SetPosition(XMFLOAT3 pos) noexcept { trans.SetPosition(pos.x, pos.y, pos.z); }
-void CubeTiledTutorial::SetRotation(float roll, float pitch, float yaw) noexcept { trans.SetRotationDegreeToRad(roll, pitch, yaw); }
-void CubeTiledTutorial::SetScale(XMFLOAT3 size) noexcept { trans.SetScale(size.x, size.y, size.z); }
-XMMATRIX CubeTiledTutorial::GetTransformXM() const noexcept { return trans.GetTransformXM(); }
+void CubeTiledTutorial::SetPosition(XMFLOAT3 pos) noexcept 
+{ 
+    trans.SetPosition(pos.x, pos.y, pos.z); 
+}
+void CubeTiledTutorial::SetRotation(float roll, float pitch, float yaw) noexcept 
+{ 
+    trans.SetRotationDegreeToRad(roll, pitch, yaw); 
+}
+void CubeTiledTutorial::SetScale(XMFLOAT3 size) noexcept 
+{ 
+    trans.SetScale(size.x, size.y, size.z); 
+}
+XMMATRIX CubeTiledTutorial::GetTransformXM() const noexcept 
+{ 
+    return trans.GetTransformXM(); 
+}
 
 // ----------------------------------------------------------------
 // Update
 // ----------------------------------------------------------------
-void CubeTiledTutorial::Update(float dt, const XMFLOAT3& centerWorld)
+void CubeTiledTutorial::Update(float dt)
 {
     // Grid
     m_gridTimeAccumulator += dt;
@@ -204,7 +223,7 @@ void CubeTiledTutorial::Update(float dt, const XMFLOAT3& centerWorld)
 
         float norm = std::clamp(m_collapseElapsedTime / m_collapseDuration, 0.0f, 1.0f);
 
-        FT.trState = 3;
+        FT.isCollapsing = 1;
         FT.collapseTime = norm;
 
         float maxDist = sqrtf(m_size.x * m_size.x + m_size.z * m_size.z) * 0.5f;
@@ -218,87 +237,24 @@ void CubeTiledTutorial::Update(float dt, const XMFLOAT3& centerWorld)
         if (norm < 0.2f) rainbowCurve = (norm / 0.2f) * sinf(0.2f * 3.14159f);
         FT.rainbowIntensity = rainbowCurve * m_maxRainbowIntensity;
 
-        techniques[0].SetActiveState(false);
-        techniques[1].SetActiveState(true);
+        techniques[0].SetActiveState(false); // close Shade
+        techniques[1].SetActiveState(true);  // close Collapse
 
         if (norm >= 1.0f)
         {
             m_collapseFinished = true;
             m_isCollapsing = false;
-            FT.trState = 0;
+            FT.isCollapsing = 0;
         }
         return;
     }
 
-    techniques[0].SetActiveState(true);
-    techniques[1].SetActiveState(false);
-
-    switch (FT.trState)
-    {
-    case 0: // None
-        break;
-
-    case 1: // Expand
-        m_t += dt / m_duration;
-        m_t = std::min(m_t, 1.0f);
-        FT.trRadius = m_t * m_maxRadius;
-        if (m_t >= 1.0f)
-            StartRecover(FT.trMode);
-        break;
-
-    case 2: // Recover
-        FT.trCenter = centerWorld;
-        m_t -= dt / m_duration;
-        m_t = std::max(m_t, 0.0f);
-        FT.trRadius = m_t * m_maxRadius;
-        if (m_t <= 0.0f)
-            FinishRecover();
-        break;
-    }
-}
-
-void CubeTiledTutorial::StartExpand(const XMFLOAT3& center, int mode)
-{
-    FT.colorFrom = FT.colorTo;
-    switch (mode)
-    {
-    case 0: FT.colorTo = { 1.0f,1.0f,1.0f }; break;
-    case 1: FT.colorTo = { 0.75f,0.0f,0.30f }; break;
-    case 2: FT.colorTo = { 0.0f,0.75f,0.45f }; break;
-    case 3: FT.colorTo = { 0.0f,0.30f,0.75f }; break;
-    }
-    FT.trState = 1;
-    FT.trMode = mode;
-    FT.trCenter = center;
-    m_t = 0.0f;
-    m_maxRadius = 200.0f;
-    FT.trRadius = 0.0f;
-}
-
-void CubeTiledTutorial::StartRecover(int mode)
-{
-    FT.colorFrom = { 1.0f,1.0f,1.0f };
-    FT.trState = 2;
-    FT.trMode = mode;
-    m_t = 1.0f;
-    FT.trRadius = m_maxRadius;
-}
-
-void CubeTiledTutorial::FinishRecover()
-{
-    FT.trState = 0;
-    FT.trMode = 0;
-    FT.colorTo = { 1.0f,1.0f,1.0f };
-}
-
-void CubeTiledTutorial::GameStartExpend()
-{
-    FT.colorTo = { 0.0f,0.0f,0.0f };
-    StartExpand({ 0.0f,0.0f,0.0f }, 0);
+    techniques[0].SetActiveState(true);  // open Shade
+    techniques[1].SetActiveState(false); // open Collapse
 }
 
 // Collapse
-void CubeTiledTutorial::StartCollapse(XMFLOAT3 center)
+void CubeTiledTutorial::StartCollapse()
 {
     if (m_isCollapsing) return;
     m_isCollapsing = true;
@@ -307,8 +263,7 @@ void CubeTiledTutorial::StartCollapse(XMFLOAT3 center)
     m_totalTimeAccumulator = 0.0f;
     m_currentCollapseRadiusWorld = 0.0f;
 
-    FT.trState = 3;
-    FT.trCenter = center;
+    FT.isCollapsing = 1;
     FT.trRadius = 0.0f;
     FT.trSoftness = 2.0f;
     FT.collapseTime = 0.0f;
@@ -323,14 +278,14 @@ bool CubeTiledTutorial::IsInsideCollapseHole(XMFLOAT3 worldPos) const
     if (!m_isCollapsing && !m_collapseFinished) return false;
     if (m_collapseFinished) return true;
 
-    float dx = worldPos.x - FT.trCenter.x;
-    float dz = worldPos.z - FT.trCenter.z;
+    float dx = worldPos.x;
+    float dz = worldPos.z;
     float effectiveRadius = m_currentCollapseRadiusWorld - FT.trSoftness * 0.3f;
     if (effectiveRadius < 0.0f) effectiveRadius = 0.0f;
     return sqrtf(dx * dx + dz * dz) < effectiveRadius;
 }
 
-void CubeTiledTutorial::ResetState()
+void CubeTiledTutorial::Reset()
 {
     m_isCollapsing = false;
     m_collapseFinished = false;
@@ -340,25 +295,11 @@ void CubeTiledTutorial::ResetState()
     m_gridTimeAccumulator = 0.0f;
 
     FT = TutorialTransitionTag::value_type{};
-    FT.opacity = 0.5f;
     FT.trSoftness = 40.0f;
-    FT.noiseScale = 0.02f;
-    FT.noiseAmp = 200.0f;
     FT.numTiles = m_numTiled;
-    FT.colorFrom = { 1.0f,1.0f,1.0f };
-    FT.colorTo = { 1.0f,1.0f,1.0f };
 
     techniques[0].SetActiveState(true);
     techniques[1].SetActiveState(false);
-
-    GameStartExpend();
-}
-
-// Grid Center
-void CubeTiledTutorial::SetGridCenter(XMFLOAT3 playerPos)
-{
-    if (!m_isCollapsing)
-        FT.trCenter = playerPos;
 }
 
 // IProvides

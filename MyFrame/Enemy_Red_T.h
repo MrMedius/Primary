@@ -17,7 +17,7 @@ public:
 		SetSize({ 5.0f, 10.0f, 0.0f });
 		SetCollisionSize({ 4.0f, 0.5f, 2.0f });
 		SetCollisionOnOff(true);
-		SetHpMax(20.0f);
+		SetHpMax(50.0f);
 		ResetHpCurrent();
 		SetMoveAccel(0.5f);
 		SetEnemyType(ENEMY_TYPE_RED);
@@ -66,7 +66,7 @@ private:
 	void SetupTransitions(void) override;
 private:
 	std::unique_ptr<StateMachine<Enemy_Red_T>> FSM;
-	static constexpr XMFLOAT3 basePos{ 0.0f,20.0f,-10.0f };
+	static constexpr XMFLOAT3 basePos{ 0.0f,50.0f,-10.0f };
 	float waveLimit{ 10.0f };
 	float waveX{ 0.0f };
 	float waveZ{ 0.0f };

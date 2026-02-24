@@ -21,7 +21,7 @@ EnvironmentManager::EnvironmentManager(Graphics& gfx, Rgph::RenderGraph& rg)
 	{
 		// BlockTiled
 		XMFLOAT3 fieldSize = XMFLOAT3(50.0f, 2.0f, 50.0f);
-		eT.push_back(ObjectCodex::Acquire<BlockTiledTutorial>(environment_BlockTiledTutorial, gfx, rg, XMFLOAT3(0.0f, 10.0f, 0.0f), fieldSize, XMFLOAT2(2.0f, 2.0f), true));		
+		eT.push_back(ObjectCodex::Acquire<BlockTiledTutorial>(environment_BlockTiledTutorial, gfx, rg, XMFLOAT3(0.0f, 40.0f, 0.0f), fieldSize, XMFLOAT2(2.0f, 2.0f), true));		
 		// BlockInvisible
 		float longSide = 100.0f, shortSide = 50.0f;
 		eT.push_back(ObjectCodex::Acquire<BlockInvisible>(environment_BlockInvisible, gfx, rg,
@@ -71,7 +71,7 @@ void EnvironmentManager::Update(float dt)
 			eT[i]->Update(dt);
 		}
 	}
-	else
+	if (!isTutorial || GameStatsCodex::GetIsLearnt())
 	{
 		for (int i = 0;i < eG.size();i++)
 		{
@@ -79,12 +79,28 @@ void EnvironmentManager::Update(float dt)
 		}
 	}
 
-	//if (isTutorial && isTutorial != GameStatsCodex::GetIsTutorial())
-	//{
-	//	isTutorial = GameStatsCodex::GetIsTutorial();
-	//	for (int i = 0;i < eT.size();i++) eT[i]->Deactivate();
-	//	for (int i = 0;i < eG.size();i++) eG[i]->Activate();
-	//}
+
+	if (!isLearnt && GameStatsCodex::GetIsLearnt())
+	{
+		size_t size = 0;
+		for (size_t i = 0;i < eT.size();i++)
+		{
+			if (eT[i]->IsActive()) 
+				size++;
+		}
+		if (eT.size() - size >= 2)
+		{
+			isLearnt = true;
+			GameStatsCodex::SetFinishPart();
+			for (int i = 0;i < eG.size();i++) eG[i]->Activate();
+		}
+	}
+
+	if (isTutorial && isTutorial != GameStatsCodex::GetIsTutorial())
+	{
+		isTutorial = GameStatsCodex::GetIsTutorial();
+		for (int i = 0;i < eT.size();i++) eT[i]->Deactivate();
+	}
 }
 
 void EnvironmentManager::Submit(void)
@@ -96,7 +112,7 @@ void EnvironmentManager::Submit(void)
 			eT[i]->Submit();
 		}
 	}
-	else
+	if (!isTutorial || GameStatsCodex::GetIsLearnt())
 	{
 		for (int i = 0;i < eG.size();i++)
 		{
@@ -109,6 +125,7 @@ void EnvironmentManager::Reset(void)
 {
 	for (int i = 0;i < eT.size();i++) eT[i]->Activate();
 	for (int i = 0;i < eG.size();i++) eG[i]->Deactivate();
+	isLearnt = false;
 	isTutorial = true;
 }
 
