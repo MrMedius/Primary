@@ -564,13 +564,13 @@
     <ClCompile Include="Enemy_Blue_T.cpp">
       <Filter>Source Files\Object\Character\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="SkyGridCylinder.cpp">
-      <Filter>Source Files\Framework\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="TutorialTransitionCbuf.cpp">
       <Filter>Source Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
     </ClCompile>
     <ClCompile Include="CubeTiledTutorial.cpp">
+      <Filter>Source Files\Framework\Graphics\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyGridCylinder.cpp">
       <Filter>Source Files\Framework\Graphics\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
@@ -701,54 +701,6 @@
     <ClInclude Include="SkyboxPass.h">
       <Filter>Header Files\Framework\Graphics\GraphPass\PassLib</Filter>
     </ClInclude>
-    <ClInclude Include="Bindable.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="BindableCommon.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Blender.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffers.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffersEx.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexBuffer.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="InputLayout.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelShader.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Rasterizer.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Sampler.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Stencil.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Topology.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="NullPixelShader.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
     <ClInclude Include="ShadowRasterizer.h">
       <Filter>Header Files\Framework\Graphics\Bindable\Shadow</Filter>
     </ClInclude>
@@ -832,12 +784,6 @@
     </ClInclude>
     <ClInclude Include="Frustum.h">
       <Filter>Header Files\Framework\Graphics\Drawable\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Surface.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="TexturePreprocessor.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
     </ClInclude>
     <ClInclude Include="ModelWindow.h">
       <Filter>Header Files\Framework\Graphics\Drawable\Model</Filter>
@@ -1088,9 +1034,6 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Framework\Graphics\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="CubeTexture.h">
-      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
-    </ClInclude>
     <ClInclude Include="DynamicCubeTexture.h">
       <Filter>Header Files\Framework\Graphics\Bindable\ConstantBuffers</Filter>
     </ClInclude>
@@ -1132,6 +1075,63 @@
     </ClInclude>
     <ClInclude Include="BlockTiledTutorial.h">
       <Filter>Header Files\Object\Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Bindable.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="BindableCommon.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Blender.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffers.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffersEx.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeTexture.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="InputLayout.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="NullPixelShader.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Rasterizer.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Stencil.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePreprocessor.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Topology.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Header Files\Framework\Graphics\Bindable\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

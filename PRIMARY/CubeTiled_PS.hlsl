@@ -182,8 +182,6 @@ float4 main(
         outTex += ember * edge;
     }
 
-
-
     // =========================================================
     // MODE 2: Purifying (wavy boundary + ripple band + sparkle)
     // =========================================================
